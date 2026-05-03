@@ -57,27 +57,6 @@ metadata-intelligence-platform/
 
 ---
 
-## 🚀 Quick Start
-
-```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/metadata-intelligence-platform.git
-cd metadata-intelligence-platform
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set your Anthropic API key
-export ANTHROPIC_API_KEY=your_key_here
-
-# Run the full pipeline
-python agents/orchestrator.py
-
-# Open the dashboard
-open ui/dashboard.html
-```
-
----
 
 ## 🤖 Agent Pipeline
 
@@ -138,14 +117,6 @@ Lineage data is stored in `data/etl/` as XML and JSON. The `lineage_crawler.py` 
 | Partitioned table cardinality | Consolidated across partitions before cardinality check |
 
 ---
-
-## 📋 Daily Report Format
-
-Each team member submits a daily slide update (see `ui/dashboard.html`) with:
-- ✅ What I did today
-- ❌ What I couldn't complete
-- 🔜 Next steps
-- 📸 UI verification screenshot
 
 ---
 
