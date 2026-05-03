@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Metadata Intelligence Platform — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1f2f4a;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --high: #ff4757;
+    --low: #2ed573;
+    --warn: #ffa502;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .logo-area h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+
+  .logo-area h1 span { color: var(--text); }
+
+  .logo-area p {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .status-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .badge-green { background: rgba(46,213,115,0.15); color: var(--low); border: 1px solid rgba(46,213,115,0.3); }
+  .badge-red   { background: rgba(255,71,87,0.15);  color: var(--high); border: 1px solid rgba(255,71,87,0.3); }
+  .badge-blue  { background: rgba(0,212,255,0.1);   color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
+  .badge-warn  { background: rgba(255,165,2,0.1);   color: var(--warn); border: 1px solid rgba(255,165,2,0.25); }
+
+  /* Stats row */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .stat-card.red::before   { background: var(--high); }
+  .stat-card.green::before { background: var(--low); }
+  .stat-card.blue::before  { background: var(--accent); }
+  .stat-card.warn::before  { background: var(--warn); }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card.red   .stat-num { color: var(--high); }
+  .stat-card.green .stat-num { color: var(--low); }
+  .stat-card.blue  .stat-num { color: var(--accent); }
+  .stat-card.warn  .stat-num { color: var(--warn); }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+  }
+
+  /* Main grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+  /* Panel */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .panel-header {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Table */
+  .col-table { width: 100%; border-collapse: collapse; }
+
+  .col-table th {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 8px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .col-table td {
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    border-bottom: 1px solid rgba(31,47,74,0.5);
+    vertical-align: middle;
+  }
+
+  .col-table tr:last-child td { border-bottom: none; }
+
+  .col-table tr:hover td { background: rgba(0,212,255,0.03); }
+
+  .col-name {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .desc-text { color: var(--text); max-width: 380px; line-height: 1.5; }
+  .desc-missing { color: var(--muted); font-style: italic; }
+
+  /* Risk pill */
+  .risk-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 2px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .risk-pill:hover { opacity: 0.8; }
+  .risk-high { background: rgba(255,71,87,0.15); color: var(--high); border: 1px solid rgba(255,71,87,0.4); }
+  .risk-low  { background: rgba(46,213,115,0.12); color: var(--low); border: 1px solid rgba(46,213,115,0.3); }
+
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .score-track {
+    width: 60px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  .score-val { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+  /* Issues badge */
+  .issue-count {
+    background: rgba(255,165,2,0.15);
+    color: var(--warn);
+    border: 1px solid rgba(255,165,2,0.3);
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  /* Lineage */
+  .lineage-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-bottom: 1px solid rgba(31,47,74,0.5);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+
+  .lineage-node:last-child { border-bottom: none; }
+
+  .l-src { color: var(--accent); }
+  .l-arrow { color: var(--muted); }
+  .l-tgt { color: #a78bfa; }
+  .l-loop { color: var(--high); font-size: 0.6rem; margin-left: auto; }
+
+  /* Daily report */
+  .daily-card {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(31,47,74,0.5);
+  }
+
+  .daily-card:last-child { border-bottom: none; }
+
+  .daily-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .daily-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .daily-actions { display: flex; flex-direction: column; gap: 5px; }
+
+  .daily-action {
+    font-size: 0.74rem;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .daily-action .icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* Popup overlay */
+  .popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(3px);
+  }
+
+  .popup-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .popup-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 28px;
+    max-width: 520px;
+    width: 90%;
+    position: relative;
+    transform: translateY(10px);
+    transition: transform 0.2s;
+  }
+
+  .popup-overlay.active .popup-box { transform: translateY(0); }
+
+  .popup-close {
+    position: absolute;
+    top: 12px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .popup-risk-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .popup-col-name { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); }
+  .popup-table-name { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  .popup-section-title {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+
+  .popup-desc {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.6;
+    background: var(--surface2);
+    padding: 10px 12px;
+    border-radius: 3px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .popup-issues { display: flex; flex-direction: column; gap: 6px; }
+
+  .popup-issue {
+    font-size: 0.74rem;
+    color: var(--warn);
+    background: rgba(255,165,2,0.08);
+    padding: 6px 10px;
+    border-radius: 2px;
+    border-left: 2px solid var(--warn);
+  }
+
+  /* Filters */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 4px 12px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    border-color: rgba(0,212,255,0.3);
+  }
+
+  .filter-btn.active-red {
+    background: rgba(255,71,87,0.1);
+    color: var(--high);
+    border-color: rgba(255,71,87,0.3);
+  }
+
+  .filter-btn.active-green {
+    background: rgba(46,213,115,0.1);
+    color: var(--low);
+    border-color: rgba(46,213,115,0.3);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-area">
+      <h1>Metadata<span> Intelligence</span> Platform</h1>
+      <p>// Graduation Project — AI-Powered Metadata Enrichment & Risk Classification</p>
+    </div>
+    <div class="status-bar">
+      <span class="badge badge-blue">Generator ✓</span>
+      <span class="badge badge-blue">Critic ✓</span>
+      <span class="badge badge-warn">⚠ 2 Loops</span>
+      <span class="badge badge-green">Pipeline OK</span>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card red">
+      <div class="stat-num" id="stat-high">7</div>
+      <div class="stat-label">High Risk Columns</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-num" id="stat-low">9</div>
+      <div class="stat-label">Low Risk Columns</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Tables Processed</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Lineage Loops</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-num">64</div>
+      <div class="stat-label">Avg Clarity Score</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-grid">
+    <div>
+
+      <!-- Column Table -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">// Column Risk Matrix</span>
+          <span class="badge badge-blue">16 columns</span>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterTable('all', this)">All</button>
+          <button class="filter-btn" onclick="filterTable('HIGH_RISK', this)">🔴 High Risk</button>
+          <button class="filter-btn" onclick="filterTable('LOW_RISK', this)">🟢 Low Risk</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="col-table" id="colTable">
+            <thead>
+              <tr>
+                <th>Table</th>
+                <th>Column</th>
+                <th>Description</th>
+                <th>Risk</th>
+                <th>Clarity</th>
+                <th>Issues</th>
+              </tr>
+            </thead>
+            <tbody id="colTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right sidebar -->
+    <div>
+
+      <!-- Lineage -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">// ETL Lineage</span>
+          <span class="badge badge-warn">⚠ Loop</span>
+        </div>
+        <div id="lineageContainer"></div>
+      </div>
+
+      <!-- Daily Report -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">// Daily Report</span>
+          <span class="badge badge-green">UI Verified</span>
+        </div>
+        <div id="dailyContainer"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Popup -->
+<div class="popup-overlay" id="popup" onclick="closePopup(event)">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-risk-header">
+      <div id="popup-pill"></div>
+      <div>
+        <div class="popup-col-name" id="popup-col"></div>
+        <div class="popup-table-name" id="popup-table"></div>
+      </div>
+    </div>
+    <div class="popup-section-title">Description</div>
+    <div class="popup-desc" id="popup-desc"></div>
+    <div class="popup-section-title" id="popup-issues-title" style="display:none">Issues Detected</div>
+    <div class="popup-issues" id="popup-issues"></div>
+  </div>
+</div>
+
+<script>
+const COLUMNS = [
+  { table:"CORE_BANKING.XXX_HESAP", col:"HESAP_NO", desc:"Hesabın benzersiz IBAN formatındaki tanımlayıcısıdır. 26 karakterden oluşur.", risk:"LOW_RISK", clarity:82, issues:[] },
+  { table:"CORE_BANKING.XXX_HESAP", col:"ACILIS_TARIHI", desc:"Ticari veya bireysel hesabın açıldığı resmi tarihtir. Valörlü açılışlarda valör tarihi yazar; gerçek açılış için VALOR_TARIHI kolonuna bakılmalıdır.", risk:"LOW_RISK", clarity:91, issues:[] },
+  { table:"CORE_BANKING.XXX_HESAP", col:"VALOR_TARIHI", desc:"Valörlü hesaplarda geçerli valör tarihidir. Standart hesaplarda NULL olabilir.", risk:"LOW_RISK", clarity:78, issues:[] },
+  { table:"CORE_BANKING.XXX_HESAP", col:"HESAP_TIP_KOD", desc:"LKP_HESAP_TIP tablosundaki hesap tipi kodudur. Değerler: 1=Vadesiz, 2=Vadeli, 3=Döviz, 4=Altın, 5=Yatırım.", risk:"LOW_RISK", clarity:88, issues:[] },
+  { table:"CORE_BANKING.XXX_HESAP", col:"HESAP_DURUM_KOD", desc:"Account status code. 0=Active, 1=Passive, 2=Closed.", risk:"HIGH_RISK", clarity:22, issues:["English description in Turkish schema","Value mismatch: documented [0,1,2] but DB contains value 3","LKP table missing for low-cardinality column (3 distinct values)"] },
+  { table:"CORE_BANKING.XXX_HESAP", col:"MUSTERI_NO", desc:"Müşteri kimlik numarasıdır. XXX_MUSTERI tablosunun birincil anahtarıdır.", risk:"LOW_RISK", clarity:85, issues:[] },
+  { table:"CORE_BANKING.XXX_HESAP", col:"SUBE_KOD", desc:"", risk:"HIGH_RISK", clarity:0, issues:["Missing description","LKP_SUBE FK not defined in data model","Low cardinality (87 distinct) — verify lookup coverage"] },
+  { table:"CREDIT.KRD_MUS_KREDI", col:"KRD_NO", desc:"Kredinin benzersiz tanımlayıcısıdır.", risk:"HIGH_RISK", clarity:35, issues:["Incomplete: no schema context or format mentioned"] },
+  { table:"CREDIT.KRD_MUS_KREDI", col:"KRD_MUS_KOBI_TIP", desc:"TMMOB tarafından belirlenen KOBİ tipi kodudur. Alabileceği değerler: 1-4. LKP tablosu mevcut değildir.", risk:"HIGH_RISK", clarity:62, issues:["LKP table missing for low-cardinality column (4 distinct values)"] },
+  { table:"CREDIT.KRD_MUS_KREDI", col:"INT_SHK_A_30GCK_ADT_LM", desc:"Akbank Hariç Kredi Kartı Açık Son 60 gün", risk:"HIGH_RISK", clarity:10, issues:["DESCRIPTION MISMATCH: Column name says 30 days (30GCK) but description says 60 days"] },
+  { table:"CREDIT.KRD_MUS_KREDI", col:"KRD_TUTAR", desc:"Müşteriye kullandırılan kredi miktarını TL cinsinden ifade eder.", risk:"LOW_RISK", clarity:80, issues:[] },
+  { table:"CREDIT.KRD_MUS_KREDI", col:"KRD_DURUM", desc:"Credit status. 0=Active, 1=Closed, 2=NPL", risk:"HIGH_RISK", clarity:20, issues:["English description in Turkish schema","LKP table missing"] },
+  { table:"CRM.MUS_SEGMENTASYON", col:"MUSTERI_NO", desc:"Müşteri kimlik numarasıdır.", risk:"LOW_RISK", clarity:72, issues:[] },
+  { table:"CRM.MUS_SEGMENTASYON", col:"SEGMENT_KOD", desc:"", risk:"HIGH_RISK", clarity:0, issues:["Missing description","LKP_SEGMENT exists but description not populated"] },
+  { table:"CRM.MUS_SEGMENTASYON", col:"GELIR_GRUBU", desc:"Gelir grubu kodu.", risk:"HIGH_RISK", clarity:20, issues:["Vague — no value range documented","LKP table missing (5 distinct values)"] },
+  { table:"RISK.RISK_IZLEME", col:"RISK_SKOR", desc:"0-100 arası risk skoru. Yüksek değer yüksek riski ifade eder.", risk:"LOW_RISK", clarity:90, issues:[] },
+];
+
+const LINEAGE = [
+  { src:"CORE_BANKING.XXX_HESAP", tgt:"RISK.RISK_IZLEME", loop:false },
+  { src:"CREDIT.KRD_MUS_KREDI", tgt:"RISK.RISK_IZLEME", loop:false },
+  { src:"RISK.RISK_IZLEME", tgt:"CRM.MUS_SEGMENTASYON", loop:true },
+  { src:"CRM.MUS_SEGMENTASYON", tgt:"RISK.RISK_IZLEME", loop:true },
+  { src:"CORE_BANKING.XXX_HESAP", tgt:"CRM.MUS_SEGMENTASYON", loop:false },
+];
+
+const DAILY = [
+  { name:"Ali K.", did:["Generator agent implemented and tested on 5 tables","Critic agent Claude API integration complete"], couldnt:["Lineage XML parser — blocked on schema"], next:["Complete XML lineage parser","Connect orchestrator end-to-end"] },
+  { name:"Büşra T.", did:["Risk classifier rules finalized","Cardinality checker: metadata-first strategy implemented"], couldnt:["DB query runner (no DB access yet)"], next:["Mock DB layer for testing","Update dashboard risk counts"] },
+  { name:"Cem Y.", did:["Dashboard HTML/CSS/JS complete","ETL lineage graph visualization added"], couldnt:["Loop detection edge cases still failing"], next:["Fix DFS cycle detection","UI verification screenshots for slides"] },
+];
+
+// Render table
+function renderTable(filter = 'all') {
+  const tbody = document.getElementById('colTableBody');
+  const filtered = filter === 'all' ? COLUMNS : COLUMNS.filter(c => c.risk === filter);
+
+  tbody.innerHTML = filtered.map(col => {
+    const riskClass = col.risk === 'HIGH_RISK' ? 'risk-high' : 'risk-low';
+    const riskLabel = col.risk === 'HIGH_RISK' ? '🔴 HIGH' : '🟢 LOW';
+    const clarityColor = col.clarity >= 70 ? '#2ed573' : col.clarity >= 40 ? '#ffa502' : '#ff4757';
+    const descHtml = col.desc
+      ? `<span class="desc-text">${col.desc.length > 80 ? col.desc.slice(0,80)+'…' : col.desc}</span>`
+      : `<span class="desc-missing">— missing —</span>`;
+    const issueHtml = col.issues.length
+      ? `<span class="issue-count" onclick="showPopup('${col.table}','${col.col}')">⚠ ${col.issues.length}</span>`
+      : `<span style="color:var(--muted);font-size:0.7rem;">—</span>`;
+
+    return `<tr data-risk="${col.risk}">
+      <td><span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);">${col.table}</span></td>
+      <td><span class="col-name">${col.col}</span></td>
+      <td>${descHtml}</td>
+      <td><span class="risk-pill ${riskClass}" onclick="showPopup('${col.table}','${col.col}')">${riskLabel}</span></td>
+      <td>
+        <div class="score-bar">
+          <div class="score-track"><div class="score-fill" style="width:${col.clarity}%;background:${clarityColor}"></div></div>
+          <span class="score-val">${col.clarity}</span>
+        </div>
+      </td>
+      <td>${issueHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(risk, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn');
+  if (risk === 'all') { btn.className = 'filter-btn active'; }
+  else if (risk === 'HIGH_RISK') { btn.className = 'filter-btn active-red'; }
+  else { btn.className = 'filter-btn active-green'; }
+  renderTable(risk);
+}
+
+// Render lineage
+function renderLineage() {
+  document.getElementById('lineageContainer').innerHTML = LINEAGE.map(l =>
+    `<div class="lineage-node">
+      <span class="l-src">${l.src.split('.')[1]}</span>
+      <span class="l-arrow">→</span>
+      <span class="l-tgt">${l.tgt.split('.')[1]}</span>
+      ${l.loop ? '<span class="l-loop">⚠ LOOP</span>' : ''}
+    </div>`
+  ).join('');
+}
+
+// Render daily
+function renderDaily() {
+  document.getElementById('dailyContainer').innerHTML = DAILY.map(d => `
+    <div class="daily-card">
+      <div class="daily-status">
+        <span class="badge badge-blue">@${d.name}</span>
+      </div>
+      <div class="daily-actions">
+        ${d.did.map(a => `<div class="daily-action"><span class="icon">✅</span><span>${a}</span></div>`).join('')}
+        ${d.couldnt.map(a => `<div class="daily-action"><span class="icon">❌</span><span>${a}</span></div>`).join('')}
+        ${d.next.map(a => `<div class="daily-action"><span class="icon">🔜</span><span>${a}</span></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Popup
+function showPopup(table, colName) {
+  const col = COLUMNS.find(c => c.table === table && c.col === colName);
+  if (!col) return;
+
+  const riskClass = col.risk === 'HIGH_RISK' ? 'risk-high' : 'risk-low';
+  const riskLabel = col.risk === 'HIGH_RISK' ? '🔴 HIGH RISK' : '🟢 LOW RISK';
+
+  document.getElementById('popup-pill').innerHTML = `<span class="risk-pill ${riskClass}">${riskLabel}</span>`;
+  document.getElementById('popup-col').textContent = col.col;
+  document.getElementById('popup-table').textContent = col.table;
+  document.getElementById('popup-desc').textContent = col.desc || '(No description available)';
+
+  const issuesEl = document.getElementById('popup-issues');
+  const issuesTitle = document.getElementById('popup-issues-title');
+
+  if (col.issues.length) {
+    issuesTitle.style.display = 'block';
+    issuesEl.innerHTML = col.issues.map(i => `<div class="popup-issue">⚠ ${i}</div>`).join('');
+  } else {
+    issuesTitle.style.display = 'none';
+    issuesEl.innerHTML = '';
+  }
+
+  document.getElementById('popup').classList.add('active');
+}
+
+function closePopup(e) {
+  if (!e || e.target === document.getElementById('popup') || e.target.classList.contains('popup-close')) {
+    document.getElementById('popup').classList.remove('active');
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup({target: document.getElementById('popup')}); });
+
+// Init
+renderTable();
+renderLineage();
+renderDaily();
+
+// Update stats
+const highCount = COLUMNS.filter(c => c.risk === 'HIGH_RISK').length;
+const lowCount = COLUMNS.filter(c => c.risk === 'LOW_RISK').length;
+document.getElementById('stat-high').textContent = highCount;
+document.getElementById('stat-low').textContent = lowCount;
+</script>
+</body>
+</html>

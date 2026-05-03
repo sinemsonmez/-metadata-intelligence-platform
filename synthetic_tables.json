@@ -1,0 +1,276 @@
+[
+  {
+    "table_name": "XXX_HESAP",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Account",
+    "description": "Banka müşterilerine ait hesap bilgilerini içeren ana tablodur. Ticari ve bireysel hesapları kapsar.",
+    "has_functional_doc": true,
+    "has_toa_doc": true,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "HESAP_NO",
+        "data_type": "VARCHAR(26)",
+        "description": "Hesap numarasıdır.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "ACILIS_TARIHI",
+        "data_type": "DATE",
+        "description": "Açılış tarihidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "notes": "Valörlü açılan hesaplarda bu bilgi valör tarihi olarak yazar. VALOR_TARIHI kolonuna da bakılmalıdır."
+      },
+      {
+        "column_name": "VALOR_TARIHI",
+        "data_type": "DATE",
+        "description": "Valör tarihidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "HESAP_TIP_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "Hesap tipi.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "distinct_count": 5,
+        "has_lookup": true,
+        "lookup_table": "LKP_HESAP_TIP",
+        "nullable": false,
+        "known_values": [1, 2, 3, 4, 5]
+      },
+      {
+        "column_name": "HESAP_DURUM_KOD",
+        "data_type": "NUMBER(1)",
+        "description": "Account status code.",
+        "description_quality": "english",
+        "cardinality": "low",
+        "distinct_count": 3,
+        "has_lookup": false,
+        "nullable": false,
+        "known_values": [0, 1, 2],
+        "actual_values_in_db": [0, 1, 2, 3],
+        "validation_issue": "Documented values [0,1,2] but DB contains value 3 as well. LKP table missing."
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "Müşteri numarasıdır. XXX_MUSTERI tablosunun birincil anahtarıdır.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "fk_table": "XXX_MUSTERI"
+      },
+      {
+        "column_name": "SUBE_KOD",
+        "data_type": "NUMBER(4)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "distinct_count": 87,
+        "has_lookup": true,
+        "lookup_table": "LKP_SUBE",
+        "nullable": false
+      }
+    ]
+  },
+  {
+    "table_name": "KRD_MUS_KREDI",
+    "schema": "CREDIT",
+    "conceptual_model": "Credit",
+    "description": null,
+    "description_quality": "missing",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": true,
+    "partition_column": "ISLEM_TARIHI",
+    "partition_type": "RANGE",
+    "columns": [
+      {
+        "column_name": "KRD_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "Kredi numarasıdır.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "KRD_MUS_KOBI_TIP",
+        "data_type": "NUMBER(1)",
+        "description": "KOBI TIPININ TUTULACAGI ALAN.",
+        "description_quality": "vague",
+        "cardinality": "low",
+        "distinct_count": 4,
+        "has_lookup": false,
+        "nullable": true,
+        "known_values": [1, 2, 3, 4],
+        "notes": "TMMOB tarafından belirlenen kobi tipidir. LKP tablosu mevcut değil."
+      },
+      {
+        "column_name": "INT_SHK_A_30GCK_ADT_LM",
+        "data_type": "NUMBER(15,2)",
+        "description": "Akbank Hariç Kredi Kartı Açık Son 60 gün",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true,
+        "validation_issue": "Column name suggests 30 days (30GCK) but description says 60 days. Mismatch detected."
+      },
+      {
+        "column_name": "KRD_TUTAR",
+        "data_type": "NUMBER(15,2)",
+        "description": "Kredi tutarı. Müşteriye kullandırılan kredi miktarını TL cinsinden ifade eder.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "KRD_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "Credit status. 0=Active, 1=Closed, 2=NPL",
+        "description_quality": "english",
+        "cardinality": "low",
+        "distinct_count": 3,
+        "has_lookup": false,
+        "nullable": false,
+        "known_values": [0, 1, 2]
+      }
+    ]
+  },
+  {
+    "table_name": "MUS_SEGMENTASYON",
+    "schema": "CRM",
+    "conceptual_model": "Customer",
+    "description": "Customer segmentation table for CRM analytics.",
+    "description_quality": "english",
+    "has_functional_doc": true,
+    "has_toa_doc": false,
+    "has_ddl": false,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "Müşteri kimlik numarasıdır.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "SEGMENT_KOD",
+        "data_type": "VARCHAR(5)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "distinct_count": 6,
+        "has_lookup": true,
+        "lookup_table": "LKP_SEGMENT",
+        "nullable": false
+      },
+      {
+        "column_name": "GELIR_GRUBU",
+        "data_type": "NUMBER(1)",
+        "description": "Gelir grubu kodu.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "distinct_count": 5,
+        "has_lookup": false,
+        "nullable": true,
+        "known_values": [1, 2, 3, 4, 5]
+      }
+    ]
+  },
+  {
+    "table_name": "LKP_HESAP_TIP",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Lookup",
+    "description": "Hesap tipi lookup tablosu.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "KOD",
+        "data_type": "NUMBER(2)",
+        "description": "Lookup kodu.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "distinct_count": 5,
+        "has_lookup": false,
+        "nullable": false,
+        "known_values": [1, 2, 3, 4, 5]
+      },
+      {
+        "column_name": "ACIKLAMA",
+        "data_type": "VARCHAR(100)",
+        "description": "Lookup açıklaması.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "known_values": ["Vadesiz", "Vadeli", "Döviz", "Altın", "Yatırım"]
+      }
+    ]
+  },
+  {
+    "table_name": "RISK_IZLEME",
+    "schema": "RISK",
+    "conceptual_model": "Risk",
+    "description": "Risk izleme ve takip tablosu. Müşteri bazlı risk skorlarını ve limit aşım bilgilerini içerir.",
+    "description_quality": "complete",
+    "has_functional_doc": true,
+    "has_toa_doc": true,
+    "has_ddl": true,
+    "is_partitioned": true,
+    "partition_column": "RAPOR_TARIHI",
+    "partition_type": "RANGE",
+    "columns": [
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "Müşteri kimlik numarası.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "RISK_SKOR",
+        "data_type": "NUMBER(5,2)",
+        "description": "0-100 arası risk skoru. Yüksek değer yüksek riski ifade eder.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "RISK_SINIF",
+        "data_type": "VARCHAR(10)",
+        "description": "Risk sınıfı.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "distinct_count": 3,
+        "has_lookup": false,
+        "nullable": true,
+        "known_values": ["LOW", "MEDIUM", "HIGH"]
+      }
+    ]
+  }
+]

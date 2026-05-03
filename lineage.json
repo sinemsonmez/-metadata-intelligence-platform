@@ -1,0 +1,86 @@
+{
+  "etl_lineage": [
+    {
+      "job_id": "ETL_001",
+      "job_name": "HESAP_TO_RISK",
+      "source": {
+        "schema": "CORE_BANKING",
+        "table": "XXX_HESAP",
+        "columns": ["HESAP_NO", "MUSTERI_NO", "HESAP_DURUM_KOD"]
+      },
+      "target": {
+        "schema": "RISK",
+        "table": "RISK_IZLEME",
+        "columns": ["MUSTERI_NO", "RISK_SINIF"]
+      },
+      "transformation": "Hesap durum kodu üzerinden risk sınıfı türetilir.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_002",
+      "job_name": "KREDI_TO_RISK",
+      "source": {
+        "schema": "CREDIT",
+        "table": "KRD_MUS_KREDI",
+        "columns": ["MUSTERI_NO", "KRD_DURUM", "KRD_TUTAR"]
+      },
+      "target": {
+        "schema": "RISK",
+        "table": "RISK_IZLEME",
+        "columns": ["MUSTERI_NO", "RISK_SKOR"]
+      },
+      "transformation": "Kredi tutarı ve duruma göre risk skoru hesaplanır.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_003",
+      "job_name": "RISK_TO_CRM",
+      "source": {
+        "schema": "RISK",
+        "table": "RISK_IZLEME",
+        "columns": ["MUSTERI_NO", "RISK_SKOR", "RISK_SINIF"]
+      },
+      "target": {
+        "schema": "CRM",
+        "table": "MUS_SEGMENTASYON",
+        "columns": ["MUSTERI_NO", "SEGMENT_KOD"]
+      },
+      "transformation": "Risk skoru baz alınarak müşteri segmenti güncellenir.",
+      "schedule": "WEEKLY",
+      "note": "LOOP DETECTED: CRM -> RISK -> CRM circular dependency via ETL_004"
+    },
+    {
+      "job_id": "ETL_004",
+      "job_name": "CRM_TO_RISK_FEEDBACK",
+      "source": {
+        "schema": "CRM",
+        "table": "MUS_SEGMENTASYON",
+        "columns": ["MUSTERI_NO", "GELIR_GRUBU"]
+      },
+      "target": {
+        "schema": "RISK",
+        "table": "RISK_IZLEME",
+        "columns": ["MUSTERI_NO", "RISK_SKOR"]
+      },
+      "transformation": "Gelir grubu risk skorunu etkiler (feedback loop).",
+      "schedule": "WEEKLY",
+      "loop_risk": true
+    },
+    {
+      "job_id": "ETL_005",
+      "job_name": "HESAP_TO_CRM",
+      "source": {
+        "schema": "CORE_BANKING",
+        "table": "XXX_HESAP",
+        "columns": ["MUSTERI_NO", "HESAP_TIP_KOD", "ACILIS_TARIHI"]
+      },
+      "target": {
+        "schema": "CRM",
+        "table": "MUS_SEGMENTASYON",
+        "columns": ["MUSTERI_NO", "SEGMENT_KOD"]
+      },
+      "transformation": "Hesap tipi ve açılış tarihine göre segment kodu belirlenir.",
+      "schedule": "DAILY"
+    }
+  ]
+}

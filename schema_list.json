@@ -1,0 +1,59 @@
+{
+  "schemas": [
+    {
+      "schema_name": "CORE_BANKING",
+      "description": "Temel bankacılık işlemlerini içeren şema. Hesap, müşteri ve şube tablolarını barındırır.",
+      "owner": "CORE_TEAM",
+      "tables": ["XXX_HESAP", "XXX_MUSTERI", "LKP_HESAP_TIP", "LKP_SUBE"]
+    },
+    {
+      "schema_name": "CREDIT",
+      "description": "Kredi ürünleri ve kredi izleme tabloları.",
+      "owner": "CREDIT_TEAM",
+      "tables": ["KRD_MUS_KREDI", "KRD_TEMINAT", "KRD_ODEME_PLAN"]
+    },
+    {
+      "schema_name": "CRM",
+      "description": "Müşteri ilişkileri yönetimi. Segmentasyon, kampanya ve etkileşim verileri.",
+      "owner": "CRM_TEAM",
+      "tables": ["MUS_SEGMENTASYON", "LKP_SEGMENT", "KAMPANYA_HEDEF"]
+    },
+    {
+      "schema_name": "RISK",
+      "description": "Risk izleme ve raporlama şeması. Müşteri ve ürün bazlı risk metrikleri.",
+      "owner": "RISK_TEAM",
+      "tables": ["RISK_IZLEME", "RISK_LIMIT", "RISK_RAPOR"]
+    }
+  ],
+  "conceptual_model": {
+    "entities": [
+      {
+        "entity": "Customer",
+        "turkish": "Müşteri",
+        "tables": ["XXX_MUSTERI", "MUS_SEGMENTASYON"],
+        "key_attribute": "MUSTERI_NO"
+      },
+      {
+        "entity": "Account",
+        "turkish": "Hesap",
+        "tables": ["XXX_HESAP"],
+        "key_attribute": "HESAP_NO",
+        "parent_entity": "Customer"
+      },
+      {
+        "entity": "Credit",
+        "turkish": "Kredi",
+        "tables": ["KRD_MUS_KREDI"],
+        "key_attribute": "KRD_NO",
+        "parent_entity": "Customer"
+      },
+      {
+        "entity": "Risk",
+        "turkish": "Risk",
+        "tables": ["RISK_IZLEME"],
+        "key_attribute": "MUSTERI_NO",
+        "parent_entity": "Customer"
+      }
+    ]
+  }
+}
