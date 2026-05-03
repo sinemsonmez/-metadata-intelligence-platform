@@ -11,21 +11,18 @@ Runs the full metadata enrichment pipeline:
 """
 
 import json
-import os
 from pathlib import Path
 
 # Agents
 from generator_agent import run_generator, load_json
 from critic_agent import run_critic
 
-# Scripts
-import sys
-sys.path.append(str(Path(__file__).parent.parent / "scripts"))
 from lineage_crawler import build_lineage_graph, detect_loops
 from risk_classifier import classify_all_risks
 from clarity_scorer import score_all
 
-DATA_DIR = Path(__file__).parent.parent / "data"
+REPO_ROOT = Path(__file__).resolve().parent
+DATA_DIR = REPO_ROOT
 REGENERATION_THRESHOLD = 60
 MAX_REGENERATION_ATTEMPTS = 2
 
@@ -67,7 +64,9 @@ def run_pipeline():
     print("=" * 60)
 
     # Step 1: Load raw tables
-    tables_path = DATA_DIR / "tables" / "synthetic_tables.json"
+    tables_path = DATA_DIR / "synthetic_tables.json"
+    if not tables_path.exists():
+        tables_path = DATA_DIR / "data" / "tables" / "synthetic_tables.json"
     tables = load_json(tables_path)
     print(f"\n📥 Loaded {len(tables)} tables")
 
@@ -112,7 +111,9 @@ def run_pipeline():
     print("\n" + "─" * 40)
     print("STEP 4: Lineage Crawler")
     print("─" * 40)
-    lineage_path = DATA_DIR / "etl" / "lineage.json"
+    lineage_path = DATA_DIR / "lineage.json"
+    if not lineage_path.exists():
+        lineage_path = DATA_DIR / "data" / "etl" / "lineage.json"
     graph, loops = build_lineage_graph(str(lineage_path))
     print(f"📊 Lineage graph: {len(graph)} nodes")
     if loops:
@@ -141,7 +142,7 @@ def run_pipeline():
         "clarity_scores": scored
     }
 
-    out_path = DATA_DIR / "tables" / "final_output.json"
+    out_path = DATA_DIR / "final_output.json"
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(final_output, f, ensure_ascii=False, indent=2)
 

@@ -34,10 +34,10 @@ from dataclasses import dataclass, field, asdict
 import anthropic
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-ROOT = Path(__file__).parent.parent
-DATA_DIR = ROOT / "data"
-DOCS_DIR = ROOT / "docs"
-OUT_DIR  = ROOT / "data" / "ablation"
+ROOT = Path(__file__).resolve().parent
+DATA_DIR = ROOT
+DOCS_DIR = ROOT
+OUT_DIR = ROOT / "ablation"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
@@ -103,7 +103,9 @@ class ConfigResult:
 def load_context_full(table_name: str, schema: str) -> dict:
     """Full context: schema + DDL + FRD + TOA"""
     ctx = {}
-    schema_path = DATA_DIR / "schemas" / "schema_list.json"
+    schema_path = DATA_DIR / "schema_list.json"
+    if not schema_path.exists():
+        schema_path = DATA_DIR / "data" / "schemas" / "schema_list.json"
     if schema_path.exists():
         data = json.loads(schema_path.read_text("utf-8"))
         for s in data.get("schemas", []):
@@ -111,7 +113,9 @@ def load_context_full(table_name: str, schema: str) -> dict:
                 ctx["schema_info"] = s
         ctx["conceptual_model"] = data.get("conceptual_model", {})
 
-    ddl_path = DOCS_DIR / "ddl" / "create_scripts.sql"
+    ddl_path = DOCS_DIR / "create_scripts.sql"
+    if not ddl_path.exists():
+        ddl_path = DOCS_DIR / "docs" / "ddl" / "create_scripts.sql"
     if ddl_path.exists():
         lines = ddl_path.read_text("utf-8").split("\n")
         block, in_t = [], False
@@ -125,11 +129,15 @@ def load_context_full(table_name: str, schema: str) -> dict:
         if block:
             ctx["ddl"] = "\n".join(block)
 
-    frd = DOCS_DIR / "functional_requirements" / f"FRD_{table_name}.md"
+    frd = DOCS_DIR / f"FRD_{table_name}.md"
+    if not frd.exists():
+        frd = DOCS_DIR / "docs" / "functional_requirements" / f"FRD_{table_name}.md"
     if frd.exists():
         ctx["functional_doc"] = frd.read_text("utf-8")
 
-    toa = DOCS_DIR / "toa" / f"TOA_{table_name}.md"
+    toa = DOCS_DIR / f"TOA_{table_name}.md"
+    if not toa.exists():
+        toa = DOCS_DIR / "docs" / "toa" / f"TOA_{table_name}.md"
     if toa.exists():
         ctx["toa_doc"] = toa.read_text("utf-8")[:1000]
 
@@ -732,7 +740,9 @@ def run_ablation():
     print("🔬 ABLATION STUDY — Metadata Intelligence Platform")
     print("=" * 65)
 
-    tables_path = DATA_DIR / "tables" / "synthetic_tables.json"
+    tables_path = DATA_DIR / "synthetic_tables.json"
+    if not tables_path.exists():
+        tables_path = DATA_DIR / "data" / "tables" / "synthetic_tables.json"
     tables = json.loads(tables_path.read_text("utf-8"))
 
     print(f"\n📋 Tables: {len(tables)} | Columns: {sum(len(t.get('columns',[])) for t in tables)}")

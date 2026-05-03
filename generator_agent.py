@@ -13,8 +13,9 @@ import anthropic
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-DATA_DIR = Path(__file__).parent.parent / "data"
-DOCS_DIR = Path(__file__).parent.parent / "docs"
+REPO_ROOT = Path(__file__).resolve().parent
+DATA_DIR = REPO_ROOT
+DOCS_DIR = REPO_ROOT
 
 
 def load_json(path: Path) -> dict | list:
@@ -32,8 +33,10 @@ def load_context(table_name: str, schema: str) -> dict:
     """Load all available context documents for a table."""
     context = {}
 
-    # Schema info
-    schema_path = DATA_DIR / "schemas" / "schema_list.json"
+    # Schema info (repo kökü veya data/schemas)
+    schema_path = DATA_DIR / "schema_list.json"
+    if not schema_path.exists():
+        schema_path = DATA_DIR / "data" / "schemas" / "schema_list.json"
     if schema_path.exists():
         schema_data = load_json(schema_path)
         for s in schema_data.get("schemas", []):
@@ -42,7 +45,9 @@ def load_context(table_name: str, schema: str) -> dict:
         context["conceptual_model"] = schema_data.get("conceptual_model", {})
 
     # DDL
-    ddl_path = DOCS_DIR / "ddl" / "create_scripts.sql"
+    ddl_path = DOCS_DIR / "create_scripts.sql"
+    if not ddl_path.exists():
+        ddl_path = DOCS_DIR / "docs" / "ddl" / "create_scripts.sql"
     if ddl_path.exists():
         ddl_content = ddl_path.read_text(encoding="utf-8")
         # Extract just the relevant table section
@@ -60,11 +65,15 @@ def load_context(table_name: str, schema: str) -> dict:
             context["ddl"] = "\n".join(relevant)
 
     # Functional requirements
-    frd_path = DOCS_DIR / "functional_requirements" / f"FRD_{table_name}.md"
+    frd_path = DOCS_DIR / f"FRD_{table_name}.md"
+    if not frd_path.exists():
+        frd_path = DOCS_DIR / "docs" / "functional_requirements" / f"FRD_{table_name}.md"
     context["functional_doc"] = load_text(frd_path)
 
     # TOA
-    toa_path = DOCS_DIR / "toa" / f"TOA_{table_name}.md"
+    toa_path = DOCS_DIR / f"TOA_{table_name}.md"
+    if not toa_path.exists():
+        toa_path = DOCS_DIR / "docs" / "toa" / f"TOA_{table_name}.md"
     context["toa_doc"] = load_text(toa_path)
 
     return context
@@ -173,10 +182,13 @@ def run_generator(tables: list) -> list:
 
 
 if __name__ == "__main__":
-    tables = load_json(DATA_DIR / "tables" / "synthetic_tables.json")
+    tables_path = DATA_DIR / "synthetic_tables.json"
+    if not tables_path.exists():
+        tables_path = DATA_DIR / "data" / "tables" / "synthetic_tables.json"
+    tables = load_json(tables_path)
     enriched = run_generator(tables)
 
-    out_path = DATA_DIR / "tables" / "enriched_tables.json"
+    out_path = DATA_DIR / "enriched_tables.json"
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(enriched, f, ensure_ascii=False, indent=2)
 

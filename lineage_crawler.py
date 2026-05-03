@@ -115,7 +115,9 @@ def find_orphans(graph: dict) -> list:
 
 
 if __name__ == "__main__":
-    lineage_path = Path(__file__).parent.parent / "data" / "etl" / "lineage.json"
+    lineage_path = Path(__file__).resolve().parent / "lineage.json"
+    if not lineage_path.exists():
+        lineage_path = Path(__file__).resolve().parent / "data" / "etl" / "lineage.json"
     graph, loops = build_lineage_graph(str(lineage_path))
 
     print("\n🔄 Loop Analysis:")

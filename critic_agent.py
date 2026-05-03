@@ -173,7 +173,7 @@ def run_critic(enriched_tables: list) -> list:
 
 
 if __name__ == "__main__":
-    data_dir = Path(__file__).parent.parent / "data" / "tables"
+    data_dir = Path(__file__).resolve().parent
 
     enriched_path = data_dir / "enriched_tables.json"
     if not enriched_path.exists():

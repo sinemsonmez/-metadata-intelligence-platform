@@ -83,7 +83,9 @@ if __name__ == "__main__":
     import json
     from pathlib import Path
 
-    data_path = Path(__file__).parent.parent / "data" / "tables" / "enriched_tables.json"
+    data_path = Path(__file__).resolve().parent / "enriched_tables.json"
+    if not data_path.exists():
+        data_path = Path(__file__).resolve().parent / "data" / "tables" / "enriched_tables.json"
     with open(data_path, "r", encoding="utf-8") as f:
         tables = json.load(f)
 
