@@ -7,14 +7,9 @@ functional requirement docs, and TOA docs when available.
 """
 
 import json
-import os
 from pathlib import Path
-import google.generativeai as genai
 
-# Google SDK dokümantasyonu GOOGLE_API_KEY önerir; ekip içi GEMINI_API_KEY de kabul edilir.
-_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-genai.configure(api_key=_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+from gemini_util import generate_text
 
 REPO_ROOT = Path(__file__).resolve().parent
 DATA_DIR = REPO_ROOT
@@ -124,8 +119,7 @@ Sadece düzeltilmiş açıklamayı yaz, başka hiçbir şey ekleme.""")
 def generate_description(table, column, context):
     """Call Gemini API to generate an enriched column description."""
     prompt = build_prompt(table, column, context)
-    response = model.generate_content(prompt)
-    return response.text.strip()
+    return generate_text(prompt)
 
 
 def run_generator(tables):

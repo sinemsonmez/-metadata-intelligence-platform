@@ -6,13 +6,9 @@ Scores clarity, completeness, accuracy and assigns HIGH_RISK / LOW_RISK.
 """
 
 import json
-import os
 from pathlib import Path
-import google.generativeai as genai
 
-_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-genai.configure(api_key=_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+from gemini_util import generate_text
 
 CARDINALITY_THRESHOLD = 100
 
@@ -40,8 +36,7 @@ SADECE JSON döndür, başka hiçbir şey yazma, markdown kullanma:
 HIGH_RISK: belirsiz/eksik açıklama, lookup eksikliği, validation hatası, ingilizce açıklama.
 LOW_RISK: net, tam, tüm değerler dokümante, validation temiz."""
 
-    response = model.generate_content(prompt)
-    raw = response.text.strip()
+    raw = generate_text(prompt)
 
     try:
         if raw.startswith("```"):

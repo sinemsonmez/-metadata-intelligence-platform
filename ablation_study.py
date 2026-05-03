@@ -14,11 +14,7 @@ import statistics
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
 
-import google.generativeai as genai
-
-_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-genai.configure(api_key=_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+from gemini_util import generate_text
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT
@@ -163,8 +159,7 @@ SADECE JSON döndür (markdown yok):
 
 # ─── API call ─────────────────────────────────────────────────────────────────
 def call_api(prompt):
-    response = model.generate_content(prompt)
-    return response.text.strip()
+    return generate_text(prompt)
 
 
 def parse_critic_json(raw):
