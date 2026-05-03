@@ -1,172 +1,127 @@
 """
 Orchestrator
 ------------
-Runs the full metadata enrichment pipeline:
-  1. Generator Agent   → enrich descriptions
-  2. Critic Agent      → score and flag risks
-  3. Re-generate       → if score < threshold
-  4. Lineage Crawler   → traverse ETL graph
-  5. Risk Classifier   → produce final risk report
-  6. Export            → dashboard-ready JSON
+Tam pipeline'ı çalıştırır:
+  1. Generator Agent  → açıklamaları üret
+  2. Critic Agent     → skorla ve risk etiketle
+  3. Re-generate      → skoru düşük olanları tekrar üret
+  4. Lineage Crawler  → ETL graph traversal
+  5. Risk Classifier  → final risk raporu
+  6. Clarity Scorer   → kolon başı skor
+
+Çalıştırmak için (birini tanımlayın):
+  GOOGLE_API_KEY veya GEMINI_API_KEY ortam değişkeni
 """
 
 import json
 from pathlib import Path
 
-# Agents
+REPO_ROOT = Path(__file__).resolve().parent
+
 from generator_agent import run_generator, load_json
 from critic_agent import run_critic
-
 from lineage_crawler import build_lineage_graph, detect_loops
 from risk_classifier import classify_all_risks
 from clarity_scorer import score_all
 
-REPO_ROOT = Path(__file__).resolve().parent
 DATA_DIR = REPO_ROOT
 REGENERATION_THRESHOLD = 60
 MAX_REGENERATION_ATTEMPTS = 2
 
 
-def merge_critic_into_tables(tables: list, critic_results: list) -> list:
-    """Merge critic scores back into table/column objects."""
+def merge_critic_into_tables(tables, critic_results):
     critic_map = {r["table_name"]: r for r in critic_results}
-
     for table in tables:
         table_critic = critic_map.get(table["table_name"], {})
         col_evals = {e["column_name"]: e for e in table_critic.get("column_evaluations", [])}
-
         for col in table.get("columns", []):
             eval_data = col_evals.get(col["column_name"], {})
-            col["critic_score"] = eval_data.get("overall_score", None)
-            col["risk_level"] = eval_data.get("risk_level", "HIGH_RISK")
-            col["issues"] = eval_data.get("issues", [])
-            col["feedback"] = eval_data.get("feedback", "")
-            col["needs_regeneration"] = eval_data.get("needs_regeneration", False)
-
+            col["critic_score"]        = eval_data.get("overall_score", None)
+            col["risk_level"]          = eval_data.get("risk_level", "HIGH_RISK")
+            col["issues"]              = eval_data.get("issues", [])
+            col["feedback"]            = eval_data.get("feedback", "")
+            col["needs_regeneration"]  = eval_data.get("needs_regeneration", False)
     return tables
 
 
-def filter_needs_regeneration(tables: list) -> list:
-    """Filter down to only tables/columns that need regeneration."""
+def filter_needs_regeneration(tables):
     filtered = []
     for table in tables:
-        cols_to_regen = [c for c in table.get("columns", []) if c.get("needs_regeneration")]
-        if cols_to_regen:
+        cols = [c for c in table.get("columns", []) if c.get("needs_regeneration")]
+        if cols:
             t = dict(table)
-            t["columns"] = cols_to_regen
+            t["columns"] = cols
             filtered.append(t)
     return filtered
 
 
 def run_pipeline():
     print("=" * 60)
-    print("🚀 METADATA INTELLIGENCE PLATFORM — Pipeline Start")
+    print("🚀 METADATA INTELLIGENCE PLATFORM — Pipeline")
     print("=" * 60)
 
-    # Step 1: Load raw tables
     tables_path = DATA_DIR / "synthetic_tables.json"
     if not tables_path.exists():
         tables_path = DATA_DIR / "data" / "tables" / "synthetic_tables.json"
     tables = load_json(tables_path)
-    print(f"\n📥 Loaded {len(tables)} tables")
+    print(f"\n📥 {len(tables)} tables loaded")
 
-    # Step 2: Generator
-    print("\n" + "─" * 40)
-    print("STEP 1: Generator Agent")
-    print("─" * 40)
+    # Step 1: Generate
+    print("\n─── STEP 1: Generator ───")
     enriched = run_generator(tables)
 
-    # Step 3: Critic
-    print("\n" + "─" * 40)
-    print("STEP 2: Critic Agent")
-    print("─" * 40)
+    # Step 2: Critic
+    print("\n─── STEP 2: Critic ───")
     critic_results = run_critic(enriched)
     enriched = merge_critic_into_tables(enriched, critic_results)
 
-    # Step 4: Re-generation loop
+    # Step 3: Re-generation loop
     for attempt in range(MAX_REGENERATION_ATTEMPTS):
         regen_needed = filter_needs_regeneration(enriched)
         if not regen_needed:
-            print(f"\n✅ No columns need regeneration after attempt {attempt}")
+            print(f"\n✅ No re-generation needed after attempt {attempt}")
             break
-
-        print(f"\n" + "─" * 40)
-        print(f"STEP 3: Re-generation attempt {attempt + 1}")
-        print("─" * 40)
+        print(f"\n─── STEP 3: Re-generate (attempt {attempt+1}) ───")
         regen_enriched = run_generator(regen_needed)
-        regen_critic = run_critic(regen_enriched)
+        regen_critic   = run_critic(regen_enriched)
         regen_enriched = merge_critic_into_tables(regen_enriched, regen_critic)
-
-        # Patch back into main enriched list
         regen_map = {t["table_name"]: t for t in regen_enriched}
         for i, table in enumerate(enriched):
             if table["table_name"] in regen_map:
-                regen_table = regen_map[table["table_name"]]
-                regen_col_map = {c["column_name"]: c for c in regen_table["columns"]}
+                regen_col_map = {c["column_name"]: c for c in regen_map[table["table_name"]]["columns"]}
                 for j, col in enumerate(enriched[i]["columns"]):
                     if col["column_name"] in regen_col_map:
                         enriched[i]["columns"][j] = regen_col_map[col["column_name"]]
 
-    # Step 5: Lineage
-    print("\n" + "─" * 40)
-    print("STEP 4: Lineage Crawler")
-    print("─" * 40)
+    # Step 4: Lineage
+    print("\n─── STEP 4: Lineage ───")
     lineage_path = DATA_DIR / "lineage.json"
     if not lineage_path.exists():
         lineage_path = DATA_DIR / "data" / "etl" / "lineage.json"
     graph, loops = build_lineage_graph(str(lineage_path))
-    print(f"📊 Lineage graph: {len(graph)} nodes")
-    if loops:
-        print(f"⚠️  LOOPS DETECTED: {loops}")
-    else:
-        print("✅ No circular dependencies found")
+    print(f"Nodes: {len(graph)} | Loops: {len(loops)}")
 
-    # Step 6: Risk classification
-    print("\n" + "─" * 40)
-    print("STEP 5: Risk Classifier")
-    print("─" * 40)
+    # Step 5: Risk
+    print("\n─── STEP 5: Risk Classifier ───")
     risk_report = classify_all_risks(enriched)
 
-    # Step 7: Clarity scoring
-    print("\n" + "─" * 40)
-    print("STEP 6: Clarity Scorer")
-    print("─" * 40)
+    # Step 6: Clarity
+    print("\n─── STEP 6: Clarity Scorer ───")
     scored = score_all(enriched)
 
-    # Final output
-    final_output = {
-        "tables": enriched,
-        "risk_report": risk_report,
-        "lineage_graph": graph,
-        "lineage_loops": loops,
-        "clarity_scores": scored
-    }
-
+    # Save
+    final = {"tables": enriched, "risk_report": risk_report, "lineage_graph": graph, "lineage_loops": loops, "clarity_scores": scored}
     out_path = DATA_DIR / "final_output.json"
     with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(final_output, f, ensure_ascii=False, indent=2)
+        json.dump(final, f, ensure_ascii=False, indent=2)
+
+    total_high = sum(1 for t in enriched for c in t.get("columns", []) if c.get("risk_level") == "HIGH_RISK")
+    total_low  = sum(1 for t in enriched for c in t.get("columns", []) if c.get("risk_level") == "LOW_RISK")
 
     print("\n" + "=" * 60)
-    print(f"✅ PIPELINE COMPLETE — Output: {out_path}")
+    print(f"✅ DONE — {out_path}")
+    print(f"🔴 HIGH_RISK: {total_high} | 🟢 LOW_RISK: {total_low} | 🔗 Loops: {len(loops)}")
     print("=" * 60)
-
-    # Summary
-    total_high = sum(
-        1 for t in enriched
-        for c in t.get("columns", [])
-        if c.get("risk_level") == "HIGH_RISK"
-    )
-    total_low = sum(
-        1 for t in enriched
-        for c in t.get("columns", [])
-        if c.get("risk_level") == "LOW_RISK"
-    )
-    print(f"\n📊 Summary:")
-    print(f"   🔴 HIGH_RISK columns: {total_high}")
-    print(f"   🟢 LOW_RISK  columns: {total_low}")
-    print(f"   🔗 Lineage loops:     {len(loops)}")
-
-    return final_output
 
 
 if __name__ == "__main__":

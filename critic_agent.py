@@ -1,31 +1,23 @@
 """
 Critic Agent
 ------------
-Evaluates generated column descriptions for:
-  - Completeness (is the context fully captured?)
-  - Accuracy (does it match DDL, lookup values, functional docs?)
-  - Clarity Score (hierarchical, no ambiguity, structured)
-  - Risk Level (HIGH_RISK / LOW_RISK)
-
-Returns a score (0-100) and improvement feedback.
+Evaluates generated column descriptions using Google Gemini API.
+Scores clarity, completeness, accuracy and assigns HIGH_RISK / LOW_RISK.
 """
 
 import json
 import os
 from pathlib import Path
-import anthropic
+import google.generativeai as genai
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+genai.configure(api_key=_API_KEY)
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-CARDINALITY_THRESHOLD = 100  # columns with distinct < threshold are "low cardinality"
+CARDINALITY_THRESHOLD = 100
 
 
-def evaluate_column(table: dict, column: dict) -> dict:
-    """
-    Call Claude to evaluate the quality of a column description.
-    Returns a dict with score, risk_level, issues, and feedback.
-    """
-
+def evaluate_column(table, column):
     prompt = f"""Sen bir veri kalite uzmanısın. Aşağıdaki kolon açıklamasını değerlendir.
 
 TABLO: {table['schema']}.{table['table_name']}
@@ -42,82 +34,54 @@ LOOKUP TABLOSU: {column.get('lookup_table', 'Yok')}
 BİLİNEN DEĞERLER: {column.get('known_values', 'Yok')}
 VALİDASYON SORUNU: {column.get('validation_issue', 'Yok')}
 
-Aşağıdaki kriterlere göre değerlendir ve SADECE JSON formatında yanıt ver:
+SADECE JSON döndür, başka hiçbir şey yazma, markdown kullanma:
+{{"clarity_score":0,"completeness_score":0,"accuracy_score":0,"overall_score":0,"risk_level":"HIGH_RISK","issues":[],"feedback":"","needs_regeneration":true}}
 
-{{
-  "clarity_score": 0-100,
-  "completeness_score": 0-100,
-  "accuracy_score": 0-100,
-  "overall_score": 0-100,
-  "risk_level": "LOW_RISK" | "HIGH_RISK",
-  "issues": ["sorun1", "sorun2"],
-  "feedback": "İyileştirme önerisi",
-  "needs_regeneration": true | false
-}}
+HIGH_RISK: belirsiz/eksik açıklama, lookup eksikliği, validation hatası, ingilizce açıklama.
+LOW_RISK: net, tam, tüm değerler dokümante, validation temiz."""
 
-Kriterler:
-- HIGH_RISK: belirsiz açıklama, lookup eksik (düşük kardinaliteli ama LKP yok), validation hatası, eksik açıklama, yanlış değer aralığı
-- LOW_RISK: net açıklama, tüm değerler dokümante, lookup mevcut veya gerekmez, validation clean
-- needs_regeneration: overall_score < 60 ise true
-"""
+    response = model.generate_content(prompt)
+    raw = response.text.strip()
 
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=500,
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    raw = message.content[0].text.strip()
-
-    # Parse JSON response
     try:
-        # Strip markdown fences if present
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):
                 raw = raw[4:]
-        return json.loads(raw)
-    except json.JSONDecodeError:
+        return json.loads(raw.strip())
+    except Exception:
         return {
             "clarity_score": 0,
             "completeness_score": 0,
             "accuracy_score": 0,
-            "overall_score": 0,
+            "overall_score": 30,
             "risk_level": "HIGH_RISK",
-            "issues": ["Değerlendirme parse edilemedi"],
+            "issues": ["Parse hatası"],
             "feedback": raw,
             "needs_regeneration": True
         }
 
 
-def check_lookup_gaps(column: dict) -> list:
-    """
-    Rule-based check: if cardinality is low and no lookup table exists,
-    flag as lookup gap. Avoids heavy DB queries via metadata first.
-    """
+def check_lookup_gaps(column):
     issues = []
     distinct = column.get("distinct_count")
     has_lookup = column.get("has_lookup", False)
-
     if distinct is not None and distinct < CARDINALITY_THRESHOLD and not has_lookup:
         issues.append(
             f"LOW CARDINALITY ({distinct} distinct değer) ama LKP tablosu yok. "
             f"Bilinen değerler: {column.get('known_values', 'bilinmiyor')}"
         )
-
     return issues
 
 
-def check_value_validation(column: dict) -> list:
-    """Check if documented values match actual DB values."""
+def check_value_validation(column):
     issues = []
     if column.get("validation_issue"):
         issues.append(f"VALUE MISMATCH: {column['validation_issue']}")
     return issues
 
 
-def run_critic(enriched_tables: list) -> list:
-    """Run critic on all enriched tables and columns."""
+def run_critic(enriched_tables):
     results = []
 
     for table in enriched_tables:
@@ -131,15 +95,13 @@ def run_critic(enriched_tables: list) -> list:
         for col in table.get("columns", []):
             print(f"  📊 Evaluating: {col['column_name']}")
 
-            # Rule-based checks
             lookup_issues = check_lookup_gaps(col)
             validation_issues = check_value_validation(col)
 
-            # AI evaluation
             try:
                 eval_result = evaluate_column(table, col)
             except Exception as e:
-                print(f"  ❌ Error evaluating {col['column_name']}: {e}")
+                print(f"  ❌ Error: {e}")
                 eval_result = {
                     "overall_score": 0,
                     "risk_level": "HIGH_RISK",
@@ -148,11 +110,9 @@ def run_critic(enriched_tables: list) -> list:
                     "needs_regeneration": True
                 }
 
-            # Merge rule-based issues
             all_issues = eval_result.get("issues", []) + lookup_issues + validation_issues
             eval_result["issues"] = all_issues
 
-            # Force HIGH_RISK if rule-based issues found
             if lookup_issues or validation_issues:
                 eval_result["risk_level"] = "HIGH_RISK"
 
