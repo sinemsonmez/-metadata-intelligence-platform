@@ -6,7 +6,7 @@ Uses heuristic rules aligned with the professor's criteria.
 """
 
 
-def score_description(description: str | None, column: dict) -> int:
+def score_description(description, column: dict) -> int:
     """
     Heuristic clarity score (0-100) for a column description.
 
