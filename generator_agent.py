@@ -2,14 +2,14 @@
 Generator Agent
 ---------------
 Reads raw table/column metadata and generates enriched descriptions
-using Google Gemini API. Context-aware: uses schema, DDL,
+using OpenAI Chat Completions API. Context-aware: uses schema, DDL,
 functional requirement docs, and TOA docs when available.
 """
 
 import json
 from pathlib import Path
 
-from gemini_util import generate_text
+from openai_util import generate_text
 
 REPO_ROOT = Path(__file__).resolve().parent
 DATA_DIR = REPO_ROOT

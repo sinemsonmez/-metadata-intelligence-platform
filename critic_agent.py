@@ -1,14 +1,14 @@
 """
 Critic Agent
 ------------
-Evaluates generated column descriptions using Google Gemini API.
+Evaluates generated column descriptions using OpenAI Chat Completions API.
 Scores clarity, completeness, accuracy and assigns HIGH_RISK / LOW_RISK.
 """
 
 import json
 from pathlib import Path
 
-from gemini_util import generate_text
+from openai_util import generate_text
 
 CARDINALITY_THRESHOLD = 100
 

@@ -10,9 +10,9 @@ Tam pipeline'ı çalıştırır:
   6. Clarity Scorer   → kolon başı skor
 
 Çalıştırmak için:
-  GOOGLE_API_KEY veya GEMINI_API_KEY
-  İsteğe bağlı: GEMINI_MODEL (örn. gemini-2.5-pro), GEMINI_MIN_INTERVAL_SEC (varsayılan 2.5),
-  GEMINI_MAX_RETRIES (varsayılan 12). 429 kota: gemini_util otomatik bekler/yeniden dener.
+  OPENAI_API_KEY (veya proje kökünde .env)
+  İsteğe bağlı: OPENAI_MODEL, OPENAI_MIN_INTERVAL_SEC (varsayılan 0 = hızlı),
+  OPENAI_MAX_RETRIES.
 """
 
 import json

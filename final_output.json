@@ -13,60 +13,57 @@
         {
           "column_name": "HESAP_NO",
           "data_type": "VARCHAR(26)",
-          "description": "Hesap numarasıdır.",
-          "description_quality": "incomplete",
+          "description": "HESAP_NO, CORE_BANKING.XXX_HESAP tablosundaki her bir hesabın benzersiz tanımlayıcısıdır ve IBAN formatında 26 karakter olarak tutulur. Bu kolon, hesapların doğru bir şekilde tanımlanmasını sağlamak için NULL olamaz ve UNIQUE olmalıdır. Hesap numarası, `TR` ile başlayan, 2 kontrol hanesi, 4 banka kodu ve 16 hesap numarasından oluşan bir formatı takip eder.",
+          "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.471110266s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 40
+          "original_description": "Hesap numarasıdır.",
+          "critic_score": 4,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "ACILIS_TARIHI",
           "data_type": "DATE",
-          "description": "Açılış tarihidir.",
-          "description_quality": "incomplete",
+          "description": "ACILIS_TARIHI, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların resmi açılış tarihini temsil eden bir tarih kolonudur. Ticari veya bireysel hesapların açılış tarihleri için kullanılır; valörlü açılan hesaplarda bu tarih, fiziksel açılış tarihi yerine valör tarihi olarak değerlendirilmelidir, bu nedenle `VALOR_TARIHI` kolonuna da bakılması gerekmektedir. Bu kolon NULL olamaz ve hesapların geçerli bir müşteri numarası ile ilişkilendirilmesi zorunludur.",
+          "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "notes": "Valörlü açılan hesaplarda bu bilgi valör tarihi olarak yazar. VALOR_TARIHI kolonuna da bakılmalıdır.",
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.397696702s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 25
+          "original_description": "Açılış tarihidir.",
+          "critic_score": 3,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "VALOR_TARIHI",
           "data_type": "DATE",
-          "description": "Valör tarihidir.",
-          "description_quality": "incomplete",
+          "description": "`VALOR_TARIHI` kolonu, CORE_BANKING.XXX_HESAP tablosunda yer alan ve valörlü açılan hesapların geçerli valör tarihini temsil eder. Bu tarih, hesap açılışının resmi tarihinden farklı olabilir ve standart hesaplarda NULL değeri alabilir. Valör tarihinin doğru bir şekilde belirlenmesi, hesap açılış tarihi ile birlikte değerlendirilmelidir; bu nedenle, `ACILIS_TARIHI` kolonu ile ilişkilendirilmesi önemlidir.",
+          "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.22921474s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 25
+          "original_description": "Valör tarihidir.",
+          "critic_score": 3,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "HESAP_TIP_KOD",
           "data_type": "NUMBER(2)",
-          "description": "Hesap tipi.",
-          "description_quality": "incomplete",
+          "description": "HESAP_TIP_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve hesap türünü belirten bir kodudur. Bu kolon, LKP_HESAP_TIP tablosundan gelen değerleri kullanarak hesap tiplerini tanımlar: 1 (Vadesiz), 2 (Vadeli), 3 (Döviz), 4 (Altın) ve 5 (Yatırım). Her hesap için geçerli bir HESAP_TIP_KOD değeri sağlanması zorunludur.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 5,
           "has_lookup": true,
@@ -79,20 +76,19 @@
             4,
             5
           ],
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.154832579s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 40
+          "original_description": "Hesap tipi.",
+          "critic_score": 1,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "HESAP_DURUM_KOD",
           "data_type": "NUMBER(1)",
-          "description": "Account status code.",
-          "description_quality": "english",
+          "description": "HESAP_DURUM_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir hesabın durumunu tanımlayan bir kolondur. Alabileceği değerler şunlardır: 0 (Aktif), 1 (Pasif) ve 2 (Kapalı); bu değerler için herhangi bir referans tablosu tanımlanmamıştır. Bu kolon, hesapların geçerli durumunu izlemek amacıyla kullanılır ve HESAP_NO ile birlikte değerlendirilmelidir.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 3,
           "has_lookup": false,
@@ -109,16 +105,18 @@
             3
           ],
           "validation_issue": "Documented values [0,1,2] but DB contains value 3 as well. LKP table missing.",
+          "original_description": "Account status code.",
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.085305565s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]",
+            "Validation issue: Documented values [0,1,2] but DB contains value 3",
+            "Missing lookup table for status codes",
             "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
             "VALUE MISMATCH: Documented values [0,1,2] but DB contains value 3 as well. LKP table missing."
           ],
-          "feedback": "Değerlendirme başarısız",
+          "feedback": "Açıklama ve değerlerin tutarlılığı sağlanmalı, ayrıca lookup tablosu eklenmelidir.",
           "needs_regeneration": true,
-          "clarity_score": 40
+          "clarity_score": 100
         },
         {
           "column_name": "MUSTERI_NO",
@@ -129,33 +127,30 @@
           "has_lookup": false,
           "nullable": false,
           "fk_table": "XXX_MUSTERI",
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.016794923s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
+          "critic_score": 2,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
           "clarity_score": 100
         },
         {
           "column_name": "SUBE_KOD",
           "data_type": "NUMBER(4)",
-          "description": null,
-          "description_quality": "missing",
+          "description": "### SUBE_KOD\nCORE_BANKING.XXX_HESAP tablosunda yer alan SUBE_KOD, bankanın müşterilerine ait hesapların hangi şubeye ait olduğunu belirten bir koddur ve LKP_SUBE tablosundan gelmektedir. Bu kolon, hesapların yönetimi ve izlenmesi açısından önemlidir; dolayısıyla, her hesap için geçerli bir SUBE_KOD değeri bulunmalıdır. Hesap açılış tarihi (ACILIS_TARIHI) ve valör tarihi (VALOR_TARIHI) gibi diğer tarihsel bilgilerle birlikte değerlendirilmelidir.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 87,
           "has_lookup": true,
           "lookup_table": "LKP_SUBE",
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.943885355s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 0
+          "original_description": null,
+          "critic_score": 3,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         }
       ]
     },
@@ -175,25 +170,24 @@
         {
           "column_name": "KRD_NO",
           "data_type": "VARCHAR(20)",
-          "description": "Kredi numarasıdır.",
-          "description_quality": "incomplete",
+          "description": "KRD_NO, CREDIT.KRD_MUS_KREDI tablosunda yer alan ve her kredi işlemini benzersiz bir şekilde tanımlayan kredi numarasıdır. Bu kolon, kredi izleme süreçlerinde kullanılır ve her kredi için müşteri numarası (MUSTERI_NO) ile birlikte değerlendirilir. KRD_NO, kredi işlemlerinin takibi ve raporlanması için kritik öneme sahiptir.",
+          "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.872016816s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 40
+          "original_description": "Kredi numarasıdır.",
+          "critic_score": 3,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "KRD_MUS_KOBI_TIP",
           "data_type": "NUMBER(1)",
-          "description": "KOBI TIPININ TUTULACAGI ALAN.",
-          "description_quality": "vague",
+          "description": "KRD_MUS_KOBI_TIP, CREDIT.KRD_MUS_KREDI tablosunda KOBİ (Küçük ve Orta Büyüklükteki İşletmeler) tipini belirtmek için kullanılan bir alandır. Bu alan, TMMOB tarafından belirlenen dört farklı KOBİ tipini temsil eder: 1 - Mikro, 2 - Küçük, 3 - Orta, 4 - Büyük. KRD_MUS_KOBI_TIP kolonunun değerleri, kredi ürünlerinin uygunluk değerlendirmesinde önemli bir rol oynamaktadır.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 4,
           "has_lookup": false,
@@ -205,32 +199,33 @@
             4
           ],
           "notes": "TMMOB tarafından belirlenen kobi tipidir. LKP tablosu mevcut değil.",
-          "critic_score": 0,
+          "original_description": "KOBI TIPININ TUTULACAGI ALAN.",
+          "critic_score": 3,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.701681446s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
             "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4]"
           ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 40
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "INT_SHK_A_30GCK_ADT_LM",
           "data_type": "NUMBER(15,2)",
-          "description": "Akbank Hariç Kredi Kartı Açık Son 60 gün",
-          "description_quality": "wrong",
+          "description": "KREDIT.KRD_MUS_KREDI tablosundaki INT_SHK_A_30GCK_ADT_LM kolonu, Akbank hariç, son 60 gün içinde açık olan kredi kartı bakiyelerini temsil etmektedir. Bu kolon, kredi izleme süreçlerinde kullanılır ve kredi kartı durumunu değerlendirmek için önemli bir referans noktasıdır. İlgili kolonlar arasında KRD_TUTAR ve KRD_DURUM bulunmaktadır.",
+          "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
           "validation_issue": "Column name suggests 30 days (30GCK) but description says 60 days. Mismatch detected.",
+          "original_description": "Akbank Hariç Kredi Kartı Açık Son 60 gün",
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.602212057s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
+            "Validation issue: Column name suggests 30 days (30GCK) but description says 60 days.",
             "VALUE MISMATCH: Column name suggests 30 days (30GCK) but description says 60 days. Mismatch detected."
           ],
-          "feedback": "Değerlendirme başarısız",
+          "feedback": "Açıklama ve kolon adı arasında tutarsızlık var. Ayrıca, tablo açıklaması eksik.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
@@ -242,20 +237,18 @@
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.531470995s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
+          "critic_score": 1,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
           "clarity_score": 100
         },
         {
           "column_name": "KRD_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "Credit status. 0=Active, 1=Closed, 2=NPL",
-          "description_quality": "english",
+          "description": "KRD_DURUM kolonu, CREDIT.KRD_MUS_KREDI tablosunda yer alan kredi durumunu belirtir. Bu kolon, 0=Aktif, 1=Kapalı, 2=Takipte (NPL) değerlerini alır ve kredi izleme süreçlerinde kullanılır. KRD_DURUM, kredi işleminin mevcut durumunu yansıtmakta olup, ISLEM_TARIHI ile birlikte değerlendirilmelidir.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 3,
           "has_lookup": false,
@@ -265,15 +258,15 @@
             1,
             2
           ],
+          "original_description": "Credit status. 0=Active, 1=Closed, 2=NPL",
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.460444018s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
             "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
           ],
-          "feedback": "Değerlendirme başarısız",
+          "feedback": "",
           "needs_regeneration": true,
-          "clarity_score": 80
+          "clarity_score": 100
         }
       ]
     },
@@ -296,39 +289,36 @@
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.290923362s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
+          "critic_score": 1,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
           "clarity_score": 60
         },
         {
           "column_name": "SEGMENT_KOD",
           "data_type": "VARCHAR(5)",
-          "description": null,
-          "description_quality": "missing",
+          "description": "SEGMENT_KOD, CRM veri tabanındaki MUS_SEGMENTASYON tablosunda yer alan ve müşteri segmentasyonunu tanımlayan 5 karakter uzunluğunda bir alandır. Bu kolon, LKP_SEGMENT lookup tablosundaki segment kodları ile ilişkilidir ve her bir müşteri için belirli bir segmenti temsil eder. Müşteri segmentasyonu, kampanya hedeflemesi ve etkileşim stratejilerinin belirlenmesinde kritik bir rol oynamaktadır.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 6,
           "has_lookup": true,
           "lookup_table": "LKP_SEGMENT",
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.223541255s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 0
+          "original_description": null,
+          "critic_score": 4,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "GELIR_GRUBU",
           "data_type": "NUMBER(1)",
-          "description": "Gelir grubu kodu.",
-          "description_quality": "incomplete",
+          "description": "GELIR_GRUBU kolonu, CRM.MUS_SEGMENTASYON tablosunda yer alan ve müşterilerin gelir düzeylerini temsil eden bir kodu içermektedir. Bu kolon, gelir grubu kodları olarak [1, 2, 3, 4, 5] değerlerini alır ve her bir kod belirli bir gelir seviyesini ifade eder. Müşteri segmentasyonu ve kampanya hedeflemesi süreçlerinde kullanılmakta olup, ilgili LKP_SEGMENT tablosundaki gelir grubu tanımlarıyla ilişkilidir.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 5,
           "has_lookup": false,
@@ -340,15 +330,15 @@
             4,
             5
           ],
-          "critic_score": 0,
+          "original_description": "Gelir grubu kodu.",
+          "critic_score": 3,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.158203814s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
             "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
           ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 10
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         }
       ]
     },
@@ -366,8 +356,8 @@
         {
           "column_name": "KOD",
           "data_type": "NUMBER(2)",
-          "description": "Lookup kodu.",
-          "description_quality": "incomplete",
+          "description": "KOD kolonu, CORE_BANKING.LKP_HESAP_TIP tablosunda yer alan hesap tipi için kullanılan benzersiz bir lookup kodudur. Bu kolon, hesap türlerini tanımlamak amacıyla 1 ile 5 arasında değişen değerler alır; bu değerler sırasıyla \"Vadesiz Hesap\", \"Vadeli Hesap\", \"Kredi Hesabı\", \"Tasarruf Hesabı\" ve \"Diğer Hesap\" anlamına gelir. Hesap tipi, müşteri hesaplarının yönetimi ve raporlaması için kritik öneme sahiptir.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 5,
           "has_lookup": false,
@@ -379,21 +369,21 @@
             4,
             5
           ],
-          "critic_score": 0,
+          "original_description": "Lookup kodu.",
+          "critic_score": 3,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.084276534s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
             "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
           ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 0
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         },
         {
           "column_name": "ACIKLAMA",
           "data_type": "VARCHAR(100)",
-          "description": "Lookup açıklaması.",
-          "description_quality": "incomplete",
+          "description": "LKP_HESAP_TIP tablosundaki ACIKLAMA kolonu, bankacılık sisteminde kullanılan hesap tiplerini tanımlayan açıklamaları içermektedir. Bu kolon, 'Vadesiz', 'Vadeli', 'Döviz', 'Altın' ve 'Yatırım' gibi belirli hesap türlerini referans alarak, her bir hesap tipinin ne anlama geldiğini net bir şekilde ifade eder. Hesap türleri, müşteri hesaplarının yönetimi ve işlem süreçlerinde önemli bir rol oynamaktadır.",
+          "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
           "nullable": false,
@@ -404,14 +394,13 @@
             "Altın",
             "Yatırım"
           ],
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.009613929s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 40
+          "original_description": "Lookup açıklaması.",
+          "critic_score": 4,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         }
       ]
     },
@@ -439,9 +428,24 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 52.942106947s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 52\n}\n]"
+            {
+              "issue": "Belirsiz/eksik açıklama",
+              "description": "Açıklama yeterince detaylı değil."
+            },
+            {
+              "issue": "Lookup eksikliği",
+              "description": "Müşteri numarasının hangi değerleri alabileceği belirtilmemiş."
+            },
+            {
+              "issue": "Validation hatası",
+              "description": "Validation ile ilgili herhangi bir bilgi yok."
+            },
+            {
+              "issue": "İngilizce açıklama",
+              "description": "Açıklama Türkçe verilmiş."
+            }
           ],
-          "feedback": "Değerlendirme başarısız",
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 60
         },
@@ -455,18 +459,16 @@
           "nullable": true,
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
-          "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 52.87234513s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 52\n}\n]"
-          ],
-          "feedback": "Değerlendirme başarısız",
+          "issues": [],
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "RISK_SINIF",
           "data_type": "VARCHAR(10)",
-          "description": "Risk sınıfı.",
-          "description_quality": "incomplete",
+          "description": "RISK.RISK_IZLEME tablosundaki RISK_SINIF kolonu, müşteri bazında belirlenen risk seviyesini ifade eder ve üç olası değer içerir: 'LOW' (Düşük), 'MEDIUM' (Orta) ve 'HIGH' (Yüksek). Bu kolon, risk skorları ile birlikte değerlendirilerek müşteri risk profilinin belirlenmesine yardımcı olur. Müşteri numarası (MUSTERI_NO) ve rapor tarihi (RAPOR_TARIHI) ile birlikte kullanılarak her müşteri için risk durumu izlenir.",
+          "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 3,
           "has_lookup": false,
@@ -476,15 +478,15 @@
             "MEDIUM",
             "HIGH"
           ],
-          "critic_score": 0,
+          "original_description": "Risk sınıfı.",
+          "critic_score": 1,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 52.796585998s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 52\n}\n]",
             "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['LOW', 'MEDIUM', 'HIGH']"
           ],
-          "feedback": "Değerlendirme başarısız",
-          "needs_regeneration": true,
-          "clarity_score": 20
+          "feedback": "",
+          "needs_regeneration": false,
+          "clarity_score": 100
         }
       ]
     }
@@ -493,170 +495,83 @@
     "high_risk_columns": [
       {
         "table": "CORE_BANKING.XXX_HESAP",
-        "column": "HESAP_NO",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.471110266s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-        ],
-        "description": "Hesap numarasıdır."
-      },
-      {
-        "table": "CORE_BANKING.XXX_HESAP",
-        "column": "ACILIS_TARIHI",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.397696702s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-        ],
-        "description": "Açılış tarihidir."
-      },
-      {
-        "table": "CORE_BANKING.XXX_HESAP",
-        "column": "VALOR_TARIHI",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.22921474s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-        ],
-        "description": "Valör tarihidir."
-      },
-      {
-        "table": "CORE_BANKING.XXX_HESAP",
-        "column": "HESAP_TIP_KOD",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.154832579s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-        ],
-        "description": "Hesap tipi."
-      },
-      {
-        "table": "CORE_BANKING.XXX_HESAP",
         "column": "HESAP_DURUM_KOD",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.085305565s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]",
+          "Validation issue: Documented values [0,1,2] but DB contains value 3",
+          "Missing lookup table for status codes",
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
           "VALUE MISMATCH: Documented values [0,1,2] but DB contains value 3 as well. LKP table missing."
         ],
-        "description": "Account status code."
-      },
-      {
-        "table": "CORE_BANKING.XXX_HESAP",
-        "column": "MUSTERI_NO",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 54.016794923s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 54\n}\n]"
-        ],
-        "description": "Müşteri numarasıdır. XXX_MUSTERI tablosunun birincil anahtarıdır."
-      },
-      {
-        "table": "CORE_BANKING.XXX_HESAP",
-        "column": "SUBE_KOD",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.943885355s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-        ],
-        "description": null
-      },
-      {
-        "table": "CREDIT.KRD_MUS_KREDI",
-        "column": "KRD_NO",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.872016816s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-        ],
-        "description": "Kredi numarasıdır."
+        "description": "HESAP_DURUM_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir hesabın durumunu tanımlayan bir kolondur. Alabileceği değerler şunlardır: 0 (Aktif), 1 (Pasif) ve 2 (Kapalı); bu değerler için herhangi bir referans tablosu tanımlanmamıştır. Bu kolon, hesapların geçerli durumunu izlemek amacıyla kullanılır ve HESAP_NO ile birlikte değerlendirilmelidir."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
         "column": "KRD_MUS_KOBI_TIP",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.701681446s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
           "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4]"
         ],
-        "description": "KOBI TIPININ TUTULACAGI ALAN."
+        "description": "KRD_MUS_KOBI_TIP, CREDIT.KRD_MUS_KREDI tablosunda KOBİ (Küçük ve Orta Büyüklükteki İşletmeler) tipini belirtmek için kullanılan bir alandır. Bu alan, TMMOB tarafından belirlenen dört farklı KOBİ tipini temsil eder: 1 - Mikro, 2 - Küçük, 3 - Orta, 4 - Büyük. KRD_MUS_KOBI_TIP kolonunun değerleri, kredi ürünlerinin uygunluk değerlendirmesinde önemli bir rol oynamaktadır."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
         "column": "INT_SHK_A_30GCK_ADT_LM",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.602212057s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
+          "Validation issue: Column name suggests 30 days (30GCK) but description says 60 days.",
           "VALUE MISMATCH: Column name suggests 30 days (30GCK) but description says 60 days. Mismatch detected."
         ],
-        "description": "Akbank Hariç Kredi Kartı Açık Son 60 gün"
-      },
-      {
-        "table": "CREDIT.KRD_MUS_KREDI",
-        "column": "KRD_TUTAR",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.531470995s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-        ],
-        "description": "Kredi tutarı. Müşteriye kullandırılan kredi miktarını TL cinsinden ifade eder."
+        "description": "KREDIT.KRD_MUS_KREDI tablosundaki INT_SHK_A_30GCK_ADT_LM kolonu, Akbank hariç, son 60 gün içinde açık olan kredi kartı bakiyelerini temsil etmektedir. Bu kolon, kredi izleme süreçlerinde kullanılır ve kredi kartı durumunu değerlendirmek için önemli bir referans noktasıdır. İlgili kolonlar arasında KRD_TUTAR ve KRD_DURUM bulunmaktadır."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
         "column": "KRD_DURUM",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.460444018s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "Credit status. 0=Active, 1=Closed, 2=NPL"
-      },
-      {
-        "table": "CRM.MUS_SEGMENTASYON",
-        "column": "MUSTERI_NO",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.290923362s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-        ],
-        "description": "Müşteri kimlik numarasıdır."
-      },
-      {
-        "table": "CRM.MUS_SEGMENTASYON",
-        "column": "SEGMENT_KOD",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.223541255s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-        ],
-        "description": null
+        "description": "KRD_DURUM kolonu, CREDIT.KRD_MUS_KREDI tablosunda yer alan kredi durumunu belirtir. Bu kolon, 0=Aktif, 1=Kapalı, 2=Takipte (NPL) değerlerini alır ve kredi izleme süreçlerinde kullanılır. KRD_DURUM, kredi işleminin mevcut durumunu yansıtmakta olup, ISLEM_TARIHI ile birlikte değerlendirilmelidir."
       },
       {
         "table": "CRM.MUS_SEGMENTASYON",
         "column": "GELIR_GRUBU",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.158203814s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
         ],
-        "description": "Gelir grubu kodu."
+        "description": "GELIR_GRUBU kolonu, CRM.MUS_SEGMENTASYON tablosunda yer alan ve müşterilerin gelir düzeylerini temsil eden bir kodu içermektedir. Bu kolon, gelir grubu kodları olarak [1, 2, 3, 4, 5] değerlerini alır ve her bir kod belirli bir gelir seviyesini ifade eder. Müşteri segmentasyonu ve kampanya hedeflemesi süreçlerinde kullanılmakta olup, ilgili LKP_SEGMENT tablosundaki gelir grubu tanımlarıyla ilişkilidir."
       },
       {
         "table": "CORE_BANKING.LKP_HESAP_TIP",
         "column": "KOD",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.084276534s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]",
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
         ],
-        "description": "Lookup kodu."
-      },
-      {
-        "table": "CORE_BANKING.LKP_HESAP_TIP",
-        "column": "ACIKLAMA",
-        "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 53.009613929s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 53\n}\n]"
-        ],
-        "description": "Lookup açıklaması."
+        "description": "KOD kolonu, CORE_BANKING.LKP_HESAP_TIP tablosunda yer alan hesap tipi için kullanılan benzersiz bir lookup kodudur. Bu kolon, hesap türlerini tanımlamak amacıyla 1 ile 5 arasında değişen değerler alır; bu değerler sırasıyla \"Vadesiz Hesap\", \"Vadeli Hesap\", \"Kredi Hesabı\", \"Tasarruf Hesabı\" ve \"Diğer Hesap\" anlamına gelir. Hesap tipi, müşteri hesaplarının yönetimi ve raporlaması için kritik öneme sahiptir."
       },
       {
         "table": "RISK.RISK_IZLEME",
         "column": "MUSTERI_NO",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 52.942106947s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 52\n}\n]"
+          {
+            "issue": "Belirsiz/eksik açıklama",
+            "description": "Açıklama yeterince detaylı değil."
+          },
+          {
+            "issue": "Lookup eksikliği",
+            "description": "Müşteri numarasının hangi değerleri alabileceği belirtilmemiş."
+          },
+          {
+            "issue": "Validation hatası",
+            "description": "Validation ile ilgili herhangi bir bilgi yok."
+          },
+          {
+            "issue": "İngilizce açıklama",
+            "description": "Açıklama Türkçe verilmiş."
+          }
         ],
         "description": "Müşteri kimlik numarası."
       },
@@ -664,9 +579,7 @@
         "table": "RISK.RISK_IZLEME",
         "column": "RISK_SKOR",
         "risk_level": "HIGH_RISK",
-        "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 52.87234513s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 52\n}\n]"
-        ],
+        "issues": [],
         "description": "0-100 arası risk skoru. Yüksek değer yüksek riski ifade eder."
       },
       {
@@ -674,17 +587,94 @@
         "column": "RISK_SINIF",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 52.796585998s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\"\n  quota_id: \"GenerateContentInputTokensPerModelPerMinute-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\nviolations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.0-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n}\n, retry_delay {\n  seconds: 52\n}\n]",
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['LOW', 'MEDIUM', 'HIGH']"
         ],
-        "description": "Risk sınıfı."
+        "description": "RISK.RISK_IZLEME tablosundaki RISK_SINIF kolonu, müşteri bazında belirlenen risk seviyesini ifade eder ve üç olası değer içerir: 'LOW' (Düşük), 'MEDIUM' (Orta) ve 'HIGH' (Yüksek). Bu kolon, risk skorları ile birlikte değerlendirilerek müşteri risk profilinin belirlenmesine yardımcı olur. Müşteri numarası (MUSTERI_NO) ve rapor tarihi (RAPOR_TARIHI) ile birlikte kullanılarak her müşteri için risk durumu izlenir."
       }
     ],
-    "low_risk_columns": [],
+    "low_risk_columns": [
+      {
+        "table": "CORE_BANKING.XXX_HESAP",
+        "column": "HESAP_NO",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "HESAP_NO, CORE_BANKING.XXX_HESAP tablosundaki her bir hesabın benzersiz tanımlayıcısıdır ve IBAN formatında 26 karakter olarak tutulur. Bu kolon, hesapların doğru bir şekilde tanımlanmasını sağlamak için NULL olamaz ve UNIQUE olmalıdır. Hesap numarası, `TR` ile başlayan, 2 kontrol hanesi, 4 banka kodu ve 16 hesap numarasından oluşan bir formatı takip eder."
+      },
+      {
+        "table": "CORE_BANKING.XXX_HESAP",
+        "column": "ACILIS_TARIHI",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "ACILIS_TARIHI, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların resmi açılış tarihini temsil eden bir tarih kolonudur. Ticari veya bireysel hesapların açılış tarihleri için kullanılır; valörlü açılan hesaplarda bu tarih, fiziksel açılış tarihi yerine valör tarihi olarak değerlendirilmelidir, bu nedenle `VALOR_TARIHI` kolonuna da bakılması gerekmektedir. Bu kolon NULL olamaz ve hesapların geçerli bir müşteri numarası ile ilişkilendirilmesi zorunludur."
+      },
+      {
+        "table": "CORE_BANKING.XXX_HESAP",
+        "column": "VALOR_TARIHI",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "`VALOR_TARIHI` kolonu, CORE_BANKING.XXX_HESAP tablosunda yer alan ve valörlü açılan hesapların geçerli valör tarihini temsil eder. Bu tarih, hesap açılışının resmi tarihinden farklı olabilir ve standart hesaplarda NULL değeri alabilir. Valör tarihinin doğru bir şekilde belirlenmesi, hesap açılış tarihi ile birlikte değerlendirilmelidir; bu nedenle, `ACILIS_TARIHI` kolonu ile ilişkilendirilmesi önemlidir."
+      },
+      {
+        "table": "CORE_BANKING.XXX_HESAP",
+        "column": "HESAP_TIP_KOD",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "HESAP_TIP_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve hesap türünü belirten bir kodudur. Bu kolon, LKP_HESAP_TIP tablosundan gelen değerleri kullanarak hesap tiplerini tanımlar: 1 (Vadesiz), 2 (Vadeli), 3 (Döviz), 4 (Altın) ve 5 (Yatırım). Her hesap için geçerli bir HESAP_TIP_KOD değeri sağlanması zorunludur."
+      },
+      {
+        "table": "CORE_BANKING.XXX_HESAP",
+        "column": "MUSTERI_NO",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "Müşteri numarasıdır. XXX_MUSTERI tablosunun birincil anahtarıdır."
+      },
+      {
+        "table": "CORE_BANKING.XXX_HESAP",
+        "column": "SUBE_KOD",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "### SUBE_KOD\nCORE_BANKING.XXX_HESAP tablosunda yer alan SUBE_KOD, bankanın müşterilerine ait hesapların hangi şubeye ait olduğunu belirten bir koddur ve LKP_SUBE tablosundan gelmektedir. Bu kolon, hesapların yönetimi ve izlenmesi açısından önemlidir; dolayısıyla, her hesap için geçerli bir SUBE_KOD değeri bulunmalıdır. Hesap açılış tarihi (ACILIS_TARIHI) ve valör tarihi (VALOR_TARIHI) gibi diğer tarihsel bilgilerle birlikte değerlendirilmelidir."
+      },
+      {
+        "table": "CREDIT.KRD_MUS_KREDI",
+        "column": "KRD_NO",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "KRD_NO, CREDIT.KRD_MUS_KREDI tablosunda yer alan ve her kredi işlemini benzersiz bir şekilde tanımlayan kredi numarasıdır. Bu kolon, kredi izleme süreçlerinde kullanılır ve her kredi için müşteri numarası (MUSTERI_NO) ile birlikte değerlendirilir. KRD_NO, kredi işlemlerinin takibi ve raporlanması için kritik öneme sahiptir."
+      },
+      {
+        "table": "CREDIT.KRD_MUS_KREDI",
+        "column": "KRD_TUTAR",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "Kredi tutarı. Müşteriye kullandırılan kredi miktarını TL cinsinden ifade eder."
+      },
+      {
+        "table": "CRM.MUS_SEGMENTASYON",
+        "column": "MUSTERI_NO",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "Müşteri kimlik numarasıdır."
+      },
+      {
+        "table": "CRM.MUS_SEGMENTASYON",
+        "column": "SEGMENT_KOD",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "SEGMENT_KOD, CRM veri tabanındaki MUS_SEGMENTASYON tablosunda yer alan ve müşteri segmentasyonunu tanımlayan 5 karakter uzunluğunda bir alandır. Bu kolon, LKP_SEGMENT lookup tablosundaki segment kodları ile ilişkilidir ve her bir müşteri için belirli bir segmenti temsil eder. Müşteri segmentasyonu, kampanya hedeflemesi ve etkileşim stratejilerinin belirlenmesinde kritik bir rol oynamaktadır."
+      },
+      {
+        "table": "CORE_BANKING.LKP_HESAP_TIP",
+        "column": "ACIKLAMA",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "LKP_HESAP_TIP tablosundaki ACIKLAMA kolonu, bankacılık sisteminde kullanılan hesap tiplerini tanımlayan açıklamaları içermektedir. Bu kolon, 'Vadesiz', 'Vadeli', 'Döviz', 'Altın' ve 'Yatırım' gibi belirli hesap türlerini referans alarak, her bir hesap tipinin ne anlama geldiğini net bir şekilde ifade eder. Hesap türleri, müşteri hesaplarının yönetimi ve işlem süreçlerinde önemli bir rol oynamaktadır."
+      }
+    ],
     "summary": {
       "total_columns": 20,
-      "high_risk_count": 20,
-      "low_risk_count": 0
+      "high_risk_count": 9,
+      "low_risk_count": 11
     }
   },
   "lineage_graph": {
@@ -707,48 +697,48 @@
   ],
   "clarity_scores": {
     "CORE_BANKING.XXX_HESAP": {
-      "average_clarity": 38.6,
+      "average_clarity": 100.0,
       "columns": {
-        "HESAP_NO": 40,
-        "ACILIS_TARIHI": 25,
-        "VALOR_TARIHI": 25,
-        "HESAP_TIP_KOD": 40,
-        "HESAP_DURUM_KOD": 40,
+        "HESAP_NO": 100,
+        "ACILIS_TARIHI": 100,
+        "VALOR_TARIHI": 100,
+        "HESAP_TIP_KOD": 100,
+        "HESAP_DURUM_KOD": 100,
         "MUSTERI_NO": 100,
-        "SUBE_KOD": 0
+        "SUBE_KOD": 100
       }
     },
     "CREDIT.KRD_MUS_KREDI": {
-      "average_clarity": 72.0,
+      "average_clarity": 100.0,
       "columns": {
-        "KRD_NO": 40,
-        "KRD_MUS_KOBI_TIP": 40,
+        "KRD_NO": 100,
+        "KRD_MUS_KOBI_TIP": 100,
         "INT_SHK_A_30GCK_ADT_LM": 100,
         "KRD_TUTAR": 100,
-        "KRD_DURUM": 80
+        "KRD_DURUM": 100
       }
     },
     "CRM.MUS_SEGMENTASYON": {
-      "average_clarity": 23.3,
+      "average_clarity": 86.7,
       "columns": {
         "MUSTERI_NO": 60,
-        "SEGMENT_KOD": 0,
-        "GELIR_GRUBU": 10
+        "SEGMENT_KOD": 100,
+        "GELIR_GRUBU": 100
       }
     },
     "CORE_BANKING.LKP_HESAP_TIP": {
-      "average_clarity": 20.0,
+      "average_clarity": 100.0,
       "columns": {
-        "KOD": 0,
-        "ACIKLAMA": 40
+        "KOD": 100,
+        "ACIKLAMA": 100
       }
     },
     "RISK.RISK_IZLEME": {
-      "average_clarity": 60.0,
+      "average_clarity": 86.7,
       "columns": {
         "MUSTERI_NO": 60,
         "RISK_SKOR": 100,
-        "RISK_SINIF": 20
+        "RISK_SINIF": 100
       }
     }
   }

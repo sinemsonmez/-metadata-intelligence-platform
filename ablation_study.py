@@ -2,9 +2,9 @@
 Ablation Study
 ==============
 4 konfigürasyonu karşılaştırır, her birinin accuracy'ye katkısını ölçer.
-Google Gemini API kullanır (ücretsiz).
+OpenAI API kullanır.
 
-Çalıştırmak için: GOOGLE_API_KEY veya GEMINI_API_KEY
+Çalıştırmak için: OPENAI_API_KEY
 """
 
 import json
@@ -14,7 +14,7 @@ import statistics
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
 
-from gemini_util import generate_text
+from openai_util import generate_text
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT
