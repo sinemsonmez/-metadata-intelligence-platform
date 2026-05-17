@@ -150,17 +150,17 @@ HTML = r"""<!DOCTYPE html>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #08090C;
-  --surface:  #0F1117;
-  --surface2: #161820;
-  --border:   #1E2130;
-  --accent:   #00E5FF;
-  --accent2:  #7B61FF;
-  --high:     #FF3B5C;
-  --low:      #00D68F;
-  --warn:     #FFB547;
-  --text:     #E4E6F0;
-  --muted:    #5A607A;
+  --bg:       #F4F6F9;
+  --surface:  #FFFFFF;
+  --surface2: #EEF2F7;
+  --border:   #D8E0EA;
+  --accent:   #0369A1;
+  --accent2:  #6D28D9;
+  --high:     #DC2626;
+  --low:      #059669;
+  --warn:     #B45309;
+  --text:     #1E293B;
+  --muted:    #64748B;
   --mono:     'Space Mono', monospace;
   --sans:     'DM Sans', sans-serif;
   --r:        4px;
@@ -175,21 +175,10 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Scanline overlay ──────────────────────────────────────────────── */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(
-    0deg, transparent, transparent 2px,
-    rgba(0,229,255,0.012) 2px, rgba(0,229,255,0.012) 4px
-  );
-  pointer-events: none; z-index: 9999;
-}
-
 /* ── Topbar ────────────────────────────────────────────────────────── */
 header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(8,9,12,0.92);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 0 28px;
@@ -256,7 +245,7 @@ header {
   text-transform: uppercase;
   padding: 8px 18px;
   background: var(--accent);
-  color: var(--bg);
+  color: #FFFFFF;
   border: none;
   border-radius: var(--r);
   cursor: pointer;
@@ -435,10 +424,10 @@ header {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.badge-accent  { background: rgba(0,229,255,0.12); color: var(--accent); border: 1px solid rgba(0,229,255,0.25); }
-.badge-high    { background: rgba(255,59,92,0.12); color: var(--high);   border: 1px solid rgba(255,59,92,0.3); }
-.badge-low     { background: rgba(0,214,143,0.1);  color: var(--low);    border: 1px solid rgba(0,214,143,0.25); }
-.badge-warn    { background: rgba(255,181,71,0.1);  color: var(--warn);   border: 1px solid rgba(255,181,71,0.25); }
+.badge-accent  { background: rgba(3,105,161,0.1); color: var(--accent); border: 1px solid rgba(3,105,161,0.25); }
+.badge-high    { background: rgba(220,38,38,0.1); color: var(--high);   border: 1px solid rgba(220,38,38,0.28); }
+.badge-low     { background: rgba(5,150,105,0.1);  color: var(--low);    border: 1px solid rgba(5,150,105,0.25); }
+.badge-warn    { background: rgba(180,83,9,0.1);  color: var(--warn);   border: 1px solid rgba(180,83,9,0.25); }
 
 /* ── Filter bar ────────────────────────────────────────────────────── */
 .filter-bar {
@@ -462,19 +451,19 @@ header {
   transition: all 0.12s;
 }
 .filter-btn:hover, .filter-btn.active {
-  background: rgba(0,229,255,0.08);
+  background: rgba(3,105,161,0.08);
   color: var(--accent);
-  border-color: rgba(0,229,255,0.3);
+  border-color: rgba(3,105,161,0.28);
 }
 .filter-btn.active-red {
-  background: rgba(255,59,92,0.1);
+  background: rgba(220,38,38,0.08);
   color: var(--high);
-  border-color: rgba(255,59,92,0.3);
+  border-color: rgba(220,38,38,0.28);
 }
 .filter-btn.active-green {
-  background: rgba(0,214,143,0.08);
+  background: rgba(5,150,105,0.08);
   color: var(--low);
-  border-color: rgba(0,214,143,0.25);
+  border-color: rgba(5,150,105,0.25);
 }
 
 /* ── Table ─────────────────────────────────────────────────────────── */
@@ -498,11 +487,11 @@ th {
 
 td {
   padding: 9px 14px;
-  border-bottom: 1px solid rgba(30,33,48,0.7);
+  border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(0,229,255,0.025); }
+tr:hover td { background: rgba(3,105,161,0.05); }
 
 .col-name { font-family: var(--mono); font-size: 0.68rem; color: var(--accent); font-weight: 700; }
 .tbl-name { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
@@ -517,8 +506,8 @@ tr:hover td { background: rgba(0,229,255,0.025); }
   white-space: nowrap; cursor: pointer; transition: opacity 0.12s;
 }
 .risk-pill:hover { opacity: 0.75; }
-.risk-high { background: rgba(255,59,92,0.15); color: var(--high); border: 1px solid rgba(255,59,92,0.35); }
-.risk-low  { background: rgba(0,214,143,0.1);  color: var(--low);  border: 1px solid rgba(0,214,143,0.3); }
+.risk-high { background: rgba(220,38,38,0.1); color: var(--high); border: 1px solid rgba(220,38,38,0.35); }
+.risk-low  { background: rgba(5,150,105,0.1);  color: var(--low);  border: 1px solid rgba(5,150,105,0.28); }
 
 /* ── Clarity bar ───────────────────────────────────────────────────── */
 .clarity-wrap { display: flex; align-items: center; gap: 7px; }
@@ -528,9 +517,9 @@ tr:hover td { background: rgba(0,229,255,0.025); }
 
 /* ── Issue count ───────────────────────────────────────────────────── */
 .issue-count {
-  background: rgba(255,181,71,0.12);
+  background: rgba(180,83,9,0.1);
   color: var(--warn);
-  border: 1px solid rgba(255,181,71,0.25);
+  border: 1px solid rgba(180,83,9,0.25);
   font-family: var(--mono); font-size: 0.58rem;
   padding: 2px 7px; border-radius: 2px; cursor: pointer;
   transition: opacity 0.12s;
@@ -541,7 +530,7 @@ tr:hover td { background: rgba(0,229,255,0.025); }
 .lineage-item {
   display: flex; align-items: center; gap: 8px;
   padding: 9px 16px;
-  border-bottom: 1px solid rgba(30,33,48,0.5);
+  border-bottom: 1px solid var(--border);
   font-family: var(--mono); font-size: 0.68rem;
 }
 .lineage-item:last-child { border-bottom: none; }
@@ -553,7 +542,7 @@ tr:hover td { background: rgba(0,229,255,0.025); }
 /* ── Popup ─────────────────────────────────────────────────────────── */
 .overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(15,23,42,0.35);
   z-index: 200;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
@@ -597,7 +586,7 @@ tr:hover td { background: rgba(0,229,255,0.025); }
 .popup-issues { display: flex; flex-direction: column; gap: 5px; }
 .popup-issue {
   font-size: 0.7rem; color: var(--warn);
-  background: rgba(255,181,71,0.06);
+  background: rgba(180,83,9,0.08);
   padding: 6px 10px; border-radius: 2px;
   border-left: 2px solid var(--warn);
 }
@@ -616,11 +605,11 @@ tr:hover td { background: rgba(0,229,255,0.025); }
   display: inline-block; margin-right: 4px;
   text-transform: uppercase; letter-spacing: 0.05em;
 }
-.schema-CORE_BANKING { background: rgba(0,229,255,0.12); color: var(--accent); }
-.schema-CREDIT       { background: rgba(255,59,92,0.12); color: var(--high); }
-.schema-CRM          { background: rgba(123,97,255,0.12); color: var(--accent2); }
-.schema-RISK         { background: rgba(255,181,71,0.12); color: var(--warn); }
-.schema-OTHER        { background: rgba(90,96,122,0.2); color: var(--muted); }
+.schema-CORE_BANKING { background: rgba(3,105,161,0.1); color: var(--accent); }
+.schema-CREDIT       { background: rgba(220,38,38,0.1); color: var(--high); }
+.schema-CRM          { background: rgba(109,40,217,0.1); color: var(--accent2); }
+.schema-RISK         { background: rgba(180,83,9,0.1); color: var(--warn); }
+.schema-OTHER        { background: rgba(100,116,139,0.12); color: var(--muted); }
 
 /* ── Scrollbar ─────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -895,7 +884,7 @@ function renderColTable(filter) {
   document.getElementById('colTbody').innerHTML = rows.map(col => {
     const riskCls = col.risk === 'HIGH_RISK' ? 'risk-high' : 'risk-low';
     const riskLbl = col.risk === 'HIGH_RISK' ? '🔴 HIGH' : '🟢 LOW';
-    const cc = col.clarity >= 70 ? '#00D68F' : col.clarity >= 40 ? '#FFB547' : '#FF3B5C';
+    const cc = col.clarity >= 70 ? '#059669' : col.clarity >= 40 ? '#B45309' : '#DC2626';
     const descHtml = col.desc
       ? `<span class="desc-text">${col.desc.length > 75 ? col.desc.slice(0,75)+'…' : col.desc}</span>`
       : `<span class="desc-missing">— missing —</span>`;
@@ -937,14 +926,14 @@ function renderQuality() {
   allColumns.forEach(c => { if (types[c.quality] !== undefined) types[c.quality]++; });
 
   const colors = {
-    complete: '#00D68F', generated: '#00E5FF',
-    incomplete: '#FFB547', english: '#7B61FF',
-    missing: '#FF3B5C', wrong: '#FF3B5C', vague: '#FF7D54'
+    complete: '#059669', generated: '#0369A1',
+    incomplete: '#B45309', english: '#6D28D9',
+    missing: '#DC2626', wrong: '#DC2626', vague: '#EA580C'
   };
 
   const el = document.getElementById('qualityBreakdown');
   el.innerHTML = Object.entries(types).filter(([,v]) => v > 0).map(([k,v]) => {
-    const c = colors[k] || '#5A607A';
+    const c = colors[k] || '#64748B';
     const pct = allColumns.length ? Math.round(v / allColumns.length * 100) : 0;
     return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
       <div style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0"></div>
