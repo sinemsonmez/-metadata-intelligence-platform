@@ -30,15 +30,8 @@ from openai import OpenAI
 
 _DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 # Varsayılan 0: ardışık çağrılar arasında yapay gecikme yok (maksimum hız).
-_MIN_INTERVAL_SEC = float(
-    os.environ.get("OPENAI_MIN_INTERVAL_SEC")
-    or os.environ.get("GEMINI_MIN_INTERVAL_SEC")
-    or "0"
-)
-_MAX_RETRIES = int(
-    os.environ.get("OPENAI_MAX_RETRIES")
-    or os.environ.get("GEMINI_MAX_RETRIES", "12")
-)
+_MIN_INTERVAL_SEC = float(os.environ.get("OPENAI_MIN_INTERVAL_SEC", "0"))
+_MAX_RETRIES = int(os.environ.get("OPENAI_MAX_RETRIES", "12"))
 
 _client: OpenAI | None = None
 

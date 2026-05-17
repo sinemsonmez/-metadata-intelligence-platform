@@ -18,6 +18,24 @@ This project simulates a real-world enterprise data environment with incomplete,
 
 ---
 
+## 🔑 OpenAI API Kurulumu
+
+Tüm LLM çağrıları `openai_util.py` üzerinden **OpenAI Chat Completions API** kullanır.
+
+1. `.env.example` dosyasını `.env` olarak kopyalayın.
+2. `.env` içine `OPENAI_API_KEY=...` ekleyin.
+3. Bağımlılıkları yükleyin: `pip install -r requirements.txt`
+4. Pipeline: `python orchestrator.py` veya web arayüzü: `python app.py`
+
+| Ortam değişkeni | Zorunlu | Açıklama |
+|---|---|---|
+| `OPENAI_API_KEY` | Evet | OpenAI API anahtarı |
+| `OPENAI_MODEL` | Hayır | Varsayılan: `gpt-4o-mini` |
+| `OPENAI_MIN_INTERVAL_SEC` | Hayır | İstekler arası bekleme (varsayılan `0`) |
+| `OPENAI_MAX_RETRIES` | Hayır | 429/kota yeniden deneme sayısı (varsayılan `12`) |
+
+---
+
 ## 🏗️ Architecture
 
 ```
@@ -62,12 +80,13 @@ metadata-intelligence-platform/
 
 ### Generator Agent
 - Reads raw table/column metadata
-- Calls Claude API to generate enriched descriptions
+- Calls OpenAI Chat Completions API (`OPENAI_API_KEY`) to generate enriched descriptions
+- Default model: `gpt-4o-mini` (override with `OPENAI_MODEL`)
 - Context-aware: uses schema, conceptual model, DDL, and TOA docs if available
 - Handles missing/partial documentation gracefully
 
 ### Critic Agent
-- Evaluates generated descriptions for:
+- Evaluates generated descriptions via OpenAI (`openai_util.generate_text`) for:
   - **Completeness** — Does it explain the column in full context?
   - **Accuracy** — Does it match DDL, lookup values, and functional docs?
   - **Clarity Score** — Hierarchical, unambiguous, no divergent interpretations

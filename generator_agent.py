@@ -117,7 +117,7 @@ Sadece düzeltilmiş açıklamayı yaz, başka hiçbir şey ekleme.""")
 
 
 def generate_description(table, column, context):
-    """Call Gemini API to generate an enriched column description."""
+    """OpenAI API ile zenginleştirilmiş kolon açıklaması üretir."""
     prompt = build_prompt(table, column, context)
     return generate_text(prompt)
 
