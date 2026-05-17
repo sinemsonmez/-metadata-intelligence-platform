@@ -31,8 +31,10 @@ Tüm LLM çağrıları `openai_util.py` üzerinden **OpenAI Chat Completions API
 |---|---|---|
 | `OPENAI_API_KEY` | Evet | OpenAI API anahtarı |
 | `OPENAI_MODEL` | Hayır | Varsayılan: `gpt-4o-mini` |
+| `OPENAI_MAX_WORKERS` | Hayır | Paralel API isteği sayısı (varsayılan `16`) |
+| `OPENAI_MAX_TOKENS` | Hayır | Yanıt token üst sınırı (varsayılan `512`) |
 | `OPENAI_MIN_INTERVAL_SEC` | Hayır | İstekler arası bekleme (varsayılan `0`) |
-| `OPENAI_MAX_RETRIES` | Hayır | 429/kota yeniden deneme sayısı (varsayılan `12`) |
+| `OPENAI_MAX_RETRIES` | Hayır | 429/kota yeniden deneme sayısı (varsayılan `8`) |
 
 ---
 

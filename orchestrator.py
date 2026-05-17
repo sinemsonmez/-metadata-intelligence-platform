@@ -11,8 +11,8 @@ Tam pipeline'ı çalıştırır:
 
 Çalıştırmak için:
   OPENAI_API_KEY (veya proje kökünde .env)
-  İsteğe bağlı: OPENAI_MODEL, OPENAI_MIN_INTERVAL_SEC (varsayılan 0 = hızlı),
-  OPENAI_MAX_RETRIES.
+  İsteğe bağlı: OPENAI_MODEL, OPENAI_MAX_WORKERS (varsayılan 16, paralel API),
+  OPENAI_MAX_TOKENS, OPENAI_MIN_INTERVAL_SEC (varsayılan 0), OPENAI_MAX_RETRIES.
 """
 
 import json

@@ -3,48 +3,24 @@
     {
       "job_id": "ETL_001",
       "job_name": "HESAP_TO_RISK",
-      "source": {
-        "schema": "CORE_BANKING",
-        "table": "XXX_HESAP",
-        "columns": ["HESAP_NO", "MUSTERI_NO", "HESAP_DURUM_KOD"]
-      },
-      "target": {
-        "schema": "RISK",
-        "table": "RISK_IZLEME",
-        "columns": ["MUSTERI_NO", "RISK_SINIF"]
-      },
+      "source": {"schema": "CORE_BANKING", "table": "XXX_HESAP", "columns": ["HESAP_NO", "MUSTERI_NO", "HESAP_DURUM_KOD"]},
+      "target": {"schema": "RISK", "table": "RISK_IZLEME", "columns": ["MUSTERI_NO", "RISK_SINIF"]},
       "transformation": "Hesap durum kodu üzerinden risk sınıfı türetilir.",
       "schedule": "DAILY"
     },
     {
       "job_id": "ETL_002",
       "job_name": "KREDI_TO_RISK",
-      "source": {
-        "schema": "CREDIT",
-        "table": "KRD_MUS_KREDI",
-        "columns": ["MUSTERI_NO", "KRD_DURUM", "KRD_TUTAR"]
-      },
-      "target": {
-        "schema": "RISK",
-        "table": "RISK_IZLEME",
-        "columns": ["MUSTERI_NO", "RISK_SKOR"]
-      },
+      "source": {"schema": "CREDIT", "table": "KRD_MUS_KREDI", "columns": ["MUSTERI_NO", "KRD_DURUM", "KRD_TUTAR"]},
+      "target": {"schema": "RISK", "table": "RISK_IZLEME", "columns": ["MUSTERI_NO", "RISK_SKOR"]},
       "transformation": "Kredi tutarı ve duruma göre risk skoru hesaplanır.",
       "schedule": "DAILY"
     },
     {
       "job_id": "ETL_003",
       "job_name": "RISK_TO_CRM",
-      "source": {
-        "schema": "RISK",
-        "table": "RISK_IZLEME",
-        "columns": ["MUSTERI_NO", "RISK_SKOR", "RISK_SINIF"]
-      },
-      "target": {
-        "schema": "CRM",
-        "table": "MUS_SEGMENTASYON",
-        "columns": ["MUSTERI_NO", "SEGMENT_KOD"]
-      },
+      "source": {"schema": "RISK", "table": "RISK_IZLEME", "columns": ["MUSTERI_NO", "RISK_SKOR", "RISK_SINIF"]},
+      "target": {"schema": "CRM", "table": "MUS_SEGMENTASYON", "columns": ["MUSTERI_NO", "SEGMENT_KOD"]},
       "transformation": "Risk skoru baz alınarak müşteri segmenti güncellenir.",
       "schedule": "WEEKLY",
       "note": "LOOP DETECTED: CRM -> RISK -> CRM circular dependency via ETL_004"
@@ -52,16 +28,8 @@
     {
       "job_id": "ETL_004",
       "job_name": "CRM_TO_RISK_FEEDBACK",
-      "source": {
-        "schema": "CRM",
-        "table": "MUS_SEGMENTASYON",
-        "columns": ["MUSTERI_NO", "GELIR_GRUBU"]
-      },
-      "target": {
-        "schema": "RISK",
-        "table": "RISK_IZLEME",
-        "columns": ["MUSTERI_NO", "RISK_SKOR"]
-      },
+      "source": {"schema": "CRM", "table": "MUS_SEGMENTASYON", "columns": ["MUSTERI_NO", "GELIR_GRUBU"]},
+      "target": {"schema": "RISK", "table": "RISK_IZLEME", "columns": ["MUSTERI_NO", "RISK_SKOR"]},
       "transformation": "Gelir grubu risk skorunu etkiler (feedback loop).",
       "schedule": "WEEKLY",
       "loop_risk": true
@@ -69,17 +37,65 @@
     {
       "job_id": "ETL_005",
       "job_name": "HESAP_TO_CRM",
-      "source": {
-        "schema": "CORE_BANKING",
-        "table": "XXX_HESAP",
-        "columns": ["MUSTERI_NO", "HESAP_TIP_KOD", "ACILIS_TARIHI"]
-      },
-      "target": {
-        "schema": "CRM",
-        "table": "MUS_SEGMENTASYON",
-        "columns": ["MUSTERI_NO", "SEGMENT_KOD"]
-      },
+      "source": {"schema": "CORE_BANKING", "table": "XXX_HESAP", "columns": ["MUSTERI_NO", "HESAP_TIP_KOD", "ACILIS_TARIHI"]},
+      "target": {"schema": "CRM", "table": "MUS_SEGMENTASYON", "columns": ["MUSTERI_NO", "SEGMENT_KOD"]},
       "transformation": "Hesap tipi ve açılış tarihine göre segment kodu belirlenir.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_006",
+      "job_name": "MUSTERI_TO_HESAP",
+      "source": {"schema": "CORE_BANKING", "table": "XXX_MUSTERI", "columns": ["MUSTERI_NO"]},
+      "target": {"schema": "CORE_BANKING", "table": "XXX_HESAP", "columns": ["MUSTERI_NO"]},
+      "transformation": "Müşteri ana verisi hesap açılışında referans alınır.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_007",
+      "job_name": "ISLEM_TO_RISK",
+      "source": {"schema": "CORE_BANKING", "table": "XXX_ISLEM", "columns": ["MUSTERI_NO", "ISLM_TARIH"]},
+      "target": {"schema": "RISK", "table": "RISK_AML", "columns": ["MUSTERI_NO"]},
+      "transformation": "İşlem hacmi AML kurallarına beslenir.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_008",
+      "job_name": "BASVURU_TO_KREDI",
+      "source": {"schema": "CREDIT", "table": "KRD_BASVURU", "columns": ["MUSTERI_NO"]},
+      "target": {"schema": "CREDIT", "table": "KRD_MUS_KREDI", "columns": ["MUSTERI_NO", "KRD_NO"]},
+      "transformation": "Onaylanan başvurular kredi tablosuna aktarılır.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_009",
+      "job_name": "KREDI_TO_TEMINAT",
+      "source": {"schema": "CREDIT", "table": "KRD_MUS_KREDI", "columns": ["KRD_NO"]},
+      "target": {"schema": "CREDIT", "table": "KRD_TEMINAT", "columns": ["KRD_NO"]},
+      "transformation": "Kredi teminat eşlemesi.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_010",
+      "job_name": "LIMIT_TO_RISK",
+      "source": {"schema": "RISK", "table": "RISK_LIMIT", "columns": ["MUSTERI_NO"]},
+      "target": {"schema": "RISK", "table": "RISK_IZLEME", "columns": ["MUSTERI_NO", "RISK_SKOR"]},
+      "transformation": "Limit kullanımı risk skoruna yansır.",
+      "schedule": "DAILY"
+    },
+    {
+      "job_id": "ETL_011",
+      "job_name": "SEGMENT_TO_KAMPANYA",
+      "source": {"schema": "CRM", "table": "MUS_SEGMENTASYON", "columns": ["MUSTERI_NO", "SEGMENT_KOD"]},
+      "target": {"schema": "CRM", "table": "KAMPANYA_HEDEF", "columns": ["MUSTERI_NO"]},
+      "transformation": "Segment bazlı kampanya hedef listesi.",
+      "schedule": "WEEKLY"
+    },
+    {
+      "job_id": "ETL_012",
+      "job_name": "RISK_TO_RAPOR",
+      "source": {"schema": "RISK", "table": "RISK_IZLEME", "columns": ["MUSTERI_NO", "RISK_SKOR"]},
+      "target": {"schema": "RISK", "table": "RISK_RAPOR", "columns": ["MUSTERI_NO"]},
+      "transformation": "Günlük risk raporu üretimi.",
       "schedule": "DAILY"
     }
   ]

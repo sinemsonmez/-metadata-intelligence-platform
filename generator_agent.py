@@ -9,11 +9,14 @@ functional requirement docs, and TOA docs when available.
 import json
 from pathlib import Path
 
-from openai_util import generate_text
+from openai_util import generate_text, get_max_workers, run_parallel
 
 REPO_ROOT = Path(__file__).resolve().parent
 DATA_DIR = REPO_ROOT
 DOCS_DIR = REPO_ROOT
+
+_GENERATE_QUALITIES = frozenset({"incomplete", "missing", "wrong", "english", "vague"})
+_context_cache: dict[tuple[str, str], dict] = {}
 
 
 def load_json(path):
@@ -72,6 +75,13 @@ def load_context(table_name, schema):
     return context
 
 
+def _cached_context(table_name: str, schema: str) -> dict:
+    key = (schema, table_name)
+    if key not in _context_cache:
+        _context_cache[key] = load_context(table_name, schema)
+    return _context_cache[key]
+
+
 def build_prompt(table, column, context):
     parts = [
         "Sen bir veri mimarısın ve metadata kalitesini artırmaya çalışıyorsun.",
@@ -119,35 +129,59 @@ Sadece düzeltilmiş açıklamayı yaz, başka hiçbir şey ekleme.""")
 def generate_description(table, column, context):
     """OpenAI API ile zenginleştirilmiş kolon açıklaması üretir."""
     prompt = build_prompt(table, column, context)
-    return generate_text(prompt)
+    return generate_text(prompt, max_tokens=400)
+
+
+def _generate_task(item: tuple) -> tuple:
+    table, column, context = item
+    table_name = table["table_name"]
+    col_name = column["column_name"]
+    try:
+        desc = generate_description(table, column, context)
+        return table_name, col_name, desc, None
+    except Exception as e:
+        return table_name, col_name, None, e
 
 
 def run_generator(tables):
     """Run generator on all tables and columns, return enriched metadata."""
-    enriched = []
+    _context_cache.clear()
+    tasks: list[tuple] = []
+    for table in tables:
+        ctx = _cached_context(table["table_name"], table["schema"])
+        for col in table.get("columns", []):
+            if col.get("description_quality", "") in _GENERATE_QUALITIES:
+                tasks.append((table, col, ctx))
 
+    generated: dict[tuple[str, str], tuple[str | None, Exception | None]] = {}
+    if tasks:
+        print(f"  Paralel üretim: {len(tasks)} kolon ({get_max_workers()} worker)")
+        for row in run_parallel(tasks, _generate_task, label="Generator"):
+            tn, cn, desc, err = row
+            generated[(tn, cn)] = (desc, err)
+
+    enriched = []
     for table in tables:
         print(f"\n📋 Processing table: {table['schema']}.{table['table_name']}")
-        context = load_context(table["table_name"], table["schema"])
-
         enriched_table = dict(table)
         enriched_columns = []
 
         for col in table.get("columns", []):
             quality = col.get("description_quality", "")
+            key = (table["table_name"], col["column_name"])
 
-            if quality in ("incomplete", "missing", "wrong", "english", "vague"):
-                print(f"  ✏️  Generating: {col['column_name']} [{quality}]")
-                try:
-                    new_description = generate_description(table, col, context)
+            if key in generated:
+                desc, err = generated[key]
+                if err:
+                    print(f"  ❌ Error {col['column_name']}: {err}")
+                    enriched_columns.append(col)
+                else:
+                    print(f"  ✏️  Generated: {col['column_name']} [{quality}]")
                     enriched_col = dict(col)
                     enriched_col["original_description"] = col.get("description")
-                    enriched_col["description"] = new_description
+                    enriched_col["description"] = desc
                     enriched_col["description_quality"] = "generated"
                     enriched_columns.append(enriched_col)
-                except Exception as e:
-                    print(f"  ❌ Error: {e}")
-                    enriched_columns.append(col)
             else:
                 print(f"  ✅ OK: {col['column_name']}")
                 enriched_columns.append(col)

@@ -8,7 +8,7 @@ Scores clarity, completeness, accuracy and assigns HIGH_RISK / LOW_RISK.
 import json
 from pathlib import Path
 
-from openai_util import generate_text
+from openai_util import generate_text, get_max_workers, run_parallel
 
 CARDINALITY_THRESHOLD = 100
 
@@ -36,8 +36,11 @@ SADECE JSON döndür, başka hiçbir şey yazma, markdown kullanma:
 HIGH_RISK: belirsiz/eksik açıklama, lookup eksikliği, validation hatası, ingilizce açıklama.
 LOW_RISK: net, tam, tüm değerler dokümante, validation temiz."""
 
-    raw = generate_text(prompt)
+    raw = generate_text(prompt, max_tokens=320)
+    return _parse_eval(raw)
 
+
+def _parse_eval(raw: str) -> dict:
     try:
         if raw.startswith("```"):
             raw = raw.split("```")[1]
@@ -53,7 +56,7 @@ LOW_RISK: net, tam, tüm değerler dokümante, validation temiz."""
             "risk_level": "HIGH_RISK",
             "issues": ["Parse hatası"],
             "feedback": raw,
-            "needs_regeneration": True
+            "needs_regeneration": True,
         }
 
 
@@ -76,51 +79,73 @@ def check_value_validation(column):
     return issues
 
 
-def run_critic(enriched_tables):
-    results = []
+def _critic_task(item: tuple) -> tuple:
+    table, col = item
+    lookup_issues = check_lookup_gaps(col)
+    validation_issues = check_value_validation(col)
+    try:
+        eval_result = evaluate_column(table, col)
+    except Exception as e:
+        eval_result = {
+            "overall_score": 0,
+            "risk_level": "HIGH_RISK",
+            "issues": [str(e)],
+            "feedback": "Değerlendirme başarısız",
+            "needs_regeneration": True,
+        }
 
+    all_issues = eval_result.get("issues", []) + lookup_issues + validation_issues
+    eval_result["issues"] = all_issues
+    if lookup_issues or validation_issues:
+        eval_result["risk_level"] = "HIGH_RISK"
+
+    return table["table_name"], col["column_name"], eval_result
+
+
+def run_critic(enriched_tables):
+    tasks = [
+        (table, col)
+        for table in enriched_tables
+        for col in table.get("columns", [])
+    ]
+    eval_map: dict[tuple[str, str], dict] = {}
+
+    if tasks:
+        print(f"  Paralel critic: {len(tasks)} kolon ({get_max_workers()} worker)")
+        for row in run_parallel(tasks, _critic_task, label="Critic"):
+            tn, cn, ev = row
+            eval_map[(tn, cn)] = ev
+
+    results = []
     for table in enriched_tables:
         print(f"\n🔍 Critiquing: {table['schema']}.{table['table_name']}")
         table_result = {
             "table_name": table["table_name"],
             "schema": table["schema"],
-            "column_evaluations": []
+            "column_evaluations": [],
         }
 
         for col in table.get("columns", []):
-            print(f"  📊 Evaluating: {col['column_name']}")
-
-            lookup_issues = check_lookup_gaps(col)
-            validation_issues = check_value_validation(col)
-
-            try:
-                eval_result = evaluate_column(table, col)
-            except Exception as e:
-                print(f"  ❌ Error: {e}")
-                eval_result = {
+            eval_result = eval_map.get(
+                (table["table_name"], col["column_name"]),
+                {
                     "overall_score": 0,
                     "risk_level": "HIGH_RISK",
-                    "issues": [str(e)],
-                    "feedback": "Değerlendirme başarısız",
-                    "needs_regeneration": True
-                }
-
-            all_issues = eval_result.get("issues", []) + lookup_issues + validation_issues
-            eval_result["issues"] = all_issues
-
-            if lookup_issues or validation_issues:
-                eval_result["risk_level"] = "HIGH_RISK"
-
+                    "issues": ["Değerlendirme eksik"],
+                    "needs_regeneration": True,
+                },
+            )
             col_result = {
                 "column_name": col["column_name"],
                 "description": col.get("description"),
-                **eval_result
+                **eval_result,
             }
-
             table_result["column_evaluations"].append(col_result)
-
-            risk_emoji = "🔴" if eval_result["risk_level"] == "HIGH_RISK" else "🟢"
-            print(f"  {risk_emoji} Score: {eval_result.get('overall_score', 0)} | {eval_result['risk_level']}")
+            risk_emoji = "🔴" if eval_result.get("risk_level") == "HIGH_RISK" else "🟢"
+            print(
+                f"  {risk_emoji} {col['column_name']}: "
+                f"{eval_result.get('overall_score', 0)} | {eval_result.get('risk_level')}"
+            )
 
         results.append(table_result)
 

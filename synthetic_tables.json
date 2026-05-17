@@ -47,7 +47,13 @@
         "has_lookup": true,
         "lookup_table": "LKP_HESAP_TIP",
         "nullable": false,
-        "known_values": [1, 2, 3, 4, 5]
+        "known_values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
       },
       {
         "column_name": "HESAP_DURUM_KOD",
@@ -58,8 +64,17 @@
         "distinct_count": 3,
         "has_lookup": false,
         "nullable": false,
-        "known_values": [0, 1, 2],
-        "actual_values_in_db": [0, 1, 2, 3],
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "actual_values_in_db": [
+          0,
+          1,
+          2,
+          3
+        ],
         "validation_issue": "Documented values [0,1,2] but DB contains value 3 as well. LKP table missing."
       },
       {
@@ -82,6 +97,347 @@
         "has_lookup": true,
         "lookup_table": "LKP_SUBE",
         "nullable": false
+      }
+    ]
+  },
+  {
+    "table_name": "XXX_MUSTERI",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Customer",
+    "description": "Müşteri ana verisi; kimlik ve iletişim bilgilerini tutar.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "MUSTERI_NO bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "MUST_TARIH",
+        "data_type": "DATE",
+        "description": "MUST_TARIH — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "MUST_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "MUST_KOD için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": true,
+        "distinct_count": 3,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_MUSTER"
+      },
+      {
+        "column_name": "MUST_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "MUST_DURUM bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 5,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  {
+    "table_name": "XXX_ISLEM",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Transaction",
+    "description": null,
+    "description_quality": "missing",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": true,
+    "partition_column": "ISLEM_TARIHI",
+    "partition_type": "RANGE",
+    "columns": [
+      {
+        "column_name": "ISLE_NO",
+        "data_type": "VARCHAR(20)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "ISLE_TARIH",
+        "data_type": "DATE",
+        "description": "ISLE_TARIH code value.",
+        "description_quality": "english",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "ISLE_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "ISLE_KOD alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 4,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_ISLEM"
+      },
+      {
+        "column_name": "ISLE_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 6,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      }
+    ]
+  },
+  {
+    "table_name": "XXX_KART",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Card",
+    "description": "Debit/kredi kartı ana verisi.",
+    "description_quality": "complete",
+    "has_functional_doc": true,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "KART_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "KART_NO — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "KART_TARIH",
+        "data_type": "DATE",
+        "description": "KART_TARIH için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "KART_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "KART_KOD bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 5,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_KART"
+      },
+      {
+        "column_name": "KART_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "KART_DURUM — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 7,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      }
+    ]
+  },
+  {
+    "table_name": "LKP_HESAP_TIP",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Lookup",
+    "description": "Hesap tipi lookup tablosu.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "KOD",
+        "data_type": "NUMBER(2)",
+        "description": "Lookup kodu.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "distinct_count": 5,
+        "has_lookup": false,
+        "nullable": false,
+        "known_values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "column_name": "ACIKLAMA",
+        "data_type": "VARCHAR(100)",
+        "description": "Lookup açıklaması.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "known_values": [
+          "Vadesiz",
+          "Vadeli",
+          "Döviz",
+          "Altın",
+          "Yatırım"
+        ]
+      }
+    ]
+  },
+  {
+    "table_name": "LKP_SUBE",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Lookup",
+    "description": "Şube kodları lookup tablosu.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": true,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "KOD",
+        "data_type": "NUMBER(4)",
+        "description": "KOD için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 3,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "ACIKLAMA",
+        "data_type": "VARCHAR(100)",
+        "description": "ACIKLAMA alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 4,
+        "known_values": [
+          "A",
+          "B",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "table_name": "LKP_DOVIZ",
+    "schema": "CORE_BANKING",
+    "conceptual_model": "Lookup",
+    "description": null,
+    "description_quality": "missing",
+    "has_functional_doc": true,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "KOD",
+        "data_type": "NUMBER(4)",
+        "description": "KOD alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 4,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "ACIKLAMA",
+        "data_type": "VARCHAR(100)",
+        "description": "ACIKLAMA bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 5,
+        "known_values": [
+          "A",
+          "B",
+          "C"
+        ]
       }
     ]
   },
@@ -116,7 +472,12 @@
         "distinct_count": 4,
         "has_lookup": false,
         "nullable": true,
-        "known_values": [1, 2, 3, 4],
+        "known_values": [
+          1,
+          2,
+          3,
+          4
+        ],
         "notes": "TMMOB tarafından belirlenen kobi tipidir. LKP tablosu mevcut değil."
       },
       {
@@ -147,7 +508,304 @@
         "distinct_count": 3,
         "has_lookup": false,
         "nullable": false,
-        "known_values": [0, 1, 2]
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  {
+    "table_name": "KRD_TEMINAT",
+    "schema": "CREDIT",
+    "conceptual_model": "Collateral",
+    "description": "Kredi teminat ve rehin kayıtları.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "TEMI_NO",
+        "data_type": "VARCHAR(20)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "TEMI_TARIH",
+        "data_type": "DATE",
+        "description": "TEMI_TARIH code value.",
+        "description_quality": "english",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "TEMI_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "TEMI_KOD alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 5,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_TEMINA"
+      },
+      {
+        "column_name": "TEMI_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 7,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      }
+    ]
+  },
+  {
+    "table_name": "KRD_ODEME_PLAN",
+    "schema": "CREDIT",
+    "conceptual_model": "PaymentPlan",
+    "description": "Kredi taksit ve ödeme planı.",
+    "description_quality": "complete",
+    "has_functional_doc": true,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "PLAN_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "PLAN_NO — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "PLAN_TARIH",
+        "data_type": "DATE",
+        "description": "PLAN_TARIH için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "PLAN_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "PLAN_KOD bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 6,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_PLAN"
+      },
+      {
+        "column_name": "PLAN_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "PLAN_DURUM — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 3,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      }
+    ]
+  },
+  {
+    "table_name": "KRD_BASVURU",
+    "schema": "CREDIT",
+    "conceptual_model": "Application",
+    "description": null,
+    "description_quality": "missing",
+    "has_functional_doc": false,
+    "has_toa_doc": true,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "BASV_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "BASV_NO code value.",
+        "description_quality": "english",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "BASV_TARIH",
+        "data_type": "DATE",
+        "description": "BASV_TARIH alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "BASV_KOD",
+        "data_type": "NUMBER(2)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": true,
+        "distinct_count": 7,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_BASVUR"
+      },
+      {
+        "column_name": "BASV_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "BASV_DURUM code value.",
+        "description_quality": "english",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 4,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "actual_values_in_db": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      }
+    ]
+  },
+  {
+    "table_name": "KRD_GARANTI",
+    "schema": "CREDIT",
+    "conceptual_model": "Guarantee",
+    "description": "Kefalet ve garanti ilişkileri.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "GARA_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "GARA_NO için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "GARA_TARIH",
+        "data_type": "DATE",
+        "description": "GARA_TARIH bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "GARA_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "GARA_KOD — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 3,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_GARANT",
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "GARA_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "GARA_DURUM için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 5,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
       }
     ]
   },
@@ -191,15 +849,21 @@
         "distinct_count": 5,
         "has_lookup": false,
         "nullable": true,
-        "known_values": [1, 2, 3, 4, 5]
+        "known_values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
       }
     ]
   },
   {
-    "table_name": "LKP_HESAP_TIP",
-    "schema": "CORE_BANKING",
+    "table_name": "LKP_SEGMENT",
+    "schema": "CRM",
     "conceptual_model": "Lookup",
-    "description": "Hesap tipi lookup tablosu.",
+    "description": "Segment kodları lookup.",
     "description_quality": "complete",
     "has_functional_doc": false,
     "has_toa_doc": false,
@@ -208,24 +872,177 @@
     "columns": [
       {
         "column_name": "KOD",
-        "data_type": "NUMBER(2)",
-        "description": "Lookup kodu.",
+        "data_type": "NUMBER(4)",
+        "description": "KOD bilgisidir.",
         "description_quality": "incomplete",
         "cardinality": "low",
-        "distinct_count": 5,
         "has_lookup": false,
         "nullable": false,
-        "known_values": [1, 2, 3, 4, 5]
+        "distinct_count": 6,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
       },
       {
         "column_name": "ACIKLAMA",
         "data_type": "VARCHAR(100)",
-        "description": "Lookup açıklaması.",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 7,
+        "known_values": [
+          "A",
+          "B",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "table_name": "KAMPANYA_HEDEF",
+    "schema": "CRM",
+    "conceptual_model": "Campaign",
+    "description": null,
+    "description_quality": "missing",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": false,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "HEDE_NO",
+        "data_type": "VARCHAR(20)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "HEDE_TARIH",
+        "data_type": "DATE",
+        "description": "HEDE_TARIH code value.",
+        "description_quality": "english",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "HEDE_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "HEDE_KOD alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 6,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_HEDEF"
+      },
+      {
+        "column_name": "HEDE_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 3,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      }
+    ]
+  },
+  {
+    "table_name": "MUS_ILETISIM",
+    "schema": "CRM",
+    "conceptual_model": "Contact",
+    "description": "Müşteri iletişim kanalı ve tercihleri.",
+    "description_quality": "complete",
+    "has_functional_doc": true,
+    "has_toa_doc": true,
+    "has_ddl": false,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "ILET_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "ILET_NO — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "ILET_TARIH",
+        "data_type": "DATE",
+        "description": "ILET_TARIH için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "ILET_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "ILET_KOD bilgisidir.",
         "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 7,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_ILETIS"
+      },
+      {
+        "column_name": "ILET_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "ILET_DURUM — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
         "cardinality": "low",
         "has_lookup": false,
         "nullable": false,
-        "known_values": ["Vadesiz", "Vadeli", "Döviz", "Altın", "Yatırım"]
+        "distinct_count": 4,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
       }
     ]
   },
@@ -269,7 +1086,229 @@
         "distinct_count": 3,
         "has_lookup": false,
         "nullable": true,
-        "known_values": ["LOW", "MEDIUM", "HIGH"]
+        "known_values": [
+          "LOW",
+          "MEDIUM",
+          "HIGH"
+        ]
+      }
+    ]
+  },
+  {
+    "table_name": "RISK_LIMIT",
+    "schema": "RISK",
+    "conceptual_model": "RiskLimit",
+    "description": "Limit tanım ve kullanım özeti.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "LIMI_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "LIMI_NO için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "LIMI_TARIH",
+        "data_type": "DATE",
+        "description": "LIMI_TARIH bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "LIMI_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "LIMI_KOD — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 4,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_LIMIT",
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "LIMI_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "LIMI_DURUM için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": true,
+        "distinct_count": 6,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      }
+    ]
+  },
+  {
+    "table_name": "RISK_RAPOR",
+    "schema": "RISK",
+    "conceptual_model": "RiskReport",
+    "description": null,
+    "description_quality": "missing",
+    "has_functional_doc": true,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": true,
+    "partition_column": "RAPOR_TARIHI",
+    "partition_type": "RANGE",
+    "columns": [
+      {
+        "column_name": "RAPO_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "RAPO_NO alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "RAPO_TARIH",
+        "data_type": "DATE",
+        "description": null,
+        "description_quality": "missing",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": true
+      },
+      {
+        "column_name": "RAPO_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "RAPO_KOD code value.",
+        "description_quality": "english",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": false,
+        "distinct_count": 5,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_RAPOR"
+      },
+      {
+        "column_name": "RAPO_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "RAPO_DURUM alanı; iş kurallarına uygun tam açıklama.",
+        "description_quality": "complete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 7,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "validation_issue": "Documented range does not match production samples."
+      }
+    ]
+  },
+  {
+    "table_name": "RISK_AML",
+    "schema": "RISK",
+    "conceptual_model": "AML",
+    "description": "Kara para ve uyum izleme kayıtları.",
+    "description_quality": "complete",
+    "has_functional_doc": false,
+    "has_toa_doc": false,
+    "has_ddl": true,
+    "is_partitioned": false,
+    "columns": [
+      {
+        "column_name": "AML_NO",
+        "data_type": "VARCHAR(20)",
+        "description": "AML_NO bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
+      },
+      {
+        "column_name": "AML_TARIH",
+        "data_type": "DATE",
+        "description": "AML_TARIH — last 90 days aggregate (column name implies 30 days).",
+        "description_quality": "wrong",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false,
+        "validation_issue": "Documented range does not match production samples."
+      },
+      {
+        "column_name": "AML_KOD",
+        "data_type": "NUMBER(2)",
+        "description": "AML_KOD için tutulan alan.",
+        "description_quality": "vague",
+        "cardinality": "low",
+        "has_lookup": true,
+        "nullable": true,
+        "distinct_count": 6,
+        "known_values": [
+          0,
+          1,
+          2
+        ],
+        "lookup_table": "LKP_AML"
+      },
+      {
+        "column_name": "AML_DURUM",
+        "data_type": "NUMBER(1)",
+        "description": "AML_DURUM bilgisidir.",
+        "description_quality": "incomplete",
+        "cardinality": "low",
+        "has_lookup": false,
+        "nullable": false,
+        "distinct_count": 3,
+        "known_values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "column_name": "MUSTERI_NO",
+        "data_type": "NUMBER(10)",
+        "description": "MUSTERI_NO code value.",
+        "description_quality": "english",
+        "cardinality": "high",
+        "has_lookup": false,
+        "nullable": false
       }
     ]
   }

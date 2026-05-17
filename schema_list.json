@@ -2,27 +2,51 @@
   "schemas": [
     {
       "schema_name": "CORE_BANKING",
-      "description": "Temel bankacılık işlemlerini içeren şema. Hesap, müşteri ve şube tablolarını barındırır.",
+      "description": "CORE_BANKING şeması — sentetik metadata örnekleri.",
       "owner": "CORE_TEAM",
-      "tables": ["XXX_HESAP", "XXX_MUSTERI", "LKP_HESAP_TIP", "LKP_SUBE"]
+      "tables": [
+        "XXX_HESAP",
+        "XXX_MUSTERI",
+        "XXX_ISLEM",
+        "XXX_KART",
+        "LKP_HESAP_TIP",
+        "LKP_SUBE",
+        "LKP_DOVIZ"
+      ]
     },
     {
       "schema_name": "CREDIT",
-      "description": "Kredi ürünleri ve kredi izleme tabloları.",
+      "description": "CREDIT şeması — sentetik metadata örnekleri.",
       "owner": "CREDIT_TEAM",
-      "tables": ["KRD_MUS_KREDI", "KRD_TEMINAT", "KRD_ODEME_PLAN"]
+      "tables": [
+        "KRD_MUS_KREDI",
+        "KRD_TEMINAT",
+        "KRD_ODEME_PLAN",
+        "KRD_BASVURU",
+        "KRD_GARANTI"
+      ]
     },
     {
       "schema_name": "CRM",
-      "description": "Müşteri ilişkileri yönetimi. Segmentasyon, kampanya ve etkileşim verileri.",
+      "description": "CRM şeması — sentetik metadata örnekleri.",
       "owner": "CRM_TEAM",
-      "tables": ["MUS_SEGMENTASYON", "LKP_SEGMENT", "KAMPANYA_HEDEF"]
+      "tables": [
+        "MUS_SEGMENTASYON",
+        "LKP_SEGMENT",
+        "KAMPANYA_HEDEF",
+        "MUS_ILETISIM"
+      ]
     },
     {
       "schema_name": "RISK",
-      "description": "Risk izleme ve raporlama şeması. Müşteri ve ürün bazlı risk metrikleri.",
+      "description": "RISK şeması — sentetik metadata örnekleri.",
       "owner": "RISK_TEAM",
-      "tables": ["RISK_IZLEME", "RISK_LIMIT", "RISK_RAPOR"]
+      "tables": [
+        "RISK_IZLEME",
+        "RISK_LIMIT",
+        "RISK_RAPOR",
+        "RISK_AML"
+      ]
     }
   ],
   "conceptual_model": {
@@ -30,27 +54,42 @@
       {
         "entity": "Customer",
         "turkish": "Müşteri",
-        "tables": ["XXX_MUSTERI", "MUS_SEGMENTASYON"],
+        "tables": [
+          "XXX_MUSTERI",
+          "MUS_SEGMENTASYON",
+          "MUS_ILETISIM"
+        ],
         "key_attribute": "MUSTERI_NO"
       },
       {
         "entity": "Account",
         "turkish": "Hesap",
-        "tables": ["XXX_HESAP"],
+        "tables": [
+          "XXX_HESAP",
+          "XXX_ISLEM"
+        ],
         "key_attribute": "HESAP_NO",
         "parent_entity": "Customer"
       },
       {
         "entity": "Credit",
         "turkish": "Kredi",
-        "tables": ["KRD_MUS_KREDI"],
+        "tables": [
+          "KRD_MUS_KREDI",
+          "KRD_BASVURU",
+          "KRD_TEMINAT"
+        ],
         "key_attribute": "KRD_NO",
         "parent_entity": "Customer"
       },
       {
         "entity": "Risk",
         "turkish": "Risk",
-        "tables": ["RISK_IZLEME"],
+        "tables": [
+          "RISK_IZLEME",
+          "RISK_LIMIT",
+          "RISK_AML"
+        ],
         "key_attribute": "MUSTERI_NO",
         "parent_entity": "Customer"
       }
