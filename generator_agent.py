@@ -143,7 +143,7 @@ def _generate_task(item: tuple) -> tuple:
         return table_name, col_name, None, e
 
 
-def run_generator(tables):
+def run_generator(tables, on_column_done=None):
     """Run generator on all tables and columns, return enriched metadata."""
     _context_cache.clear()
     tasks: list[tuple] = []
@@ -156,7 +156,20 @@ def run_generator(tables):
     generated: dict[tuple[str, str], tuple[str | None, Exception | None]] = {}
     if tasks:
         print(f"  Paralel üretim: {len(tasks)} kolon ({get_max_workers()} worker)")
-        for row in run_parallel(tasks, _generate_task, label="Generator"):
+
+        def _task_with_cb(item: tuple) -> tuple:
+            row = _generate_task(item)
+            tn, cn, desc, err = row
+            if on_column_done and desc is not None and err is None:
+                table, column, _ctx = item
+                updated = dict(column)
+                updated["original_description"] = column.get("description")
+                updated["description"] = desc
+                updated["description_quality"] = "generated"
+                on_column_done(tn, cn, updated)
+            return row
+
+        for row in run_parallel(tasks, _task_with_cb, label="Generator"):
             tn, cn, desc, err = row
             generated[(tn, cn)] = (desc, err)
 

@@ -102,7 +102,7 @@ def _critic_task(item: tuple) -> tuple:
     return table["table_name"], col["column_name"], eval_result
 
 
-def run_critic(enriched_tables):
+def run_critic(enriched_tables, on_column_done=None):
     tasks = [
         (table, col)
         for table in enriched_tables
@@ -112,7 +112,15 @@ def run_critic(enriched_tables):
 
     if tasks:
         print(f"  Paralel critic: {len(tasks)} kolon ({get_max_workers()} worker)")
-        for row in run_parallel(tasks, _critic_task, label="Critic"):
+
+        def _task_with_cb(item: tuple) -> tuple:
+            row = _critic_task(item)
+            tn, cn, ev = row
+            if on_column_done:
+                on_column_done(tn, cn, ev)
+            return row
+
+        for row in run_parallel(tasks, _task_with_cb, label="Critic"):
             tn, cn, ev = row
             eval_map[(tn, cn)] = ev
 

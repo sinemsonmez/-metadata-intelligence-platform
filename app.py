@@ -16,7 +16,10 @@ import json
 import os
 import threading
 from pathlib import Path
-from flask import Flask, jsonify, render_template_string, request, send_from_directory
+
+from flask import Flask, jsonify, render_template_string, request
+
+from pipeline_metrics import compute_metrics
 
 ROOT = Path(__file__).parent
 
@@ -30,55 +33,107 @@ except ImportError:
 app = Flask(__name__)
 
 # ─── Pipeline state (in-memory for v0.0.1) ───────────────────────────────────
+_state_lock = threading.Lock()
 pipeline_state = {
     "status": "idle",          # idle | running | done | error
+    "phase": "",
     "step": "",
     "progress": 0,
     "log": [],
+    "metrics": {},
     "results": None,
     "error": None,
 }
 
-def log(msg):
+
+def _load_synthetic_tables() -> list:
+    path = ROOT / "synthetic_tables.json"
+    if not path.exists():
+        path = ROOT / "data" / "tables" / "synthetic_tables.json"
+    if not path.exists():
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def log(msg: str) -> None:
     print(msg)
-    pipeline_state["log"].append(msg)
+    with _state_lock:
+        pipeline_state["log"].append(msg)
+
+
+def _on_pipeline_progress(event: dict) -> None:
+    """Orchestrator'dan gelen canlı ilerleme olayları."""
+    with _state_lock:
+        pipeline_state["progress"] = int(event.get("progress", 0))
+        pipeline_state["step"] = event.get("step", "")
+        pipeline_state["phase"] = event.get("phase", "")
+        if event.get("metrics"):
+            pipeline_state["metrics"] = event["metrics"]
+        if event.get("log"):
+            pipeline_state["log"].append(event["log"])
+
 
 # ─── Pipeline runner (background thread) ─────────────────────────────────────
 def run_pipeline_bg():
     """CLI ile aynı akış: orchestrator.run_pipeline() → final_output.json."""
     try:
-        pipeline_state["status"] = "running"
-        pipeline_state["log"] = []
-        pipeline_state["results"] = None
-        pipeline_state["error"] = None
+        baseline_tables = _load_synthetic_tables()
+        baseline_metrics = compute_metrics(baseline_tables)
 
-        pipeline_state["step"] = "Orchestrator (Generator → Critic → Re-gen → Lineage → Risk → Clarity)"
-        pipeline_state["progress"] = 15
-        log("🚀 orchestrator.run_pipeline() başlıyor…")
+        with _state_lock:
+            pipeline_state["status"] = "running"
+            pipeline_state["phase"] = "init"
+            pipeline_state["log"] = []
+            pipeline_state["results"] = None
+            pipeline_state["error"] = None
+            pipeline_state["metrics"] = baseline_metrics
+            pipeline_state["progress"] = 0
+            pipeline_state["step"] = "Pipeline başlatılıyor…"
+
+        log(
+            f"🚀 Pipeline başladı — {baseline_metrics['tables_total']} tablo, "
+            f"{baseline_metrics['columns_total']} kolon (başlangıç clarity: {baseline_metrics['stat_clarity']})"
+        )
 
         import orchestrator
 
-        orchestrator.run_pipeline()
+        orchestrator.run_pipeline(on_progress=_on_pipeline_progress)
 
         out_path = ROOT / "final_output.json"
         if not out_path.exists():
             raise FileNotFoundError(f"Beklenen çıktı bulunamadı: {out_path}")
 
-        pipeline_state["progress"] = 95
-        pipeline_state["step"] = "Sonuçlar yükleniyor"
-        with open(out_path, "r", encoding="utf-8") as f:
-            pipeline_state["results"] = json.load(f)
+        with _state_lock:
+            pipeline_state["step"] = "Sonuçlar yükleniyor…"
+            pipeline_state["progress"] = 98
 
-        pipeline_state["status"] = "done"
-        pipeline_state["progress"] = 100
-        pipeline_state["step"] = "Tamamlandı"
-        log("🎉 Pipeline tamamlandı — final_output.json okundu.")
+        with open(out_path, "r", encoding="utf-8") as f:
+            final_data = json.load(f)
+
+        loops = final_data.get("lineage_loops") or []
+        final_metrics = compute_metrics(final_data.get("tables", []), loops)
+
+        with _state_lock:
+            pipeline_state["results"] = final_data
+            pipeline_state["metrics"] = final_metrics
+            pipeline_state["status"] = "done"
+            pipeline_state["progress"] = 100
+            pipeline_state["phase"] = "done"
+            pipeline_state["step"] = "✅ Pipeline tamamlandı"
+            pipeline_state["log"].append(
+                f"🎉 Tamamlandı — Ort. clarity: {final_metrics['stat_clarity']} | "
+                f"🟢 {final_metrics['stat_low']} düşük risk | "
+                f"🔴 {final_metrics['stat_high']} yüksek risk"
+            )
 
     except Exception as e:
-        pipeline_state["status"] = "error"
-        pipeline_state["error"] = str(e)
-        pipeline_state["step"] = "Error"
-        log(f"❌ Error: {e}")
+        with _state_lock:
+            pipeline_state["status"] = "error"
+            pipeline_state["error"] = str(e)
+            pipeline_state["phase"] = "error"
+            pipeline_state["step"] = "Hata oluştu"
+            pipeline_state["log"].append(f"❌ Error: {e}")
 
 
 # ─── Load existing results if available ──────────────────────────────────────
@@ -87,23 +142,37 @@ def load_existing_results():
     if out_path.exists():
         try:
             with open(out_path, "r", encoding="utf-8") as f:
-                pipeline_state["results"] = json.load(f)
+                data = json.load(f)
+                pipeline_state["results"] = data
                 pipeline_state["status"] = "done"
-                pipeline_state["step"] = "Loaded from cache"
+                pipeline_state["phase"] = "done"
+                pipeline_state["progress"] = 100
+                pipeline_state["step"] = "Önbellekten yüklendi"
+                pipeline_state["metrics"] = compute_metrics(
+                    data.get("tables", []),
+                    data.get("lineage_loops"),
+                )
         except Exception:
             pass
+    elif _load_synthetic_tables():
+        pipeline_state["metrics"] = compute_metrics(_load_synthetic_tables())
 
 
 # ─── API Routes ───────────────────────────────────────────────────────────────
 @app.route("/api/status")
 def api_status():
-    return jsonify({
-        "status": pipeline_state["status"],
-        "step": pipeline_state["step"],
-        "progress": pipeline_state["progress"],
-        "log": pipeline_state["log"][-20:],  # last 20 lines
-        "error": pipeline_state["error"],
-    })
+    with _state_lock:
+        return jsonify(
+            {
+                "status": pipeline_state["status"],
+                "phase": pipeline_state.get("phase", ""),
+                "step": pipeline_state["step"],
+                "progress": pipeline_state["progress"],
+                "log": pipeline_state["log"][-30:],
+                "metrics": pipeline_state.get("metrics") or {},
+                "error": pipeline_state["error"],
+            }
+        )
 
 @app.route("/api/run", methods=["POST"])
 def api_run():
@@ -276,6 +345,13 @@ header {
   margin-bottom: 24px;
 }
 #progress-section.visible { display: block; }
+#progress-section.complete .progress-card {
+  border-color: rgba(5,150,105,0.45);
+  box-shadow: 0 0 0 1px rgba(5,150,105,0.12);
+}
+#progress-section.error-state .progress-card {
+  border-color: rgba(220,38,38,0.45);
+}
 
 .progress-card {
   background: var(--surface);
@@ -729,72 +805,129 @@ tr:hover td { background: rgba(3,105,161,0.05); }
 // ─── State ────────────────────────────────────────────────────────────────────
 let allColumns = [];
 let currentFilter = 'all';
+let pollTimer = null;
+let lastPipelineStatus = 'idle';
+
+function applyMetrics(m) {
+  if (!m || !Object.keys(m).length) return;
+  if (m.stat_high !== undefined) document.getElementById('statHigh').textContent = m.stat_high;
+  if (m.stat_low !== undefined) document.getElementById('statLow').textContent = m.stat_low;
+  if (m.stat_clarity !== undefined) document.getElementById('statClarity').textContent = m.stat_clarity;
+  if (m.stat_tables !== undefined) document.getElementById('statTables').textContent = m.stat_tables;
+  if (m.stat_loops !== undefined) document.getElementById('statLoops').textContent = m.stat_loops;
+}
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
   await loadResults();
   await loadLineage();
-  pollStatus();
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+    if (d.metrics) applyMetrics(d.metrics);
+    updateStatus(d);
+  } catch(e) {}
+  startPolling();
 }
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 async function runPipeline() {
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
-  document.getElementById('progress-section').classList.add('visible');
+  const progSec = document.getElementById('progress-section');
+  progSec.classList.add('visible');
+  progSec.classList.remove('complete', 'error-state');
 
   try {
-    await fetch('/api/run', { method: 'POST' });
+    const res = await fetch('/api/run', { method: 'POST' });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error || 'Pipeline zaten çalışıyor');
+      btn.disabled = false;
+      return;
+    }
+    schedulePoll(400);
   } catch(e) {
     console.error(e);
+    btn.disabled = false;
   }
 }
 
-function pollStatus() {
-  setInterval(async () => {
-    try {
-      const r = await fetch('/api/status');
-      const d = await r.json();
-      updateStatus(d);
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollOnce, 1200);
+}
 
-      if (d.status === 'done') {
-        await loadResults();
-        await loadLineage();
-      }
-    } catch(e) {}
-  }, 1500);
+function schedulePoll(ms) {
+  pollOnce();
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollOnce, ms);
+}
+
+async function pollOnce() {
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+    updateStatus(d);
+
+    if (d.status === 'running' && lastPipelineStatus !== 'running') {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(pollOnce, 600);
+    }
+
+    if (d.status === 'done' && lastPipelineStatus === 'running') {
+      await loadResults();
+      await loadLineage();
+    }
+    lastPipelineStatus = d.status;
+  } catch(e) {}
 }
 
 function updateStatus(d) {
   const dot = document.getElementById('statusDot');
   const lbl = document.getElementById('statusLabel');
   const btn = document.getElementById('runBtn');
+  const progSec = document.getElementById('progress-section');
 
   dot.className = 'status-dot ' + d.status;
-  lbl.textContent = d.status.toUpperCase();
+  lbl.textContent = d.status === 'done' ? 'TAMAMLANDI' : d.status.toUpperCase();
+
+  const pct = Math.min(100, Math.max(0, d.progress || 0));
+  document.getElementById('progressStep').textContent = d.step || '—';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  if (d.metrics) applyMetrics(d.metrics);
+
+  const log = document.getElementById('logOutput');
+  log.innerHTML = (d.log || []).map(l => {
+    const cls = l.includes('✅') || l.includes('🎉') || l.includes('Tamamlandı') ? 'log-ok'
+              : l.includes('❌') ? 'log-err' : 'log-info';
+    return `<div class="${cls}">${l}</div>`;
+  }).join('');
+  log.scrollTop = log.scrollHeight;
 
   if (d.status === 'running') {
     btn.disabled = true;
-    document.getElementById('progressStep').textContent = d.step;
-    document.getElementById('progressPct').textContent = d.progress + '%';
-    document.getElementById('progressFill').style.width = d.progress + '%';
-
-    const log = document.getElementById('logOutput');
-    log.innerHTML = (d.log || []).map(l => {
-      const cls = l.startsWith('✅') || l.startsWith('🎉') ? 'log-ok'
-                : l.startsWith('❌') ? 'log-err' : 'log-info';
-      return `<div class="${cls}">${l}</div>`;
-    }).join('');
-    log.scrollTop = log.scrollHeight;
+    progSec.classList.add('visible');
+    progSec.classList.remove('complete', 'error-state');
   }
 
-  if (d.status === 'done' || d.status === 'idle') {
+  if (d.status === 'done') {
+    btn.disabled = false;
+    progSec.classList.add('visible', 'complete');
+    progSec.classList.remove('error-state');
+  }
+
+  if (d.status === 'idle') {
     btn.disabled = false;
   }
 
   if (d.status === 'error') {
     btn.disabled = false;
-    document.getElementById('progressStep').textContent = '❌ ' + (d.error || 'Error');
+    progSec.classList.add('visible', 'error-state');
+    progSec.classList.remove('complete');
+    document.getElementById('progressStep').textContent = '❌ ' + (d.error || 'Hata');
   }
 }
 
