@@ -13,7 +13,7 @@
         {
           "column_name": "HESAP_NO",
           "data_type": "VARCHAR(26)",
-          "description": "HESAP_NO, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir banka hesabını benzersiz şekilde tanımlayan bir alandır. Bu kolon, IBAN formatında 26 karakter olarak tutulmakta olup, \"TR\" ile başlayan, 2 kontrol hanesi, 4 banka kodu ve 16 hesap numarasından oluşmaktadır. HESAP_NO, NULL olamaz ve her hesap için benzersiz olma zorunluluğu vardır.",
+          "description": "HESAP_NO, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların benzersiz tanımlayıcısıdır. Bu kolon, IBAN formatında 26 karakter olarak tutulmakta olup, `TR` ile başlayan, 2 kontrol hanesi, 4 banka kodu ve 16 hesap numarasını içermektedir. HESAP_NO, NULL olamaz ve her hesap için benzersiz olma zorunluluğu vardır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -29,14 +29,14 @@
         {
           "column_name": "ACILIS_TARIHI",
           "data_type": "DATE",
-          "description": "ACILIS_TARIHI, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların resmi açılış tarihini gösteren bir tarih kolonudur. Valörlü açılan hesaplar için bu tarih, fiziksel açılış tarihi yerine valör tarihini ifade eder; bu durumda `VALOR_TARIHI` kolonuna başvurulmalıdır. Bu kolon NULL olamaz ve her hesap için geçerli bir açılış tarihi sağlanması zorunludur.",
+          "description": "ACILIS_TARIHI, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların resmi açılış tarihini ifade eden bir tarih kolonudur. Ticari veya bireysel hesaplar için bu tarih, fiziksel açılış tarihi yerine valör tarihini temsil edebilir; bu durumda, gerçek açılış tarihi ile valör tarihi arasındaki farkı anlamak için VALOR_TARIHI kolonuna başvurulmalıdır. Bu kolon NULL olamaz ve her hesap için geçerli bir tarih bilgisi sağlamalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "notes": "Valörlü açılan hesaplarda bu bilgi valör tarihi olarak yazar. VALOR_TARIHI kolonuna da bakılmalıdır.",
           "original_description": "Açılış tarihidir.",
-          "critic_score": 4,
+          "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -46,7 +46,7 @@
         {
           "column_name": "VALOR_TARIHI",
           "data_type": "DATE",
-          "description": "`VALOR_TARIHI` kolonu, CORE_BANKING.XXX_HESAP tablosunda yer alan ve valörlü açılan hesapların geçerli valör tarihini tutan bir DATE veri tipine sahip alandır. Bu kolon, hesapların açılış tarihleri ile birlikte değerlendirilerek, hesapların işlem tarihleri için önemli bir referans noktasıdır; standart hesaplarda NULL değer alabilir. Valör tarihinin, hesap açılış tarihi ile karıştırılmaması için `ACILIS_TARIHI` kolonu ile birlikte dikkate alınması gerekmektedir.",
+          "description": "### VALOR_TARIHI\nCORE_BANKING.XXX_HESAP tablosundaki VALOR_TARIHI, valörlü açılan hesaplar için geçerli olan tarih bilgisidir ve hesapların işlem tarihlerini belirlemek amacıyla kullanılır. Bu kolon, standart hesaplarda NULL değer alabilir ve açılış tarihi ile ayrı tutulması gereken bir bilgidir; dolayısıyla, hesapların gerçek açılış tarihi için ACILIS_TARIHI kolonuna başvurulmalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -62,7 +62,7 @@
         {
           "column_name": "HESAP_TIP_KOD",
           "data_type": "NUMBER(2)",
-          "description": "HESAP_TIP_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir hesabın türünü belirten bir kodudur. Bu kolon, LKP_HESAP_TIP tablosundan gelen değerleri kullanarak hesap tiplerini tanımlar; alabileceği değerler şunlardır: 1 (Vadesiz), 2 (Vadeli), 3 (Döviz), 4 (Altın) ve 5 (Yatırım). Her hesabın geçerli bir HESAP_TIP_KOD değerine sahip olması zorunludur.",
+          "description": "HESAP_TIP_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir hesabın tipini belirten bir kodudur. Bu kolon, LKP_HESAP_TIP tablosundan gelen değerleri kullanarak hesap türlerini tanımlar; alabileceği değerler şunlardır: 1 (Vadesiz), 2 (Vadeli), 3 (Döviz), 4 (Altın) ve 5 (Yatırım). Bu kolon, hesap açılış tarihi (ACILIS_TARIHI) ve valör tarihi (VALOR_TARIHI) ile birlikte, hesapların yönetimi ve izlenmesi açısından önemlidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 5,
@@ -77,7 +77,7 @@
             5
           ],
           "original_description": "Hesap tipi.",
-          "critic_score": 4,
+          "critic_score": 1,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -87,7 +87,7 @@
         {
           "column_name": "HESAP_DURUM_KOD",
           "data_type": "NUMBER(1)",
-          "description": "HESAP_DURUM_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka hesaplarının durumunu belirten bir koddur. Bu kolonun alabileceği değerler şunlardır: 0 (Aktif), 1 (Pasif) ve 2 (Kapalı); ayrıca 3 değerinin varlığı incelenmelidir. HESAP_DURUM_KOD, hesapların geçerli bir MUSTERI_NO ile ilişkilendirilmesi gereken iş kuralı ile birlikte değerlendirilmelidir.",
+          "description": "HESAP_DURUM_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve hesapların durumunu belirten bir alandır. Bu kolon, hesapların aktif (0), pasif (1) veya kapalı (2) olduğunu gösterir; ayrıca 3 değeri mevcutsa bu durumun incelenmesi gerekmektedir. HESAP_DURUM_KOD'un LKP tablosuna referansı bulunmamaktadır, bu nedenle değerlerin doğruluğu için kontrol edilmesi önemlidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 3,
@@ -110,13 +110,13 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz/eksik açıklama",
-            "Lookup eksikliği",
+            "Lookup tablosu eksik",
             "Validation hatası",
             "İngilizce açıklama",
             "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
             "VALUE MISMATCH: Documented values [0,1,2] but DB contains value 3 as well. LKP table missing."
           ],
-          "feedback": "HESAP_DURUM_KOD için 3 değerinin varlığına dair açıklama eksik. Lookup tablosu yok ve validasyon hatası mevcut.",
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 100
         },
@@ -139,7 +139,7 @@
         {
           "column_name": "SUBE_KOD",
           "data_type": "NUMBER(4)",
-          "description": "### SUBE_KOD\nCORE_BANKING.XXX_HESAP tablosundaki SUBE_KOD, banka hesaplarının hangi şubeye ait olduğunu belirten bir kodu temsil eder ve LKP_SUBE tablosundan alınan değerleri referans alır. Bu kolon, hesapların yönetimi ve raporlaması açısından önemlidir; dolayısıyla, her hesap için geçerli bir SUBE_KOD değeri bulunması gerekmektedir. HESAP_NO ve ACILIS_TARIHI gibi diğer kolonlarla birlikte, hesabın açıldığı şubenin takibi için kritik bir rol oynamaktadır.",
+          "description": "### SUBE_KOD\nCORE_BANKING.XXX_HESAP tablosundaki SUBE_KOD, bankanın şubelerini tanımlayan ve LKP_SUBE tablosundan gelen 4 haneli bir kodu temsil eder. Bu kolon, her hesabın hangi şubeye ait olduğunu belirtir ve hesapların yönetimi için önemlidir. İş kuralı olarak, SUBE_KOD NULL olamaz ve geçerli bir şube kodu ile ilişkilendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 87,
@@ -170,7 +170,7 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "VARCHAR(20)",
-          "description": "MUSTERI_NO, CORE_BANKING.XXX_MUSTERI tablosunda yer alan ve her müşteriyi benzersiz bir şekilde tanımlayan müşteri numarasıdır. Bu kolon, müşteri ana verisi için temel bir kimlik bilgisi olup, müşteri ile ilgili diğer tablolarda (örneğin, hesap ve işlem tablolarında) referans olarak kullanılmaktadır. Müşteri numarası, sistemdeki her müşteri kaydının doğruluğunu ve bütünlüğünü sağlamak amacıyla zorunlu bir alan olarak tanımlanmıştır.",
+          "description": "MUSTERI_NO, CORE_BANKING.XXX_MUSTERI tablosunda yer alan ve her müşteriyi benzersiz bir şekilde tanımlayan müşteri numarasıdır. Bu kolon, müşteri ana verisi için temel bir kimlik bilgisi olup, diğer tablolarla (örneğin, XXX_HESAP) ilişkilendirilerek müşteri işlemlerinin takibini sağlar. MUSTERI_NO, NUMBER(10) veri tipinde olup, NULL değer alamaz ve her müşteri için zorunlu bir bilgidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -186,7 +186,7 @@
         {
           "column_name": "MUST_TARIH",
           "data_type": "DATE",
-          "description": "MUST_TARIH, CORE_BANKING.XXX_MUSTERI tablosunda yer alan ve müşterinin kayıt tarihini temsil eden bir DATE kolonudur. Bu kolon, müşteri ana verisinin oluşturulduğu tarihi gösterir ve müşteri bilgileri ile ilgili işlemlerin zamanlamasını belirlemek için kullanılır. Bu tarih, müşteri ile ilgili diğer tarih bilgileriyle (örneğin, son güncelleme tarihi) ilişkilendirilerek iş süreçlerinin izlenmesine olanak tanır.",
+          "description": "MUST_TARIH, CORE_BANKING.XXX_MUSTERI tablosunda müşteri kaydının oluşturulma tarihini belirtir. Bu kolon, müşteri ana verisinin güncelliğini takip etmek için kullanılır ve son 90 gün içinde oluşturulan kayıtları kapsar. İlgili tarih bilgisi, müşteri ile ilişkili diğer tarih kolonlarıyla (örneğin, güncelleme tarihi) birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -201,14 +201,14 @@
             "İngilizce açıklama",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama net değil ve validation hatası mevcut. Ayrıca, İngilizce açıklama bulunması gerekmektedir.",
+          "feedback": "Açıklama, tarih aralığı ile ilgili çelişkili bilgiler içeriyor ve validation sorunu mevcut.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "MUST_KOD",
           "data_type": "NUMBER(2)",
-          "description": "MUST_KOD, CORE_BANKING.XXX_MUSTERI tablosunda müşteri ana verisi için tanımlanan bir kod alanıdır ve müşteri türünü belirtir. Bu alan, LKP_MUSTER lookup tablosundaki değerlerle ilişkilidir; mevcut değerler [0, 1, 2] olarak tanımlanmıştır. Müşteri durumu (MUST_DURUM) ile birlikte kullanılarak müşteri yönetim süreçlerinde önemli bir rol oynar.",
+          "description": "MUST_KOD, CORE_BANKING.XXX_MUSTERI tablosunda müşteri ana verisi için tanımlanan bir kod alanıdır ve müşteri türünü belirtir. Bu alan, LKP_MUSTER lookup tablosundaki değerlerle ilişkilidir; mevcut değerler [0, 1, 2] olarak tanımlanmıştır. Müşteri durumu (MUST_DURUM) ile birlikte kullanılarak müşteri segmentasyonu ve yönetimi için iş kurallarını destekler.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -231,7 +231,7 @@
         {
           "column_name": "MUST_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "MUST_DURUM, CORE_BANKING.XXX_MUSTERI tablosundaki müşteri ana verisinin durumunu belirtir ve bu değerler [0: Pasif, 1: Aktif, 2: Beklemede] şeklinde tanımlanmıştır. Müşteri durumunun güncellenmesi, müşteri ilişkileri yönetimi ve raporlama süreçlerinde kritik bir rol oynamaktadır. Bu kolon, müşteri kaydıyla ilişkili diğer tarihsel bilgilerle (örneğin, MUST_TARIH) birlikte değerlendirilmelidir.",
+          "description": "MUST_DURUM, CORE_BANKING.XXX_MUSTERI tablosundaki müşteri ana verisinin durumunu belirten bir alandır ve 0, 1 veya 2 değerlerini alabilir. Bu değerler, müşteri kaydının aktif (1), pasif (0) veya beklemede (2) olduğunu gösterir. Müşteri durumu, müşteri ile ilgili diğer işlemler ve kayıtlar için önemli bir iş kuralıdır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -270,23 +270,23 @@
         {
           "column_name": "ISLE_NO",
           "data_type": "VARCHAR(20)",
-          "description": "ISLEM_NO, CORE_BANKING.XXX_ISLEM tablosundaki her bir işlem kaydını benzersiz şekilde tanımlayan bir numaradır. Bu kolon, işlemlerin tarihine göre partition'lanmış olan tabloda, işlem tarihine (ISLM_TARIH) bağlı olarak anahtar olarak kullanılmaktadır. ISLEM_NO, müşteri işlemlerinin takibi ve yönetimi için kritik bir öneme sahiptir.",
+          "description": "ISLE_NO, CORE_BANKING.XXX_ISLEM tablosundaki her bir işlem kaydını benzersiz şekilde tanımlayan bir kimlik numarasıdır. Bu kolon, işlemin tarihine (ISLM_TARIH) bağlı olarak birincil anahtarın bir parçasını oluşturur ve her işlem için eşsiz bir referans sağlar. İşlem kaydı, müşteri numarası (MUSTERI_NO) ile ilişkilidir ve işlemin durumunu (ISLM_DURUM) belirleyen diğer kolonlarla birlikte kullanılır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
           "original_description": null,
-          "critic_score": 2,
+          "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "",
+          "feedback": "Açıklama genel olarak yeterli, ancak orijinal açıklama kısmının 'None' olması ve DISTINCT sayısının bilinmemesi risk oluşturuyor.",
           "needs_regeneration": false,
           "clarity_score": 100
         },
         {
           "column_name": "ISLE_TARIH",
           "data_type": "DATE",
-          "description": "ISLE_TARIH, CORE_BANKING.XXX_ISLEM tablosunda yer alan ve her bir işlemin gerçekleştirildiği tarihi temsil eden DATE veri tipinde bir kolondur. Bu kolon, işlemlerin zamanlamasını takip etmek için kritik öneme sahiptir ve ISLM_NO ile birlikte birincil anahtar olarak kullanılmaktadır. İşlem tarihleri, finansal raporlama ve analiz süreçlerinde önemli bir referans noktasıdır.",
+          "description": "ISLE_TARIH, CORE_BANKING.XXX_ISLEM tablosundaki işlemin gerçekleştirildiği tarihi ifade eder. Bu kolon, işlemlerin tarihsel kaydını tutarak, müşteri hesap hareketlerinin zamanlamasını belirlemek için kullanılır. İlgili kolon olan ISLM_NO ile birlikte, her bir işlemin benzersiz tanımlanmasını sağlar.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -295,7 +295,7 @@
           "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "Açıklama genel olarak yeterli, ancak orijinal açıklama belirsiz ve daha fazla detay eklenebilir.",
+          "feedback": "",
           "needs_regeneration": false,
           "clarity_score": 100
         },
@@ -319,7 +319,7 @@
           "issues": [
             "Tablo açıklaması eksik",
             "Kolon açıklaması belirsiz",
-            "Lookup tablosunda bazı değerler eksik"
+            "Lookup tablosunda bilinmeyen değer var"
           ],
           "feedback": "Kolon açıklaması daha net ve detaylı olmalı. Lookup tablosundaki tüm değerler belgelenmeli.",
           "needs_regeneration": true,
@@ -328,7 +328,7 @@
         {
           "column_name": "ISLE_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "ISLE_DURUM kolonu, CORE_BANKING.XXX_ISLEM tablosunda işlem durumunu temsil eder ve bu kolonun alabileceği değerler 0 (İşlem Beklemede), 1 (İşlem Tamamlandı) ve 2 (İşlem İptal Edildi) şeklindedir. Bu değerler, işlemin mevcut durumunu belirlemek için kullanılır ve müşteri işlemleri ile ilgili iş kurallarını destekler. İlgili kolonlar arasında ISLM_TARIH (işlem tarihi) bulunmaktadır.",
+          "description": "ISLEM_DURUM kolonu, CORE_BANKING.XXX_ISLEM tablosunda işlem durumunu temsil eder ve 0, 1, 2 değerlerini alabilir. Bu değerler sırasıyla \"İptal\", \"Tamamlandı\" ve \"Beklemede\" durumlarını ifade eder. İşlem durumu, ilgili işlemin geçerliliğini ve sürecini belirlemek için kullanılır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -340,19 +340,22 @@
             2
           ],
           "original_description": null,
-          "critic_score": 3,
+          "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
+            "Tablo açıklaması eksik",
+            "Orijinal açıklama eksik",
+            "Distinct sayısı beklenenden fazla",
             "LOW CARDINALITY (6 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
           ],
-          "feedback": "",
-          "needs_regeneration": false,
+          "feedback": "Tablo ve orijinal açıklamaların eklenmesi gerekmektedir. Ayrıca, distinct sayısının 6 olması, beklenen değerlerin dışında başka değerlerin de bulunduğunu gösteriyor.",
+          "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "MUSTERI_NO, CORE_BANKING.XXX_ISLEM tablosunda işlem gerçekleştiren müşterinin benzersiz kimlik numarasını temsil eder. Bu alan, müşteri bilgilerini tutan CORE_BANKING.XXX_MUSTERI tablosundaki MUSTERI_NO ile ilişkilidir ve her işlem kaydı için zorunlu bir bilgidir. İşlem tarihine göre partition'lanmış olan bu tablo, müşteri işlemlerinin izlenmesi ve yönetilmesi amacıyla kullanılmaktadır.",
+          "description": "MUSTERI_NO, CORE_BANKING.XXX_ISLEM tablosunda yer alan ve işlem yapılan müşteriyi tanımlayan benzersiz numaradır. Bu alan, XXX_MUSTERI tablosundaki müşteri kayıtlarıyla ilişkilidir ve her işlem kaydının hangi müşteriye ait olduğunu belirler. Müşteri numarası, işlem tarihine bağlı olarak geçerli olan müşteri bilgilerini doğrulamak için kullanılmalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -381,7 +384,7 @@
         {
           "column_name": "KART_NO",
           "data_type": "VARCHAR(20)",
-          "description": "KART_NO, CORE_BANKING.XXX_KART tablosunda yer alan ve bir debit/kredi kartının benzersiz numarasını temsil eden VARCHAR(20) veri tipindeki bir alandır. Bu kolon, her kart için tekil bir kimlik sağlamakta olup, kartın işlemlerinin izlenmesi ve yönetilmesi açısından kritik öneme sahiptir. KART_NO, ilgili kartın hesap bilgileriyle ilişkilendirilmesi için XXX_HESAP tablosundaki hesap numarasıyla birlikte kullanılabilir.",
+          "description": "KART_NO, CORE_BANKING.XXX_KART tablosunda yer alan ve bir debit/kredi kartının benzersiz numarasını temsil eden VARCHAR(20) veri tipindeki bir kolondur. Bu kolon, kartın tanımlanmasında kullanılır ve her kart için eşsiz bir değer olmalıdır. KART_NO, kartın geçerlilik süresi ve kart sahibinin bilgileri gibi diğer kolonlarla birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -392,18 +395,19 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz/eksik açıklama",
+            "Lookup eksikliği",
             "Validation hatası",
-            "İngilizce açıklama mevcut",
+            "İngilizce açıklama",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama daha net ve eksiksiz olmalı. Validation sorunları giderilmeli.",
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "KART_TARIH",
           "data_type": "DATE",
-          "description": "KART_TARIH, CORE_BANKING.XXX_KART tablosunda yer alan ve bir debit/kredi kartının geçerlilik tarihini temsil eden DATE veri tipindeki alandır. Bu alan, kartın aktif olduğu tarih aralığını belirlemek için kullanılır ve genellikle KART_AKTIF_TARIH ile ilişkilidir. Kartın geçerlilik süresi dolduğunda, ilgili işlemler için bu tarih kontrol edilmelidir.",
+          "description": "KART_TARIH, CORE_BANKING şemasındaki XXX_KART tablosunda yer alan ve bir debit/kredi kartının geçerlilik tarihini temsil eden DATE veri tipindeki alandır. Bu alan, kartın aktif olduğu tarih aralığını belirlemek için kullanılır ve genellikle kartın açılış tarihi ile ilişkilidir. Kartın geçerlilik süresi dolduğunda, ilgili işlemler için geçersiz hale gelir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -419,7 +423,7 @@
         {
           "column_name": "KART_KOD",
           "data_type": "NUMBER(2)",
-          "description": "KART_KOD, CORE_BANKING.XXX_KART tablosunda yer alan ve debit/kredi kartı ana verisini tanımlayan iki basamaklı bir sayıdır. Bu kolon, kart türlerini belirtmek için kullanılır ve LKP_KART lookup tablosundaki değerlerle ilişkilidir; mevcut değerler [0, 1, 2] olarak tanımlanmıştır. Kart kodu, kartın işlevselliği ve türü hakkında bilgi sağlar ve diğer ilgili kolonlarla (örneğin, kart sahibi bilgisi) birlikte değerlendirilmelidir.",
+          "description": "KART_KOD, CORE_BANKING.XXX_KART tablosunda yer alan ve her bir debit/kredi kartını benzersiz şekilde tanımlayan iki haneli bir sayıdır. Bu kolon, LKP_KART lookup tablosundaki değerlerle ilişkilidir; mevcut değerler 0, 1 ve 2'dir. KART_KOD, kartın türünü belirlemek için kullanılır ve diğer ilgili kolonlarla (örneğin, kartın geçerlilik tarihi) birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -442,7 +446,7 @@
         {
           "column_name": "KART_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "KART_DURUM, CORE_BANKING.XXX_KART tablosunda yer alan ve kartın durumunu gösteren bir alandır. Bu kolon, kartın aktif (1), pasif (0) veya askıya alınmış (2) olduğunu belirtir. Kart durumu, kartın kullanım süresi ve geçerliliği ile ilgili iş kurallarına tabidir ve son 90 gün içerisindeki durumu yansıtır.",
+          "description": "KART_DURUM, CORE_BANKING.XXX_KART tablosunda yer alan ve kartın durumunu gösteren bir alandır. Bu kolon, kartın aktif (1), pasif (0) veya askıya alınmış (2) olduğunu belirtir. Kart durumu, kartın geçerlilik süresi ve kullanım durumu ile ilişkilidir; bu nedenle, kartın son 90 gün içindeki işlem geçmişi ile değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -461,10 +465,11 @@
             "Belirsiz/eksik açıklama",
             "Validation hatası",
             "Lookup eksikliği",
+            "İngilizce açıklama",
             "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama, kart durumunun anlamını net bir şekilde ifade etmiyor ve son 90 gün içerisindeki durumu yansıttığı belirtilmesine rağmen, orijinal açıklama 30 gün ifadesini içeriyor. Ayrıca, bilinen değerler dışında başka değerlerin varlığına dair bilgi eksikliği var.",
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 100
         },
@@ -480,10 +485,10 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz açıklama",
-            "Lookup tablosu eksik",
-            "Validation hatası yok"
+            "Lookup eksikliği",
+            "Validation hatası"
           ],
-          "feedback": "MUSTERI_NO alanının açıklaması daha net ve detaylı olmalıdır. Ayrıca, DISTINCT sayısının bilinmemesi veri kalitesi açısından risk oluşturuyor.",
+          "feedback": "MUSTERI_NO alanı için daha net ve kapsamlı bir açıklama sağlanmalı. Ayrıca, lookup tablosu ve bilinen değerler hakkında bilgi eklenmelidir.",
           "needs_regeneration": true,
           "clarity_score": 100
         }
@@ -503,7 +508,7 @@
         {
           "column_name": "KOD",
           "data_type": "NUMBER(2)",
-          "description": "KOD kolonu, CORE_BANKING.LKP_HESAP_TIP tablosunda yer alan hesap tipi lookup kodunu temsil eder. Bu kolon, hesap türlerini tanımlamak için kullanılan ve [1, 2, 3, 4, 5] değerlerini içeren bir referans tablosudur. Hesap tipleri, bankacılık işlemlerinde hesapların sınıflandırılmasında önemli bir rol oynamaktadır.",
+          "description": "KOD kolonu, CORE_BANKING.LKP_HESAP_TIP tablosunda yer alan hesap tipi lookup kodunu temsil eder. Bu kolon, hesap türlerini tanımlamak için kullanılan ve [1, 2, 3, 4, 5] değerlerini içeren bir referans tablosudur. Her bir kod, belirli bir hesap tipini ifade eder ve bu bilgiler, hesap açılışında ve işlemlerinde kullanılmak üzere önemlidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 5,
@@ -517,7 +522,7 @@
             5
           ],
           "original_description": "Lookup kodu.",
-          "critic_score": 4,
+          "critic_score": 3,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
@@ -529,7 +534,7 @@
         {
           "column_name": "ACIKLAMA",
           "data_type": "VARCHAR(100)",
-          "description": "LKP_HESAP_TIP tablosundaki ACIKLAMA kolonu, farklı hesap tiplerini tanımlayan açıklamaları içermektedir. Bu kolon, 'Vadesiz', 'Vadeli', 'Döviz', 'Altın' ve 'Yatırım' gibi belirli değerlerle ilişkilidir ve hesap türlerinin sınıflandırılmasında kullanılır. Hesap tipleri, müşteri hesaplarının yönetimi ve finansal işlemlerin gerçekleştirilmesi için önemlidir.",
+          "description": "LKP_HESAP_TIP tablosundaki ACIKLAMA kolonu, hesap türlerini tanımlayan açıklamaları içermektedir. Bu kolonda yer alan değerler, 'Vadesiz', 'Vadeli', 'Döviz', 'Altın' ve 'Yatırım' gibi hesap tiplerini belirtmektedir. Hesap türleri, müşteri hesaplarının yönetimi ve işlem süreçlerinde önemli bir rol oynamaktadır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -542,7 +547,7 @@
             "Yatırım"
           ],
           "original_description": "Lookup açıklaması.",
-          "critic_score": 4,
+          "critic_score": 1,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -565,7 +570,7 @@
         {
           "column_name": "KOD",
           "data_type": "NUMBER(4)",
-          "description": "KOD, CORE_BANKING.LKP_SUBE tablosunda şube kodlarını temsil eden bir alandır ve her bir şube için benzersiz bir tanımlayıcıdır. Mevcut değerler [0, 1, 2] olarak belirlenmiştir ve bu değerler, şubelerin farklı kategorilerini veya durumlarını ifade edebilir. Bu kolon, şube ile ilgili işlemlerde referans olarak kullanılmakta olup, ilgili hesap ve müşteri bilgileri ile ilişkilidir.",
+          "description": "KOD kolonu, CORE_BANKING.LKP_SUBE tablosunda şube kodlarını temsil eden bir alandır. Bu kolon, bankanın şubelerini tanımlamak için kullanılan sayısal kodları içerir ve mevcut değerler [0, 1, 2] olarak belirlenmiştir. Şube kodları, bankacılık işlemlerinin doğru bir şekilde yönlendirilmesi ve izlenmesi için kritik öneme sahiptir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -603,12 +608,11 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "Belirsiz/eksik açıklama",
-            "Lookup tablosu yok",
-            "Orijinal açıklama yok",
+            "Açıklama belirsiz ve eksik.",
+            "Lookup tablosu yok.",
             "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['A', 'B', 'C']"
           ],
-          "feedback": "Açıklama alanı daha net ve kapsamlı olmalıdır. Ayrıca, lookup tablosu eksikliği ve orijinal açıklamanın olmaması risk seviyesini artırmaktadır.",
+          "feedback": "Açıklama alanı için daha net ve kapsamlı bir tanım sağlanmalıdır. Ayrıca, lookup tablosu eksikliği giderilmelidir.",
           "needs_regeneration": true,
           "clarity_score": 100
         }
@@ -643,18 +647,18 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Tablo açıklaması eksik",
-            "Kod alanı açıklaması belirsiz",
+            "KOD alanı açıklaması belirsiz",
             "Lookup tablosu yok",
             "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
           ],
-          "feedback": "Tablo ve kolon açıklamaları daha net ve detaylı olmalıdır. Ayrıca, lookup tablosu eklenmesi faydalı olacaktır.",
+          "feedback": "Tablo ve kolon açıklamaları daha net ve detaylı olmalı. Ayrıca, lookup tablosu eklenmeli.",
           "needs_regeneration": true,
           "clarity_score": 80
         },
         {
           "column_name": "ACIKLAMA",
           "data_type": "VARCHAR(100)",
-          "description": "LKP_DOVIZ tablosundaki ACIKLAMA kolonu, döviz türlerinin tanımlayıcı açıklamalarını içermektedir. Bu kolonda yer alan değerler, dövizlerin kategorilerini belirtmekte olup, bilinen değerler arasında 'A', 'B' ve 'C' bulunmaktadır. Bu açıklama, döviz işlemleri ve finansal raporlamalar için referans olarak kullanılmaktadır.",
+          "description": "LKP_DOVIZ tablosundaki ACIKLAMA kolonu, döviz türlerinin açıklamalarını içermektedir. Bu kolon, 'A', 'B' ve 'C' gibi bilinen değerlerle sınırlıdır ve her bir değer, ilgili döviz türünün tanımını temsil eder. Bu açıklama, döviz işlemleri ve finansal raporlamalar için referans olarak kullanılmaktadır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -666,13 +670,13 @@
             "C"
           ],
           "original_description": "ACIKLAMA bilgisidir.",
-          "critic_score": 2,
+          "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['A', 'B', 'C']"
           ],
           "feedback": "",
-          "needs_regeneration": false,
+          "needs_regeneration": true,
           "clarity_score": 100
         }
       ]
@@ -693,7 +697,7 @@
         {
           "column_name": "KRD_NO",
           "data_type": "VARCHAR(20)",
-          "description": "KRD_NO, CREDIT şemasındaki KRD_MUS_KREDI tablosunda yer alan ve her bir kredi işlemini benzersiz şekilde tanımlayan kredi numarasıdır. Bu kolon, kredi işlemlerinin izlenmesi ve yönetilmesi için kritik öneme sahiptir ve her kredi işlemi için birincil anahtarın bir parçasıdır. KRD_NO, kredi başvurusu ve müşteri bilgileri ile ilişkilidir; dolayısıyla, ilgili müşteri numarası (MUSTERI_NO) ile birlikte kullanılmalıdır.",
+          "description": "KRD_MUS_KREDI tablosundaki KRD_NO kolonu, her bir kredi işlemini benzersiz bir şekilde tanımlayan kredi numarasıdır. Bu numara, kredi işlemlerinin izlenmesi ve yönetilmesi için kritik öneme sahiptir. KRD_NO, kredi işlemi tarihine (ISLEM_TARIHI) bağlı olarak, her işlem için farklılık gösterebilir ve bu nedenle kredi geçmişinin doğruluğu için önemlidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -709,7 +713,7 @@
         {
           "column_name": "KRD_MUS_KOBI_TIP",
           "data_type": "NUMBER(1)",
-          "description": "CREDIT.KRD_MUS_KREDI tablosundaki KRD_MUS_KOBI_TIP kolonu, TMMOB tarafından belirlenen KOBİ (Küçük ve Orta Büyüklükteki İşletmeler) tipini temsil eder ve bu alanın alabileceği değerler 1, 2, 3 ve 4'tür. Bu değerler, KOBİ'nin büyüklük kategorisini belirlemek için kullanılır ve ilgili referans tablosu mevcut değildir. KRD_MUS_KOBI_TIP, kredi başvurusu ile ilgili müşteri bilgilerini sınıflandırmak amacıyla kullanılır.",
+          "description": "KRD_MUS_KOBI_TIP, CREDIT.KRD_MUS_KREDI tablosunda, KOBİ (Küçük ve Orta Büyüklükteki İşletmeler) tipini tanımlamak için kullanılan bir alandır. Bu alan, TMMOB tarafından belirlenen dört farklı KOBİ tipini (1: Mikro, 2: Küçük, 3: Orta, 4: Büyük) temsil eder. KRD_MUS_KOBI_TIP, kredi başvurusu ile ilgili müşteri bilgilerini sınıflandırmak amacıyla kullanılır ve bu nedenle KRD_DURUM ve ISLEM_TARIHI gibi diğer kolonlarla birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 4,
@@ -723,7 +727,7 @@
           ],
           "notes": "TMMOB tarafından belirlenen kobi tipidir. LKP tablosu mevcut değil.",
           "original_description": "KOBI TIPININ TUTULACAGI ALAN.",
-          "critic_score": 2,
+          "critic_score": 3,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4]"
@@ -735,7 +739,7 @@
         {
           "column_name": "INT_SHK_A_30GCK_ADT_LM",
           "data_type": "NUMBER(15,2)",
-          "description": "CREDIT.KRD_MUS_KREDI tablosundaki INT_SHK_A_30GCK_ADT_LM kolonu, Akbank hariç, son 60 gün içerisinde müşterinin kredi kartı açık bakiyesini temsil etmektedir. Bu değer, kredi kartı hesaplarının güncel durumunu izlemek için kullanılmakta olup, kredi kartı açılış tarihi ile ilişkilidir. Kredi kartı açık bakiyesi, müşteri kredi durumu ve ödeme planları açısından önemli bir iş kuralıdır.",
+          "description": "CREDIT.KRD_MUS_KREDI tablosundaki INT_SHK_A_30GCK_ADT_LM kolonu, Akbank hariç kredi kartı açık olan müşterilerin son 60 gün içerisindeki kredi kartı harcama tutarını temsil etmektedir. Bu kolon, kredi kartı harcamalarının izlenmesi ve müşteri kredi riskinin değerlendirilmesi amacıyla kullanılmaktadır. Harcama tutarları, kredi kartı işlemleri ile ilgili diğer kolonlarla (örneğin, KRD_TUTAR) ilişkilidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -748,7 +752,7 @@
             "Validation issue: Column name suggests 30 days (30GCK) but description says 60 days.",
             "VALUE MISMATCH: Column name suggests 30 days (30GCK) but description says 60 days. Mismatch detected."
           ],
-          "feedback": "Açıklama ve kolon adı arasında tutarsızlık var. Bu durum, veri kalitesi açısından risk oluşturuyor.",
+          "feedback": "Açıklama ve kolon adı arasında tutarsızlık var. Bu durum, veri kalitesini olumsuz etkileyebilir.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
@@ -760,17 +764,17 @@
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 2,
+          "critic_score": 1,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "Tablo açıklaması eksik, ancak kolon açıklaması yeterince net ve anlaşılır. Validation sorunu yok.",
+          "feedback": "",
           "needs_regeneration": false,
           "clarity_score": 100
         },
         {
           "column_name": "KRD_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "KRD_DURUM kolonu, CREDIT.KRD_MUS_KREDI tablosunda yer alan kredi durumunu belirtir. Bu kolonun alabileceği değerler şunlardır: 0 (Aktif), 1 (Kapalı) ve 2 (Takipteki Alacak - NPL). Kredi durumu, kredi işleminin mevcut durumunu yansıtmakta olup, ISLEM_TARIHI ile birlikte değerlendirilmelidir.",
+          "description": "KRD_DURUM kolonu, CREDIT.KRD_MUS_KREDI tablosunda yer alan kredi durumunu belirtir. Bu kolonun alabileceği değerler şunlardır: 0=Aktif, 1=Kapalı, 2=Takipteki Kredi (NPL). Kredi durumu, kredi işleminin mevcut durumunu yansıtmakta olup, ISLEM_TARIHI ile birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 3,
@@ -807,13 +811,13 @@
         {
           "column_name": "TEMI_NO",
           "data_type": "VARCHAR(20)",
-          "description": "TEM_NO, CREDIT.KRD_TEMINAT tablosunda yer alan her bir kredi teminatının benzersiz tanımlayıcısıdır. Bu kolon, kredi teminat ve rehin kayıtlarının izlenmesi için kullanılır ve her bir teminat kaydının diğer ilgili kolonlarla (örneğin, TEM_TARIH, TEM_KOD) ilişkilendirilmesine olanak tanır. Bu nedenle, TEM_NO değeri, teminatın geçerliliği ve durumu hakkında bilgi sağlayan önemli bir referans noktasıdır.",
+          "description": "TEM_NO, CREDIT şemasındaki KRD_TEMINAT tablosunda yer alan ve kredi teminatı veya rehin kaydını benzersiz şekilde tanımlayan bir alandır. Bu kolon, kredi teminatı işlemlerinin takibi için gereklidir ve her bir teminat kaydının referans numarasını temsil eder. TEM_NO, KRD_MUS_KREDI tablosundaki müşteri numarası (MUSTERI_NO) ile ilişkilidir ve teminatın geçerliliği için ilgili tarih ve durum bilgileri ile birlikte kullanılmalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
           "original_description": null,
-          "critic_score": 3,
+          "critic_score": 3.67,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -823,7 +827,7 @@
         {
           "column_name": "TEMI_TARIH",
           "data_type": "DATE",
-          "description": "KRD_TEMINAT tablosundaki TEMI_TARIH kolonu, kredi teminat ve rehin kayıtlarının oluşturulma tarihini ifade eder. Bu tarih, teminatın geçerlilik süresi ve yönetimi açısından önemlidir; dolayısıyla, ilgili kayıtların güncellenmesi ve izlenmesi için kritik bir referans noktasıdır. TEMI_TARIH, teminatın başlangıç tarihini belirlemek için kullanılabilir ve bu bağlamda diğer tarih kolonlarıyla (örneğin, valör tarihi) ilişkilidir.",
+          "description": "KRD_TEMINAT tablosundaki TEMI_TARIH kolonu, kredi teminat ve rehin kayıtlarının oluşturulma tarihini ifade eder. Bu tarih, teminatın geçerlilik süresi ve izlenebilirliği açısından önemlidir. TEMI_TARIH, ilgili teminatın durumunu belirleyen diğer kolonlarla (örneğin, TEM_DURUM) birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -857,14 +861,14 @@
             "Belirsiz açıklama",
             "Lookup tablosunda eksik değerler"
           ],
-          "feedback": "TEMI_KOD alanının açıklaması daha net olmalı ve lookup tablosundaki tüm değerler belgelenmeli.",
+          "feedback": "TEMI_KOD alanı için daha net bir açıklama sağlanmalı ve lookup tablosundaki tüm değerler belgelenmelidir.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "TEMI_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "CREDIT.KRD_TEMINAT tablosundaki TEM_DURUM kolonu, kredi teminatlarının durumunu belirtir ve üç olası değere sahiptir: 0 (Geçersiz), 1 (Geçerli) ve 2 (İptal Edilmiş). Bu kolon, teminatın geçerliliğini izlemek için kullanılır ve ilgili kayıtların güncellenmesi gerektiğinde dikkate alınmalıdır. TEM_DURUM, teminatın tarihsel durumu ile birlikte değerlendirilmelidir.",
+          "description": "CREDIT.KRD_TEMINAT tablosundaki TEM_DURUM kolonu, kredi teminatının mevcut durumunu belirtir ve üç olası değer içerir: 0 (Geçersiz), 1 (Geçerli), 2 (İptal Edilmiş). Bu kolon, kredi teminatlarının yönetimi ve izlenmesi için kritik öneme sahiptir. İlgili kayıtların tarih bilgisi için TEM_TARIH kolonu referans alınmalıdır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -876,7 +880,7 @@
             2
           ],
           "original_description": null,
-          "critic_score": 2,
+          "critic_score": 1,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
@@ -888,7 +892,7 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "KRD_TEMINAT tablosundaki MUSTERI_NO kolonu, kredi teminat ve rehin kayıtlarına ilişkin müşteri numarasını tutmaktadır. Bu alan, müşteri bilgilerini içeren KRD_MUS_KREDI tablosundaki müşteri kayıtlarıyla ilişkilidir ve her müşteri için benzersiz bir tanımlayıcıdır. Müşteri numarası, kredi işlemlerinin izlenebilirliğini sağlamak amacıyla kullanılmaktadır.",
+          "description": "MUSTERI_NO, CREDIT.KRD_TEMINAT tablosunda yer alan ve kredi teminatı için ilgili müşteriyi tanımlayan benzersiz müşteri numarasını ifade eder. Bu alan, müşteri bilgilerini tutan KRD_MUS_KREDI tablosundaki MUSTERI_NO ile ilişkilidir ve her teminat kaydı için geçerli bir müşteri numarası olmalıdır. Teminat kaydı oluşturulurken, MUSTERI_NO'nun mevcut bir müşteri kaydına referans vermesi gerekmektedir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -917,7 +921,7 @@
         {
           "column_name": "PLAN_NO",
           "data_type": "VARCHAR(20)",
-          "description": "PLAN_NO — Kredi taksit ve ödeme planı tablosunda yer alan, her bir ödeme planını tanımlayan benzersiz kimlik numarasıdır. Bu kolon, kredi taksitlerinin düzenli bir şekilde takip edilmesi için kullanılır ve ilgili referans tablosu KRD_MUS_KREDI'dir. Mevcut açıklama, kolonun işlevini doğru yansıtmamaktadır; bu nedenle, \"son 90 gün toplamı\" ifadesi yerine \"her bir ödeme planının benzersiz kimlik numarası\" olarak düzeltilmiştir.",
+          "description": "PLAN_NO — Kredi taksit ve ödeme planı tablosunda yer alan, her bir ödeme planını tanımlayan benzersiz kimlik numarasıdır. Bu kolon, kredi taksitlerinin düzenli bir şekilde takip edilmesi için kullanılır ve ilgili referans tablosu KRD_MUS_KREDI'dir. Mevcut açıklama, yanlış bir bilgi içermekte olup, bu kolonun işlevini doğru bir şekilde yansıtmamaktadır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -927,22 +931,26 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
+            "Belirsiz açıklama",
+            "Lookup tablosu eksik",
+            "Validation hatası",
+            "İngilizce açıklama mevcut",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "",
+          "feedback": "Açıklama, kolonun işlevini doğru bir şekilde yansıtmıyor ve validation sorunları var.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "PLAN_TARIH",
           "data_type": "DATE",
-          "description": "PLAN_TARIH, Kredi taksit ve ödeme planı tablosu olan CREDIT.KRD_ODEME_PLAN'da yer alan, her bir ödemenin yapılacağı tarihi ifade eden DATE türünde bir alandır. Bu tarih, kredi sözleşmesinin başlangıç tarihine göre belirlenir ve ödeme planının düzenli bir şekilde takip edilmesi için kritik öneme sahiptir. İlgili kolonlar arasında VALÖR_TARIH ile ilişkilidir ve bu tarih, ödeme tarihleriyle uyumlu olmalıdır.",
+          "description": "PLAN_TARIH, Kredi taksit ve ödeme planı tablosu olan CREDIT.KRD_ODEME_PLAN'da yer alan, her bir ödemenin yapılacağı tarihi belirten DATE türündeki bir alandır. Bu tarih, kredi sözleşmesinin başlangıç tarihine (AÇILIŞ_TARIHI) göre belirlenir ve her taksit ödemesi için geçerli olan tarihleri içerir. Ödeme planı, kredi sözleşmesine bağlı olarak belirlenen taksit sayısı ve ödeme tarihleri ile ilişkilidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
           "original_description": "PLAN_TARIH için tutulan alan.",
-          "critic_score": 3,
+          "critic_score": 4,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -952,7 +960,7 @@
         {
           "column_name": "PLAN_KOD",
           "data_type": "NUMBER(2)",
-          "description": "PLAN_KOD, CREDIT şemasındaki KRD_ODEME_PLAN tablosunda yer alan ve kredi taksitleri ile ödeme planlarını tanımlayan bir alandır. Bu kolon, 0, 1 ve 2 değerlerini alabilir ve bu değerler LKP_PLAN lookup tablosunda tanımlanan farklı ödeme planlarını temsil eder. Ödeme planı seçimi, kredi sözleşmesinin şartlarına bağlı olarak belirlenir.",
+          "description": "PLAN_KOD, CREDIT şemasındaki KRD_ODEME_PLAN tablosunda yer alan ve kredi taksitlerinin ödeme planını tanımlayan bir alandır. Bu kolon, 0, 1 ve 2 değerlerini alabilir ve bu değerler LKP_PLAN lookup tablosunda tanımlı olan farklı ödeme planlarını temsil eder. Ödeme planı, kredi sözleşmesinin şartlarına göre belirlenir ve taksitlerin düzenli ödenmesini sağlamak amacıyla kullanılır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -975,7 +983,7 @@
         {
           "column_name": "PLAN_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "PLAN_DURUM — Kredi taksit ve ödeme planı tablosundaki bu kolon, ödeme planının durumunu belirtir. Bilinen değerler: 0 (Aktif), 1 (Tamamlandı), 2 (İptal Edildi). Bu kolon, ödeme planının geçerliliği ile ilgili iş kurallarını yansıtır ve ilgili tarih bilgileriyle (örn. ödeme tarihi) birlikte değerlendirilmelidir.",
+          "description": "PLAN_DURUM — Kredi taksit ve ödeme planı tablosunda, ödeme planının durumunu belirtir. Bilinen değerler: 0 (Aktif), 1 (Tamamlandı), 2 (İptal Edildi). Bu kolon, ödeme planının geçerliliğini ve durumunu izlemek için kullanılır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -997,7 +1005,7 @@
             "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama ve validasyon bilgileri net değil. Üretim örnekleri ile belgelenmiş aralık uyuşmuyor.",
+          "feedback": "Açıklama net değil ve validation sorunu mevcut. Ayrıca, orijinal açıklama ile güncel açıklama arasında tutarsızlık var.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
@@ -1011,8 +1019,12 @@
           "nullable": false,
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
-          "issues": [],
-          "feedback": "",
+          "issues": [
+            "Belirsiz açıklama",
+            "Lookup tablosu eksik",
+            "Validation hatası yok ama açıklama yetersiz"
+          ],
+          "feedback": "MUSTERI_NO alanı için daha net ve kapsamlı bir açıklama sağlanmalı. Ayrıca, lookup tablosu eklenmesi değerlendirilmeli.",
           "needs_regeneration": true,
           "clarity_score": 100
         }
@@ -1032,21 +1044,17 @@
         {
           "column_name": "BASV_NO",
           "data_type": "VARCHAR(20)",
-          "description": "KRD_BASVURU tablosundaki BASV_NO, her başvuru için benzersiz bir kimlik numarasıdır ve başvuru sürecinin takibi için kullanılır. Bu kolon, başvuru tarihine (BASV_TARIH) ve müşteri numarasına (MUSTERI_NO) referans verir. Başvuru durumu (BASV_DURUM) gibi diğer kolonlarla birlikte, başvuru sürecinin yönetilmesine yardımcı olur.",
+          "description": "KRD_BASVURU tablosundaki BASV_NO, her başvurunun benzersiz kimliğini temsil eden bir kod değeridir. Bu kolon, başvuru sürecinin takibi için kullanılır ve diğer ilgili kolonlar olan BASV_TARIH (başvuru tarihi) ve MUSTERI_NO (müşteri numarası) ile birlikte değerlendirilmelidir. Başvuru durumunu belirten BASV_DURUM ve başvuru kodunu gösteren BASV_KOD gibi diğer kolonlarla ilişkilidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "original_description": "BASV_NO code value.",
-          "critic_score": 2,
-          "risk_level": "HIGH_RISK",
-          "issues": [
-            "Tablo açıklaması eksik.",
-            "Orijinal açıklama yetersiz.",
-            "Distinct sayısı bilinmiyor."
-          ],
-          "feedback": "Tablo açıklaması eklenmeli ve orijinal açıklama daha detaylı hale getirilmeli.",
-          "needs_regeneration": true,
+          "critic_score": 3,
+          "risk_level": "LOW_RISK",
+          "issues": [],
+          "feedback": "Açıklama genel olarak yeterli, ancak tablo açıklaması eksik. Ayrıca, DISTINCT sayısının bilinmemesi, veri kalitesi açısından bir risk oluşturabilir.",
+          "needs_regeneration": false,
           "clarity_score": 100
         },
         {
@@ -1060,18 +1068,18 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "Belirsiz açıklama",
-            "Lookup tablosu eksik",
-            "Validation hatası yok ama açıklama yetersiz"
+            "Tablo açıklaması eksik",
+            "Orijinal açıklama yok",
+            "Bilinmeyen değerler var"
           ],
-          "feedback": "Açıklama daha net ve detaylı olmalı. Lookup tablosu eklenmeli.",
+          "feedback": "Tablo ve kolon açıklamaları daha net ve detaylı hale getirilmeli.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "BASV_KOD",
           "data_type": "NUMBER(2)",
-          "description": "BASV_KOD, CREDIT.KRD_BASVURU tablosunda yer alan ve başvuru türünü tanımlayan bir alandır. Bu kolon, LKP_BASVUR lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler [0, 1, 2] olarak belirlenmiştir. Başvuru kodu, başvuru durumunu belirlemek için kullanılır ve BASV_DURUM kolonu ile birlikte değerlendirilmelidir.",
+          "description": "BASV_KOD, CREDIT.KRD_BASVURU tablosunda yer alan ve başvuru türünü tanımlayan bir alandır. Bu kolon, LKP_BASVUR adlı lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler 0 (Yeni Başvuru), 1 (Devam Eden Başvuru) ve 2 (Tamamlanan Başvuru) olarak belirlenmiştir. Başvuru durumu ile birlikte değerlendirilerek, başvurunun hangi aşamada olduğunu belirlemek için kullanılır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -1094,7 +1102,7 @@
         {
           "column_name": "BASV_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "KRD_BASVURU tablosundaki BASV_DURUM kolonu, başvuru durumunu temsil eden bir kod değeridir. Bu kolonun alabileceği değerler şunlardır: 0 (Başvuru Beklemede), 1 (Başvuru Onaylandı), 2 (Başvuru Reddedildi). Başvuru durumu, başvuru tarihi (BASV_TARIH) ile birlikte değerlendirilerek, başvurunun mevcut durumunu belirlemekte kullanılır.",
+          "description": "KRD_BASVURU tablosundaki BASV_DURUM kolonu, başvuru durumunu temsil eden bir kod değeridir. Bu kolonun alabileceği değerler şunlardır: 0 (Beklemede), 1 (Onaylandı), 2 (Reddedildi). Başvuru durumu, başvuru tarihi (BASV_TARIH) ile birlikte değerlendirilerek başvurunun mevcut durumunu belirler.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1124,16 +1132,16 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "CREDIT.KRD_BASVURU tablosundaki MUSTERI_NO, başvuru yapan müşterinin benzersiz kimlik numarasını temsil eder. Bu kolon, müşteri bilgilerini içeren bir referans tablosuna (örneğin, KRD_MUS_KREDI) bağlanarak, başvuru sürecinin izlenmesine olanak tanır. MUSTERI_NO, başvuru ile ilişkilendirilen müşteri verilerinin doğruluğunu sağlamak için zorunludur.",
+          "description": "KRD_BASVURU tablosundaki MUSTERI_NO, başvuruda bulunan müşterinin benzersiz kimlik numarasını temsil eder. Bu kolon, müşteri bilgilerini içeren KRD_MUS_KREDI tablosundaki MUSTERI_NO ile ilişkilidir ve başvuru sürecinde müşteri tanımlaması için kullanılır. Bu değer, başvuru işlemlerinin doğru bir şekilde izlenmesi ve yönetilmesi için gereklidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "original_description": "MUSTERI_NO bilgisidir.",
-          "critic_score": 2,
+          "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "Açıklama genel olarak yeterli, ancak orijinal açıklama daha fazla bilgi içerebilir. Cardinalite ve distinct sayısı hakkında daha fazla bilgi eklenebilir.",
+          "feedback": "",
           "needs_regeneration": false,
           "clarity_score": 100
         }
@@ -1153,7 +1161,7 @@
         {
           "column_name": "GARA_NO",
           "data_type": "VARCHAR(20)",
-          "description": "GARA_NO, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerini tanımlayan benzersiz bir kimlik numarasıdır. Bu alan, garanti edilen işlemlerin takibi için kullanılır ve ilgili referans tabloları ile ilişkilidir. GARA_NO, KRD_MUS_KREDI tablosundaki müşteri kayıtlarıyla bağlantılıdır ve her garanti ilişkisi için tekil bir değer olmalıdır.",
+          "description": "GARA_NO, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerini tanımlayan benzersiz bir kimlik numarasıdır. Bu alan, garanti işlemlerinin izlenmesi ve yönetilmesi için kullanılır ve ilgili referans tablosu KRD_MUS_KREDI'dir. GARA_NO, her garanti kaydı için zorunlu bir alan olup, garanti ilişkilerinin doğruluğunu sağlamak amacıyla iş kuralları gereği eksiksiz ve doğru bir şekilde doldurulmalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1169,13 +1177,13 @@
         {
           "column_name": "GARA_TARIH",
           "data_type": "DATE",
-          "description": "GARA_TARIH, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerinin başlangıç tarihini ifade eden bir tarih bilgisidir. Bu kolon, garanti sürecinin zamanlamasını belirlemek için kritik öneme sahiptir ve ilgili işlemlerle bağlantılı diğer tarih bilgileriyle (örneğin, GARA_BITIS_TARIHI) birlikte değerlendirilmelidir.",
+          "description": "GARA_TARIH, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerinin başlangıç tarihini temsil eden bir tarih bilgisidir. Bu tarih, garanti sürecinin başlangıcını belirler ve ilgili işlemler için kritik öneme sahiptir. GARA_TARIH, KRD_MUS_KREDI tablosundaki müşteri kredi ilişkileri ile bağlantılıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "original_description": "GARA_TARIH bilgisidir.",
-          "critic_score": 4,
+          "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -1185,7 +1193,7 @@
         {
           "column_name": "GARA_KOD",
           "data_type": "NUMBER(2)",
-          "description": "GARA_KOD, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet ile garanti ilişkilerini tanımlayan bir alandır. Bu kolon, kefalet türünü belirtmek için kullanılır ve mevcut değerleri [0: Yok, 1: Var, 2: Belirsiz] şeklindedir; bu değerler LKP_GARANT referans tablosunda tanımlanmıştır. GARA_KOD, kefaletin geçerlilik süresi ile ilgili diğer kolonlarla (örneğin, valör tarihi) birlikte değerlendirilmelidir.",
+          "description": "GARA_KOD, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet ile garanti ilişkilerini tanımlayan bir alandır. Bu kolon, kefalet türlerini belirtmek için kullanılır ve değerleri LKP_GARANT referans tablosundaki [0: Yok, 1: Var, 2: Belirsiz] seçeneklerini içerir. Mevcut açıklama, son 90 gün toplamı olarak belirtilmişken, bu kolonun anlamı kefalet durumunu ifade etmektedir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -1207,14 +1215,14 @@
             "İngilizce açıklama",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama net değil ve validation sorunu mevcut. Ayrıca, orijinal açıklama İngilizce verilmiş.",
+          "feedback": "Açıklama, son 90 gün toplamı olarak belirtilmişken, kolonun anlamı kefalet durumunu ifade etmektedir. Bu durum, açıklamanın netliğini ve doğruluğunu olumsuz etkiliyor. Ayrıca, validation sorunu mevcut.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "GARA_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "GARA_DURUM, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet ile garanti ilişkilerinin durumunu belirten bir alandır. Bu alan, 0 (Geçersiz), 1 (Geçerli) ve 2 (İptal Edilmiş) değerlerini alabilir. GARA_DURUM, ilgili garanti işleminin geçerliliğini izlemek için kullanılır ve bu nedenle KRD_MUS_KREDI tablosundaki müşteri bilgileri ile ilişkilidir.",
+          "description": "CREDIT.KRD_GARANTI tablosundaki GARA_DURUM kolonu, kefalet ve garanti ilişkilerinin durumunu belirtir. Bu alan, 0 (Geçersiz), 1 (Geçerli) ve 2 (İptal Edilmiş) değerlerini alabilir. GARA_DURUM, garanti işlemlerinin yönetimi için kritik bir iş kuralı olup, ilgili işlemlerin izlenmesi ve raporlanması açısından önemlidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1226,7 +1234,7 @@
             2
           ],
           "original_description": "GARA_DURUM için tutulan alan.",
-          "critic_score": 3,
+          "critic_score": 2,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
@@ -1238,13 +1246,13 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "MUSTERI_NO, CREDIT.KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkileri ile ilgili olan müşteri numarasını temsil eder. Bu kolon, müşteri bilgilerini tanımlamak için kullanılır ve ilgili müşteri bilgileri için KRD_MUS_KREDI tablosundaki MUSTERI_NO kolonu ile ilişkilidir. Müşteri numarası, her müşteri için benzersiz bir tanımlayıcıdır ve 10 haneli sayısal bir değerdir.",
+          "description": "MUSTERI_NO, CREDIT.KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkileri için ilgili müşteriyi tanımlayan benzersiz bir numaradır. Bu kolon, müşteri bilgilerini içeren KRD_MUS_KREDI tablosundaki MUSTERI_NO ile ilişkilidir ve her müşteri için yalnızca bir kez kullanılmalıdır. Müşteri numarası, garanti işlemlerinin doğru bir şekilde izlenmesi ve yönetilmesi için kritik öneme sahiptir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
           "original_description": null,
-          "critic_score": 3,
+          "critic_score": 4,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -1272,17 +1280,17 @@
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 0,
-          "risk_level": "HIGH_RISK",
+          "critic_score": 1,
+          "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
-          "needs_regeneration": true,
+          "needs_regeneration": false,
           "clarity_score": 60
         },
         {
           "column_name": "SEGMENT_KOD",
           "data_type": "VARCHAR(5)",
-          "description": "SEGMENT_KOD, CRM şemasındaki MUS_SEGMENTASYON tablosunda yer alan, müşteri segmentasyonunu tanımlayan 5 karakter uzunluğunda bir alandır. Bu kolon, müşteri gruplarını belirlemek için LKP_SEGMENT lookup tablosundaki değerlerle ilişkilidir. Müşteri segmentleri, pazarlama stratejileri ve kampanya hedeflemesi için kritik öneme sahiptir.",
+          "description": "SEGMENT_KOD, CRM şemasındaki MUS_SEGMENTASYON tablosunda yer alan ve müşteri segmentasyonunu tanımlayan 5 karakter uzunluğunda bir alandır. Bu kolon, müşteri gruplarını belirlemek için kullanılan LKP_SEGMENT referans tablosundaki değerlerle ilişkilidir. Müşteri segmentleri, pazarlama stratejileri ve kampanya hedeflemeleri için kritik öneme sahiptir.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 6,
@@ -1300,7 +1308,7 @@
         {
           "column_name": "GELIR_GRUBU",
           "data_type": "NUMBER(1)",
-          "description": "GELIR_GRUBU, CRM.MUS_SEGMENTASYON tablosunda yer alan ve müşterilerin gelir düzeylerini sınıflandıran bir kod alanıdır. Bu alan, 1 ile 5 arasında değişen değerler alarak, müşterilerin gelir gruplarını belirler; 1 en düşük gelir grubunu, 5 ise en yüksek gelir grubunu temsil eder. Gelir grubu kodu, müşteri segmentasyonu ve pazarlama stratejilerinin belirlenmesinde önemli bir rol oynamaktadır.",
+          "description": "GELIR_GRUBU kolonu, CRM.MUS_SEGMENTASYON tablosunda müşteri segmentasyonu için gelir grubu kodunu temsil eder. Bu kolon, müşterilerin gelir düzeylerini belirlemek amacıyla 1 ile 5 arasında kodlanmış değerler içermektedir; burada 1 en düşük gelir grubunu, 5 ise en yüksek gelir grubunu ifade eder. Gelir grubu kodları, müşteri analitiği ve hedefleme stratejileri için kritik bir referans noktasıdır.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 5,
@@ -1314,7 +1322,7 @@
             5
           ],
           "original_description": "Gelir grubu kodu.",
-          "critic_score": 3,
+          "critic_score": 4,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
@@ -1339,7 +1347,7 @@
         {
           "column_name": "KOD",
           "data_type": "NUMBER(4)",
-          "description": "KOD kolonu, CRM.LKP_SEGMENT tablosunda yer alan segment kodlarını temsil eder ve bu kodlar, müşteri segmentasyonunu belirlemek için kullanılır. Mevcut değerler arasında 0, 1 ve 2 bulunmaktadır; bu değerler, farklı müşteri gruplarını tanımlamak için referans alınır. Bu kolon, segmentasyon süreçlerinde doğru veri analizi ve hedefleme için kritik öneme sahiptir.",
+          "description": "LKP_SEGMENT tablosundaki KOD kolonu, müşteri segmentlerini tanımlamak için kullanılan sayısal kodları içermektedir. Mevcut değerler arasında 0, 1 ve 2 bulunmaktadır; bu değerler, müşteri segmentasyonunu belirlemek için referans alınan lookup değerleridir. Bu kolon, segmentasyon süreçlerinde kullanılmakta olup, ilgili diğer kolonlarla birlikte müşteri ilişkileri yönetimi stratejilerinin oluşturulmasında önemli bir rol oynamaktadır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1351,7 +1359,7 @@
             2
           ],
           "original_description": "KOD bilgisidir.",
-          "critic_score": 1,
+          "critic_score": 3,
           "risk_level": "HIGH_RISK",
           "issues": [
             "LOW CARDINALITY (6 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
@@ -1363,7 +1371,7 @@
         {
           "column_name": "ACIKLAMA",
           "data_type": "VARCHAR(100)",
-          "description": "LKP_SEGMENT tablosundaki ACIKLAMA kolonu, segment kodlarının tanımlarını içermektedir. Bu kolon, 'A', 'B' ve 'C' gibi bilinen değerlerle segmentlerin özelliklerini açıklamak için kullanılmaktadır. Her bir segment kodu, müşteri segmentasyonu süreçlerinde önemli bir rol oynamaktadır.",
+          "description": "LKP_SEGMENT tablosundaki ACIKLAMA kolonu, segment kodlarının açıklamalarını içermektedir. Bu kolon, 'A', 'B' ve 'C' gibi bilinen değerlerle ilişkilidir ve her bir segmentin ne anlama geldiğini tanımlamak için kullanılmaktadır. Bu açıklama, CRM sistemindeki müşteri segmentasyonunu daha iyi anlamak ve yönetmek amacıyla önemlidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1400,7 +1408,7 @@
         {
           "column_name": "HEDE_NO",
           "data_type": "VARCHAR(20)",
-          "description": "HEDE_NO, CRM.KAMPANYA_HEDEF tablosunda yer alan ve kampanya hedeflerini tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, kampanyalara ait hedef kitle segmentlerini belirlemek için kullanılır ve ilgili referans tablosu KAMPANYA_SEGMENT olarak adlandırılmaktadır. Her bir HEDE_NO değeri, kampanya ile ilişkilendirilmiş müşteri segmentlerinin yönetimi ve analizi için kritik öneme sahiptir.",
+          "description": "HEDE_NO, CRM.KAMPANYA_HEDEF tablosunda yer alan ve kampanya hedeflerini tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, kampanya hedeflerinin izlenmesi ve yönetilmesi için kullanılır ve diğer ilgili tablolardaki (örneğin, MUS_SEGMENTASYON) kayıtlarla ilişkilendirilir. Kampanya hedefleri, belirli müşteri segmentlerine yönelik pazarlama stratejilerinin uygulanmasında kritik bir rol oynamaktadır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1409,23 +1417,23 @@
           "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "",
+          "feedback": "Açıklama genel olarak yeterli, ancak tablo açıklaması eksik. Ayrıca, DISTINCT sayısı ve bilinen değerler hakkında bilgi yok.",
           "needs_regeneration": false,
           "clarity_score": 100
         },
         {
           "column_name": "HEDE_TARIH",
           "data_type": "DATE",
-          "description": "KAMPANYA_HEDEF tablosundaki HEDE_TARIH kolonu, kampanyanın hedef tarihini belirtir ve DATE veri tipindedir. Bu tarih, kampanyanın uygulanacağı veya sona ereceği tarihi temsil eder. İlgili kolonlar arasında kampanya başlangıç tarihi (BAS_TARIH) ile ilişkilidir ve bu tarihlerin doğru bir şekilde yönetilmesi, kampanya planlaması açısından kritik öneme sahiptir.",
+          "description": "KAMPANYA_HEDEF tablosundaki HEDE_TARIH kolonu, kampanyanın hedef tarihini belirtir ve DATE veri tipindedir. Bu tarih, kampanyanın uygulanacağı veya sona ereceği tarihi temsil eder. İlgili tarih bilgisi, kampanya planlaması ve performans değerlendirmesi için kritik öneme sahiptir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "original_description": "HEDE_TARIH code value.",
-          "critic_score": 3,
+          "critic_score": 2,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "Açıklama genel olarak yeterli, ancak orijinal açıklama belirsiz. DISTINCT sayısı ve bilinmeyen değerler hakkında bilgi eksikliği var.",
+          "feedback": "",
           "needs_regeneration": false,
           "clarity_score": 100
         },
@@ -1448,17 +1456,16 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz açıklama",
-            "Lookup tablosu ile ilgili eksiklik",
-            "Açıklama eksikliği"
+            "Lookup tablosu ile ilgili eksiklikler"
           ],
-          "feedback": "Açıklama daha net ve detaylı olmalı. Lookup tablosunun içeriği ve iş kurallarına uygunluğu hakkında bilgi verilmelidir.",
+          "feedback": "KOLON AÇIKLAMASI daha net ve detaylı olmalıdır. Ayrıca, lookup tablosunun içeriği hakkında bilgi verilmelidir.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "HEDE_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "KAMPANYA_HEDEF tablosundaki HEDE_DURUM kolonu, kampanyanın hedef durumunu belirtir ve üç olası değere sahiptir: 0 (Aktif değil), 1 (Aktif) ve 2 (Tamamlandı). Bu kolon, kampanya yönetimi süreçlerinde hedeflerin izlenmesi ve değerlendirilmesi için kritik öneme sahiptir. İlgili diğer kolonlar arasında kampanya başlangıç tarihi ve bitiş tarihi yer alabilir.",
+          "description": "KAMPANYA_HEDEF tablosundaki HEDE_DURUM kolonu, kampanyanın hedef durumunu belirtir ve üç olası değere sahiptir: 0 (Aktif değil), 1 (Aktif) ve 2 (Tamamlandı). Bu kolon, kampanya yönetimi süreçlerinde hedeflerin izlenmesi ve raporlanması için kritik öneme sahiptir. İlgili kolonlar arasında kampanya başlangıç tarihi ve bitiş tarihi gibi zaman bilgileri yer alabilir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1482,7 +1489,7 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "KAMPANYA_HEDEF tablosundaki MUSTERI_NO kolonu, kampanyalara hedeflenen müşterilerin benzersiz kimlik numaralarını tutar. Bu alan, müşteri bilgilerini içeren referans tablosu olan MUS_SEGMENTASYON ile ilişkilidir ve her müşteri için yalnızca bir kez kullanılmalıdır. Müşteri numarası, kampanya yönetimi süreçlerinde hedef kitle belirleme ve analiz için kritik öneme sahiptir.",
+          "description": "KAMPANYA_HEDEF tablosundaki MUSTERI_NO kolonu, kampanya hedef kitlesini belirlemek için kullanılan müşteri numarasını temsil eder. Bu alan, CRM sistemindeki MÜŞTERİ tablosundaki müşteri kayıtlarıyla ilişkilidir ve her müşteri için benzersiz bir tanımlayıcıdır. Müşteri numarası, kampanya performans analizi ve hedefleme süreçlerinde kritik bir rol oynamaktadır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1511,7 +1518,7 @@
         {
           "column_name": "ILET_NO",
           "data_type": "VARCHAR(20)",
-          "description": "ILET_NO — CRM.MUS_ILETISIM tablosunda yer alan bu kolon, müşterilerin iletişim kanallarını tanımlamak için kullanılan benzersiz bir numaradır. Bu numara, müşteri iletişim tercihleri ve kanallarıyla ilgili verilerin yönetilmesinde kritik bir rol oynar. İletişim kanallarıyla ilgili referans değerleri, ilgili lookup tablolarında bulunabilir.",
+          "description": "ILET_NO — Müşteri iletişim kanalı tercihlerini tanımlayan benzersiz iletişim numarasıdır. Bu kolon, CRM.MUS_ILETISIM tablosunda yer almakta olup, müşteri iletişim bilgileri ile ilişkilidir. İletişim numarası, müşteri ile yapılan son 90 gün içindeki etkileşimlerde kullanılmaktadır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1521,20 +1528,19 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "Belirsiz açıklama",
-            "Lookup tablosu eksikliği",
+            "Belirsiz/eksik açıklama",
             "Validation hatası",
             "İngilizce açıklama mevcut",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama daha net hale getirilmeli ve validation sorunları çözülmeli.",
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "ILET_TARIH",
           "data_type": "DATE",
-          "description": "MUS_ILETISIM tablosundaki ILET_TARIH kolonu, müşteri iletişim kanallarının kullanıldığı tarih bilgisini tutmaktadır. Bu alan, müşteri ile yapılan iletişimlerin zamanlamasını belirlemek amacıyla kullanılmakta olup, iletişim tercihleri ve kanallarıyla ilişkilidir. İLET_TARIH, müşteri etkileşimlerinin analizi ve raporlanması için kritik bir referans noktasıdır.",
+          "description": "MUS_ILETISIM tablosundaki ILET_TARIH kolonu, müşteri iletişim kanallarının kullanıldığı tarih bilgisini tutmaktadır. Bu tarih, müşteri ile yapılan iletişimin zamanlamasını belirlemek için önemlidir ve diğer tarih kolonlarıyla (örneğin, iletişim son tarihi) birlikte değerlendirilmelidir. İletişim tarihleri, müşteri tercihleri ve kampanya etkinlikleri ile ilişkilidir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1550,7 +1556,7 @@
         {
           "column_name": "ILET_KOD",
           "data_type": "NUMBER(2)",
-          "description": "MUS_ILETISIM tablosundaki ILET_KOD, müşteri iletişim kanallarını tanımlayan bir kod olup, bu kodun alabileceği değerler LKP_ILETIS referans tablosunda belirtilmiştir. Mevcut değerler arasında 0 (belirtilmemiş), 1 (e-posta) ve 2 (telefon) bulunmaktadır. Bu kolon, müşteri iletişim tercihlerini belirlemek için kullanılır ve müşteri etkileşim stratejilerinin oluşturulmasında önemli bir rol oynar.",
+          "description": "MUS_ILETISIM tablosundaki ILET_KOD, müşteri iletişim kanallarını tanımlamak için kullanılan bir kod olup, LKP_ILETIS referans tablosundaki değerlerle ilişkilidir. Mevcut değerler şunlardır: 0 (Belirtilmemiş), 1 (E-posta), 2 (Telefon). Bu kolon, müşteri iletişim tercihlerini belirlemek amacıyla kullanılır ve iletişim kanalı seçimi ile ilgili iş kurallarını destekler.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -1573,7 +1579,7 @@
         {
           "column_name": "ILET_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "MUS_ILETISIM tablosundaki ILET_DURUM kolonu, son 90 gün içinde müşteri iletişim durumunu temsil eder ve üç olası değere sahiptir: 0 (iletişim yok), 1 (iletişim var) ve 2 (iletişim tercihleri mevcut). Bu kolon, müşteri iletişim tercihleri ve kanalları ile ilgili karar alma süreçlerinde kullanılmak üzere tasarlanmıştır. İLET_DURUM, müşteri etkileşimleri ile ilgili diğer kolonlarla (örneğin, iletişim tarihi) birlikte değerlendirilmelidir.",
+          "description": "MUS_ILETISIM tablosundaki ILET_DURUM kolonu, son 90 gün içinde müşteri iletişim durumunu temsil eder ve üç farklı değere sahiptir: 0 (iletişim yok), 1 (iletişim var) ve 2 (iletişim tercihleri mevcut). Bu kolon, müşteri iletişim tercihleri ve kanalları ile ilgili karar süreçlerinde kullanılmakta olup, müşteri etkileşimlerinin izlenmesine yardımcı olur. İLET_DURUM kolonu, müşteri iletişim tarihleri ile ilişkilidir ve bu nedenle müşteri etkileşimlerinin zamanlaması ile birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1589,13 +1595,13 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "Belirsiz/eksik açıklama",
+            "Belirsiz açıklama",
             "Validation hatası",
             "İngilizce açıklama",
             "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama, son 90 gün ifadesi ile çelişiyor ve 30 gün ifadesiyle karışıklık yaratıyor. Ayrıca, DISTINCT sayısı 4 olarak belirtilmişken, bilinen değerler sadece 0, 1 ve 2'yi içeriyor. Bu durum, veri kalitesi açısından sorun teşkil ediyor.",
+          "feedback": "Açıklama net değil ve son 90 gün ifadesi ile 30 gün arasındaki çelişki düzeltilmeli. Ayrıca, DISTINCT sayısı 4 olarak belirtilmişken, bilinen değerler sadece 0, 1 ve 2'dir. Bu durum, veri kalitesini olumsuz etkileyebilir.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
@@ -1607,11 +1613,15 @@
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
-          "critic_score": 1,
-          "risk_level": "LOW_RISK",
-          "issues": [],
-          "feedback": "",
-          "needs_regeneration": false,
+          "critic_score": 0,
+          "risk_level": "HIGH_RISK",
+          "issues": [
+            "Belirsiz açıklama",
+            "Lookup tablosu eksik",
+            "Validation hatası yok"
+          ],
+          "feedback": "MUSTERI_NO alanının açıklaması daha net olmalı. Ayrıca, DISTINCT sayısı ve bilinen değerler hakkında bilgi sağlanmalı.",
+          "needs_regeneration": true,
           "clarity_score": 100
         }
       ]
@@ -1641,23 +1651,16 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             {
-              "issue": "Belirsiz/eksik açıklama",
-              "description": "Açıklama, müşteri kimlik numarasının ne amaçla kullanıldığına dair daha fazla bilgi vermiyor."
+              "issue": "Belirsiz/eksik açıklama"
             },
             {
-              "issue": "Lookup eksikliği",
-              "description": "Müşteri numaralarının hangi müşteri bilgileriyle ilişkilendirileceği hakkında bilgi yok."
+              "issue": "Lookup eksikliği"
             },
             {
-              "issue": "Validation hatası",
-              "description": "Distinct sayısı bilinmiyor, bu da veri kalitesini etkileyebilir."
-            },
-            {
-              "issue": "İngilizce açıklama",
-              "description": "Açıklama Türkçe verilmiş, İngilizce versiyonu yok."
+              "issue": "Validation hatası"
             }
           ],
-          "feedback": "",
+          "feedback": "Açıklama daha detaylı olmalı, DISTINCT sayısı ve bilinen değerler belirtilmeli.",
           "needs_regeneration": true,
           "clarity_score": 60
         },
@@ -1669,7 +1672,7 @@
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
-          "critic_score": 1,
+          "critic_score": 2,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -1679,7 +1682,7 @@
         {
           "column_name": "RISK_SINIF",
           "data_type": "VARCHAR(10)",
-          "description": "RISK.RISK_IZLEME tablosundaki RISK_SINIF kolonu, her bir müşteri için hesaplanan risk skorunun sınıflandırılmasını belirtir ve üç değer alabilir: 'LOW' (Düşük), 'MEDIUM' (Orta) ve 'HIGH' (Yüksek). Bu sınıflandırma, müşteri bazında risk yönetimi süreçlerinde kullanılmakta olup, risk skoru ile birlikte değerlendirilmelidir. Müşteri risk durumu, bu kolonun değerine göre belirlenen iş kurallarına dayanarak yönetilmektedir.",
+          "description": "RISK.RISK_IZLEME tablosundaki RISK_SINIF kolonu, her müşterinin risk durumunu belirten sınıflandırmayı ifade eder ve bu sınıflar 'LOW', 'MEDIUM' ve 'HIGH' olarak tanımlanmıştır. Bu kolon, müşteri bazlı risk skorları ve limit aşım bilgileri ile birlikte kullanılarak risk yönetimi süreçlerinde önemli bir rol oynamaktadır. RISK_SINIF, RISK_SKOR kolonu ile ilişkilidir ve risk değerlendirmesi için temel bir referans sağlar.",
           "description_quality": "generated",
           "cardinality": "low",
           "distinct_count": 3,
@@ -1716,7 +1719,7 @@
         {
           "column_name": "LIMI_NO",
           "data_type": "VARCHAR(20)",
-          "description": "LIM_NO, RISK.RISK_LIMIT tablosunda her bir risk limitinin benzersiz tanımlayıcısıdır. Bu alan, risk limitinin izlenmesi ve yönetilmesi için kullanılır ve her limit kaydı için zorunlu bir değerdir. İlgili müşteri bilgileri, MUSTERI_NO kolonu ile ilişkilidir.",
+          "description": "RISK.RISK_LIMIT tablosundaki LIM_NO kolonu, her bir risk limitinin benzersiz tanımlayıcısını temsil eder. Bu alan, risk limitlerinin izlenmesi ve yönetilmesi için kritik öneme sahiptir ve diğer ilgili kolonlar olan LIM_TARIH (limitin geçerlilik tarihi) ve MUSTERI_NO (ilgili müşteri numarası) ile birlikte kullanılır. LIM_NO, sistemdeki risk limitlerinin tutarlılığını sağlamak amacıyla, her limit için yalnızca bir kez tanımlanmalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1725,20 +1728,20 @@
           "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
-          "feedback": "Açıklama genel olarak net ve anlaşılır. Ancak, DISTINCT SAYISI ve BİLİNEN DEĞERLER gibi bazı bilgiler eksik. Bu nedenle, tam bir değerlendirme yapmak için daha fazla bilgiye ihtiyaç var.",
+          "feedback": "",
           "needs_regeneration": false,
           "clarity_score": 100
         },
         {
           "column_name": "LIMI_TARIH",
           "data_type": "DATE",
-          "description": "RISK.RISK_LIMIT tablosundaki LIM_TARIH kolonu, limitin geçerli olduğu tarihi belirtir. Bu tarih, limitin uygulamaya alındığı veya güncellendiği zamanı ifade eder ve ilgili limitin geçerlilik süresi ile ilişkilidir. LIM_TARIH, limitin izlenmesi ve yönetilmesi açısından kritik bir öneme sahiptir.",
+          "description": "LIM_TARIH, RISK.RISK_LIMIT tablosunda yer alan ve limitin geçerli olduğu tarihi ifade eden bir DATE veri tipine sahip kolondur. Bu tarih, limitin başlangıç tarihini belirtir ve limitin geçerlilik süresi ile ilgili iş kurallarının uygulanmasında kritik bir rol oynar. İlgili kolonlar arasında LIM_NO (limit numarası) ve LIM_DURUM (limit durumu) bulunmaktadır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": false,
           "original_description": "LIMI_TARIH bilgisidir.",
-          "critic_score": 3,
+          "critic_score": 4,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -1748,7 +1751,7 @@
         {
           "column_name": "LIMI_KOD",
           "data_type": "NUMBER(2)",
-          "description": "RISK.RISK_LIMIT tablosundaki LIM_KOD kolonu, limit tanımları için kullanılan bir kodu temsil eder ve 0, 1, 2 değerlerini alabilir. Bu değerler, LKP_LIMIT lookup tablosunda tanımlı olan limit türlerini belirtmektedir. Bu kolon, limitin geçerlilik durumunu belirlemek için LIM_DURUM kolonu ile birlikte kullanılmalıdır.",
+          "description": "LIMI_KOD, RISK.RISK_LIMIT tablosunda yer alan ve limit tanımını belirten bir koddur. Bu kolon, limitin türünü belirtmek için kullanılır ve değerleri LKP_LIMIT lookup tablosunda tanımlanmıştır; bilinen değerler 0, 1 ve 2'dir. Bu kolon, limitin geçerlilik durumunu belirten LIM_DURUM kolonu ile birlikte değerlendirilmelidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -1766,18 +1769,19 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz/eksik açıklama",
+            "Lookup eksikliği",
             "Validation hatası",
-            "İngilizce açıklama mevcut",
+            "İngilizce açıklama",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "Açıklama daha net olmalı ve validation hatası giderilmelidir.",
+          "feedback": "",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "LIMI_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "RISK.RISK_LIMIT tablosundaki LIM_DURUM kolonu, limitin geçerlilik durumunu belirtir ve üç olası değere sahiptir: 0 (Geçersiz), 1 (Geçerli), 2 (İptal Edilmiş). Bu kolon, limitin kullanım sürecindeki durumunu izlemek için kritik öneme sahiptir. İlgili kolonlar arasında LIM_TARIH (limitin başlangıç tarihi) ile birlikte değerlendirilmelidir.",
+          "description": "RISK.RISK_LIMIT tablosundaki LIM_DURUM kolonu, limitin mevcut durumunu belirtir ve üç olası değere sahiptir: 0 (Geçersiz), 1 (Geçerli) ve 2 (Askıya Alınmış). Bu kolon, limitin kullanım durumunu izlemek için kritik öneme sahiptir ve MUSTERI_NO kolonu ile ilişkilidir. Mevcut açıklama, bu alanın işlevini yeterince net bir şekilde ifade etmemektedir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -1801,13 +1805,13 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "MUSTERI_NO, RISK.RISK_LIMIT tablosunda yer alan ve limit tanımları ile kullanım özetlerinin müşteri bazında izlenmesini sağlayan bir kimlik numarasıdır. Bu kolon, müşteri bilgilerini tutan bir referans tablosuna (MUSTERI) bağlıdır ve her müşteri için benzersiz bir değer içermelidir. Limit tanımları, müşteri bazında belirlenen risk limitlerini yönetmek amacıyla kullanılır.",
+          "description": "MUSTERI_NO, RISK.RISK_LIMIT tablosunda yer alan ve her bir limit kaydının ilişkilendirildiği müşteri numarasını temsil eden bir alandır. Bu kolon, müşteri bilgilerini tutan bir referans tablosuna (MUSTERI) bağlıdır ve her müşteri için benzersiz bir numara olmalıdır. Limit tanımları, müşteri bazında risk yönetimi süreçlerinde kullanılır ve bu nedenle zorunlu bir alandır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
           "nullable": true,
           "original_description": null,
-          "critic_score": 4,
+          "critic_score": 3,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -1844,10 +1848,7 @@
               "issue": "Tablo açıklaması eksik."
             },
             {
-              "issue": "RAPO_NO alanı açıklaması belirsiz."
-            },
-            {
-              "issue": "Orijinal açıklama yok."
+              "issue": "Kolon açıklaması belirsiz."
             },
             {
               "issue": "Distinct sayısı bilinmiyor."
@@ -1857,9 +1858,6 @@
             },
             {
               "issue": "Bilinen değerler yok."
-            },
-            {
-              "issue": "Validation sorunu yok, ancak açıklama yetersiz."
             }
           ],
           "feedback": "",
@@ -1869,7 +1867,7 @@
         {
           "column_name": "RAPO_TARIH",
           "data_type": "DATE",
-          "description": "RISK.RISK_RAPOR tablosundaki RAPO_TARIH kolonu, raporun oluşturulduğu tarihi belirtir ve bu tarih, raporun geçerliliği ve zamanlaması açısından kritik öneme sahiptir. Bu kolon, DATE veri tipinde olup, raporların zaman dilimlerine göre analiz edilmesine olanak tanır. Rapor tarihine bağlı olarak, ilgili raporların güncelliği ve doğruluğu sağlanmalıdır.",
+          "description": "RISK.RISK_RAPOR tablosundaki RAPO_TARIH kolonu, risk raporunun oluşturulduğu tarihi belirtir. Bu tarih, raporun geçerliliği ve zamanlaması açısından kritik öneme sahiptir. Rapor tarihine göre, ilgili risk analizleri ve değerlendirmeleri yapılır; bu nedenle, doğru ve güncel bir tarih bilgisi sağlanması gerekmektedir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1885,7 +1883,7 @@
         {
           "column_name": "RAPO_KOD",
           "data_type": "NUMBER(2)",
-          "description": "RISK.RISK_RAPOR tablosundaki RAPO_KOD, rapor türünü tanımlayan iki haneli bir sayıdır. Bu kolon, LKP_RAPOR lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler [0, 1, 2] olarak belirlenmiştir. Rapor türleri, risk yönetimi süreçlerinde önemli bir rol oynar ve her bir kod, belirli bir rapor formatını veya içeriğini temsil eder.",
+          "description": "RISK.RISK_RAPOR tablosundaki RAPO_KOD, rapor türünü tanımlayan iki basamaklı bir sayıdır. Bu kolon, LKP_RAPOR adlı lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler 0, 1 ve 2'dir. Rapor kodları, raporun içeriği ve amacı hakkında bilgi sağlamak için kullanılır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -1922,19 +1920,19 @@
           "critic_score": 0,
           "risk_level": "HIGH_RISK",
           "issues": [
-            "Tablo açıklaması eksik",
-            "Kolon açıklaması belirsiz",
-            "Lookup tablosu yok",
+            "Belirsiz açıklama",
+            "Lookup tablosu eksik",
+            "Orijinal açıklama yok",
             "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
           ],
-          "feedback": "Kolon açıklaması daha net ve kapsamlı hale getirilmeli. Lookup tablosu eklenmeli veya mevcut değerler için açıklama sağlanmalı.",
+          "feedback": "RAPO_DURUM alanının açıklaması daha net ve detaylı olmalı. Ayrıca, bu alana ait bir lookup tablosu oluşturulması önerilir.",
           "needs_regeneration": true,
           "clarity_score": 80
         },
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "MUSTERI_NO, RISK.RISK_RAPOR tablosunda yer alan ve rapor edilen müşteri numarasını temsil eden bir alandır. Bu kolon, müşteri bilgilerini içeren bir referans tablosuna bağlıdır ve her müşteri için benzersiz bir tanımlayıcıdır. Rapor, son 90 gün içerisindeki müşteri verilerini içermektedir.",
+          "description": "MUSTERI_NO, RISK.RISK_RAPOR tablosunda yer alan ve müşteri kimliğini temsil eden bir numaradır. Bu kolon, son 90 gün içinde raporlanan müşteri verilerini içermektedir ve müşteri bilgileri ile ilişkili diğer tablolarla (örneğin, RISK_IZLEME) bağlantılıdır. İş kuralı olarak, her müşteri numarası benzersiz olmalı ve sistemdeki tüm raporlamalarda tutarlı bir şekilde kullanılmalıdır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1945,12 +1943,11 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz/eksik açıklama",
-            "Lookup eksikliği",
             "Validation hatası",
             "İngilizce açıklama",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "",
+          "feedback": "Açıklama net değil ve son 90 gün ile ilgili tutarsızlık var. Validation sorunları da mevcut.",
           "needs_regeneration": true,
           "clarity_score": 100
         }
@@ -1970,7 +1967,7 @@
         {
           "column_name": "AML_NO",
           "data_type": "VARCHAR(20)",
-          "description": "AML_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama (AML) izleme kayıtlarını tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, her bir AML kaydının ayırt edilmesini sağlamakta olup, ilgili müşteri kaydıyla (MUSTERI_NO) ilişkilidir. AML_NO, kara para aklama ile ilgili işlemlerin izlenmesi ve raporlanması amacıyla kullanılmaktadır.",
+          "description": "AML_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama (AML) izleme kayıtlarını tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, her bir AML kaydının ayırt edilmesini sağlamakta olup, diğer ilgili kolonlar olan AML_TARIH (işlem tarihi) ve MUSTERI_NO (müşteri numarası) ile birlikte kullanılarak işlem geçmişinin izlenmesine olanak tanır. AML_NO, kara para aklama ile ilgili düzenlemelere uyum sağlamak amacıyla gereklidir ve her kaydın doğruluğunu ve geçerliliğini sağlamak için kullanılmaktadır.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1986,7 +1983,7 @@
         {
           "column_name": "AML_TARIH",
           "data_type": "DATE",
-          "description": "AML_TARIH — RISK.RISK_AML tablosunda yer alan bu kolon, kara para aklama ve uyum izleme kayıtlarının oluşturulduğu tarihi belirtir. Bu tarih, son 90 gün içinde kaydedilen işlemleri kapsar ve AML_KOD ile AML_DURUM kolonları ile birlikte değerlendirilerek işlem durumunu belirlemek için kullanılır.",
+          "description": "AML_TARIH, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarının oluşturulduğu tarihi ifade eder. Bu kolon, her kaydın son 90 gün içinde oluşturulmuş olduğunu belirtir ve ilgili kayıtların güncelliğini takip etmek için kullanılır. AML_TARIH, AML_NO ile birlikte değerlendirilerek her bir kaydın zamanlaması hakkında bilgi sağlar.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -1997,19 +1994,18 @@
           "risk_level": "HIGH_RISK",
           "issues": [
             "Belirsiz/eksik açıklama",
-            "Lookup eksikliği",
             "Validation hatası",
             "İngilizce açıklama",
             "VALUE MISMATCH: Documented range does not match production samples."
           ],
-          "feedback": "",
+          "feedback": "Açıklama net değil ve validation hatası mevcut. Ayrıca, İngilizce açıklama da bulunmakta.",
           "needs_regeneration": true,
           "clarity_score": 100
         },
         {
           "column_name": "AML_KOD",
           "data_type": "NUMBER(2)",
-          "description": "RISK.RISK_AML tablosundaki AML_KOD, kara para aklama ve uyum izleme süreçlerinde kullanılan bir kod alanıdır. Bu alan, LKP_AML lookup tablosunda tanımlanan değerlerden birini alabilir: 0 (uygun değil), 1 (uygun) veya 2 (şüpheli). AML_KOD, AML_DURUM kolonu ile birlikte değerlendirilerek müşteri risk profili oluşturulmasında önemli bir rol oynamaktadır.",
+          "description": "RISK.RISK_AML tablosundaki AML_KOD, kara para aklama ve uyum izleme süreçlerinde kullanılan bir durum kodunu temsil eder. Bu kolon, LKP_AML lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler [0: \"Geçersiz\", 1: \"Geçerli\", 2: \"İnceleme Gerektiriyor\"] şeklindedir. AML_KOD, AML_DURUM kolonu ile birlikte kullanılarak müşteri işlemlerinin risk durumunu belirlemek için kritik bir rol oynamaktadır.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": true,
@@ -2022,7 +2018,7 @@
           ],
           "lookup_table": "LKP_AML",
           "original_description": "AML_KOD için tutulan alan.",
-          "critic_score": 3,
+          "critic_score": 1,
           "risk_level": "LOW_RISK",
           "issues": [],
           "feedback": "",
@@ -2032,7 +2028,7 @@
         {
           "column_name": "AML_DURUM",
           "data_type": "NUMBER(1)",
-          "description": "AML_DURUM, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarının durumunu belirten bir alandır. Bu kolon, 0 (Aktif), 1 (Pasif) ve 2 (İptal) gibi bilinen değerleri içermektedir. Bu durum, müşteri kayıtlarının izlenmesi ve yönetilmesi için kritik öneme sahiptir.",
+          "description": "AML_DURUM, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarının durumunu belirten bir alandır. Bu kolon, üç olası değere sahiptir: 0 (Aktif), 1 (Pasif) ve 2 (İptal). İlgili kayıtların güncel durumunu yansıtmakta olup, müşteri numarası (MUSTERI_NO) ile ilişkilidir.",
           "description_quality": "generated",
           "cardinality": "low",
           "has_lookup": false,
@@ -2056,7 +2052,7 @@
         {
           "column_name": "MUSTERI_NO",
           "data_type": "NUMBER(10)",
-          "description": "MUSTERI_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarına ait müşteri numarasını temsil eden bir alandır. Bu kolon, müşteri bilgilerini tanımlamak için kullanılır ve ilgili müşteri bilgileri genellikle MÜŞTERİ tablosunda yer alır. Bu alandaki değerler, her bir kara para aklama kaydı için benzersiz olmalıdır ve boş bırakılamaz.",
+          "description": "MUSTERI_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarına ait müşteri numarasını temsil eden bir alandır. Bu kolon, her müşteri için benzersiz bir kimlik numarasıdır ve ilgili müşteri bilgileri için referans olarak kullanılabilir. Müşteri numarası, AML süreçlerinde müşteri tanımlama ve izleme amacıyla kritik öneme sahiptir.",
           "description_quality": "generated",
           "cardinality": "high",
           "has_lookup": false,
@@ -2080,13 +2076,13 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz/eksik açıklama",
-          "Lookup eksikliği",
+          "Lookup tablosu eksik",
           "Validation hatası",
           "İngilizce açıklama",
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
           "VALUE MISMATCH: Documented values [0,1,2] but DB contains value 3 as well. LKP table missing."
         ],
-        "description": "HESAP_DURUM_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka hesaplarının durumunu belirten bir koddur. Bu kolonun alabileceği değerler şunlardır: 0 (Aktif), 1 (Pasif) ve 2 (Kapalı); ayrıca 3 değerinin varlığı incelenmelidir. HESAP_DURUM_KOD, hesapların geçerli bir MUSTERI_NO ile ilişkilendirilmesi gereken iş kuralı ile birlikte değerlendirilmelidir."
+        "description": "HESAP_DURUM_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve hesapların durumunu belirten bir alandır. Bu kolon, hesapların aktif (0), pasif (1) veya kapalı (2) olduğunu gösterir; ayrıca 3 değeri mevcutsa bu durumun incelenmesi gerekmektedir. HESAP_DURUM_KOD'un LKP tablosuna referansı bulunmamaktadır, bu nedenle değerlerin doğruluğu için kontrol edilmesi önemlidir."
       },
       {
         "table": "CORE_BANKING.XXX_MUSTERI",
@@ -2098,7 +2094,7 @@
           "İngilizce açıklama",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "MUST_TARIH, CORE_BANKING.XXX_MUSTERI tablosunda yer alan ve müşterinin kayıt tarihini temsil eden bir DATE kolonudur. Bu kolon, müşteri ana verisinin oluşturulduğu tarihi gösterir ve müşteri bilgileri ile ilgili işlemlerin zamanlamasını belirlemek için kullanılır. Bu tarih, müşteri ile ilgili diğer tarih bilgileriyle (örneğin, son güncelleme tarihi) ilişkilendirilerek iş süreçlerinin izlenmesine olanak tanır."
+        "description": "MUST_TARIH, CORE_BANKING.XXX_MUSTERI tablosunda müşteri kaydının oluşturulma tarihini belirtir. Bu kolon, müşteri ana verisinin güncelliğini takip etmek için kullanılır ve son 90 gün içinde oluşturulan kayıtları kapsar. İlgili tarih bilgisi, müşteri ile ilişkili diğer tarih kolonlarıyla (örneğin, güncelleme tarihi) birlikte değerlendirilmelidir."
       },
       {
         "table": "CORE_BANKING.XXX_MUSTERI",
@@ -2107,7 +2103,7 @@
         "issues": [
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "MUST_DURUM, CORE_BANKING.XXX_MUSTERI tablosundaki müşteri ana verisinin durumunu belirtir ve bu değerler [0: Pasif, 1: Aktif, 2: Beklemede] şeklinde tanımlanmıştır. Müşteri durumunun güncellenmesi, müşteri ilişkileri yönetimi ve raporlama süreçlerinde kritik bir rol oynamaktadır. Bu kolon, müşteri kaydıyla ilişkili diğer tarihsel bilgilerle (örneğin, MUST_TARIH) birlikte değerlendirilmelidir."
+        "description": "MUST_DURUM, CORE_BANKING.XXX_MUSTERI tablosundaki müşteri ana verisinin durumunu belirten bir alandır ve 0, 1 veya 2 değerlerini alabilir. Bu değerler, müşteri kaydının aktif (1), pasif (0) veya beklemede (2) olduğunu gösterir. Müşteri durumu, müşteri ile ilgili diğer işlemler ve kayıtlar için önemli bir iş kuralıdır."
       },
       {
         "table": "CORE_BANKING.XXX_ISLEM",
@@ -2116,7 +2112,7 @@
         "issues": [
           "Tablo açıklaması eksik",
           "Kolon açıklaması belirsiz",
-          "Lookup tablosunda bazı değerler eksik"
+          "Lookup tablosunda bilinmeyen değer var"
         ],
         "description": "ISLE_KOD alanı; iş kurallarına uygun tam açıklama."
       },
@@ -2125,9 +2121,12 @@
         "column": "ISLE_DURUM",
         "risk_level": "HIGH_RISK",
         "issues": [
+          "Tablo açıklaması eksik",
+          "Orijinal açıklama eksik",
+          "Distinct sayısı beklenenden fazla",
           "LOW CARDINALITY (6 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "ISLE_DURUM kolonu, CORE_BANKING.XXX_ISLEM tablosunda işlem durumunu temsil eder ve bu kolonun alabileceği değerler 0 (İşlem Beklemede), 1 (İşlem Tamamlandı) ve 2 (İşlem İptal Edildi) şeklindedir. Bu değerler, işlemin mevcut durumunu belirlemek için kullanılır ve müşteri işlemleri ile ilgili iş kurallarını destekler. İlgili kolonlar arasında ISLM_TARIH (işlem tarihi) bulunmaktadır."
+        "description": "ISLEM_DURUM kolonu, CORE_BANKING.XXX_ISLEM tablosunda işlem durumunu temsil eder ve 0, 1, 2 değerlerini alabilir. Bu değerler sırasıyla \"İptal\", \"Tamamlandı\" ve \"Beklemede\" durumlarını ifade eder. İşlem durumu, ilgili işlemin geçerliliğini ve sürecini belirlemek için kullanılır."
       },
       {
         "table": "CORE_BANKING.XXX_KART",
@@ -2135,11 +2134,12 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz/eksik açıklama",
+          "Lookup eksikliği",
           "Validation hatası",
-          "İngilizce açıklama mevcut",
+          "İngilizce açıklama",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "KART_NO, CORE_BANKING.XXX_KART tablosunda yer alan ve bir debit/kredi kartının benzersiz numarasını temsil eden VARCHAR(20) veri tipindeki bir alandır. Bu kolon, her kart için tekil bir kimlik sağlamakta olup, kartın işlemlerinin izlenmesi ve yönetilmesi açısından kritik öneme sahiptir. KART_NO, ilgili kartın hesap bilgileriyle ilişkilendirilmesi için XXX_HESAP tablosundaki hesap numarasıyla birlikte kullanılabilir."
+        "description": "KART_NO, CORE_BANKING.XXX_KART tablosunda yer alan ve bir debit/kredi kartının benzersiz numarasını temsil eden VARCHAR(20) veri tipindeki bir kolondur. Bu kolon, kartın tanımlanmasında kullanılır ve her kart için eşsiz bir değer olmalıdır. KART_NO, kartın geçerlilik süresi ve kart sahibinin bilgileri gibi diğer kolonlarla birlikte değerlendirilmelidir."
       },
       {
         "table": "CORE_BANKING.XXX_KART",
@@ -2149,10 +2149,11 @@
           "Belirsiz/eksik açıklama",
           "Validation hatası",
           "Lookup eksikliği",
+          "İngilizce açıklama",
           "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "KART_DURUM, CORE_BANKING.XXX_KART tablosunda yer alan ve kartın durumunu gösteren bir alandır. Bu kolon, kartın aktif (1), pasif (0) veya askıya alınmış (2) olduğunu belirtir. Kart durumu, kartın kullanım süresi ve geçerliliği ile ilgili iş kurallarına tabidir ve son 90 gün içerisindeki durumu yansıtır."
+        "description": "KART_DURUM, CORE_BANKING.XXX_KART tablosunda yer alan ve kartın durumunu gösteren bir alandır. Bu kolon, kartın aktif (1), pasif (0) veya askıya alınmış (2) olduğunu belirtir. Kart durumu, kartın geçerlilik süresi ve kullanım durumu ile ilişkilidir; bu nedenle, kartın son 90 gün içindeki işlem geçmişi ile değerlendirilmelidir."
       },
       {
         "table": "CORE_BANKING.XXX_KART",
@@ -2160,8 +2161,8 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz açıklama",
-          "Lookup tablosu eksik",
-          "Validation hatası yok"
+          "Lookup eksikliği",
+          "Validation hatası"
         ],
         "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama."
       },
@@ -2172,7 +2173,7 @@
         "issues": [
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
         ],
-        "description": "KOD kolonu, CORE_BANKING.LKP_HESAP_TIP tablosunda yer alan hesap tipi lookup kodunu temsil eder. Bu kolon, hesap türlerini tanımlamak için kullanılan ve [1, 2, 3, 4, 5] değerlerini içeren bir referans tablosudur. Hesap tipleri, bankacılık işlemlerinde hesapların sınıflandırılmasında önemli bir rol oynamaktadır."
+        "description": "KOD kolonu, CORE_BANKING.LKP_HESAP_TIP tablosunda yer alan hesap tipi lookup kodunu temsil eder. Bu kolon, hesap türlerini tanımlamak için kullanılan ve [1, 2, 3, 4, 5] değerlerini içeren bir referans tablosudur. Her bir kod, belirli bir hesap tipini ifade eder ve bu bilgiler, hesap açılışında ve işlemlerinde kullanılmak üzere önemlidir."
       },
       {
         "table": "CORE_BANKING.LKP_SUBE",
@@ -2181,16 +2182,15 @@
         "issues": [
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "KOD, CORE_BANKING.LKP_SUBE tablosunda şube kodlarını temsil eden bir alandır ve her bir şube için benzersiz bir tanımlayıcıdır. Mevcut değerler [0, 1, 2] olarak belirlenmiştir ve bu değerler, şubelerin farklı kategorilerini veya durumlarını ifade edebilir. Bu kolon, şube ile ilgili işlemlerde referans olarak kullanılmakta olup, ilgili hesap ve müşteri bilgileri ile ilişkilidir."
+        "description": "KOD kolonu, CORE_BANKING.LKP_SUBE tablosunda şube kodlarını temsil eden bir alandır. Bu kolon, bankanın şubelerini tanımlamak için kullanılan sayısal kodları içerir ve mevcut değerler [0, 1, 2] olarak belirlenmiştir. Şube kodları, bankacılık işlemlerinin doğru bir şekilde yönlendirilmesi ve izlenmesi için kritik öneme sahiptir."
       },
       {
         "table": "CORE_BANKING.LKP_SUBE",
         "column": "ACIKLAMA",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "Belirsiz/eksik açıklama",
-          "Lookup tablosu yok",
-          "Orijinal açıklama yok",
+          "Açıklama belirsiz ve eksik.",
+          "Lookup tablosu yok.",
           "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['A', 'B', 'C']"
         ],
         "description": "ACIKLAMA alanı; iş kurallarına uygun tam açıklama."
@@ -2201,7 +2201,7 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Tablo açıklaması eksik",
-          "Kod alanı açıklaması belirsiz",
+          "KOD alanı açıklaması belirsiz",
           "Lookup tablosu yok",
           "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
@@ -2214,7 +2214,7 @@
         "issues": [
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['A', 'B', 'C']"
         ],
-        "description": "LKP_DOVIZ tablosundaki ACIKLAMA kolonu, döviz türlerinin tanımlayıcı açıklamalarını içermektedir. Bu kolonda yer alan değerler, dövizlerin kategorilerini belirtmekte olup, bilinen değerler arasında 'A', 'B' ve 'C' bulunmaktadır. Bu açıklama, döviz işlemleri ve finansal raporlamalar için referans olarak kullanılmaktadır."
+        "description": "LKP_DOVIZ tablosundaki ACIKLAMA kolonu, döviz türlerinin açıklamalarını içermektedir. Bu kolon, 'A', 'B' ve 'C' gibi bilinen değerlerle sınırlıdır ve her bir değer, ilgili döviz türünün tanımını temsil eder. Bu açıklama, döviz işlemleri ve finansal raporlamalar için referans olarak kullanılmaktadır."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
@@ -2223,7 +2223,7 @@
         "issues": [
           "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4]"
         ],
-        "description": "CREDIT.KRD_MUS_KREDI tablosundaki KRD_MUS_KOBI_TIP kolonu, TMMOB tarafından belirlenen KOBİ (Küçük ve Orta Büyüklükteki İşletmeler) tipini temsil eder ve bu alanın alabileceği değerler 1, 2, 3 ve 4'tür. Bu değerler, KOBİ'nin büyüklük kategorisini belirlemek için kullanılır ve ilgili referans tablosu mevcut değildir. KRD_MUS_KOBI_TIP, kredi başvurusu ile ilgili müşteri bilgilerini sınıflandırmak amacıyla kullanılır."
+        "description": "KRD_MUS_KOBI_TIP, CREDIT.KRD_MUS_KREDI tablosunda, KOBİ (Küçük ve Orta Büyüklükteki İşletmeler) tipini tanımlamak için kullanılan bir alandır. Bu alan, TMMOB tarafından belirlenen dört farklı KOBİ tipini (1: Mikro, 2: Küçük, 3: Orta, 4: Büyük) temsil eder. KRD_MUS_KOBI_TIP, kredi başvurusu ile ilgili müşteri bilgilerini sınıflandırmak amacıyla kullanılır ve bu nedenle KRD_DURUM ve ISLEM_TARIHI gibi diğer kolonlarla birlikte değerlendirilmelidir."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
@@ -2233,7 +2233,7 @@
           "Validation issue: Column name suggests 30 days (30GCK) but description says 60 days.",
           "VALUE MISMATCH: Column name suggests 30 days (30GCK) but description says 60 days. Mismatch detected."
         ],
-        "description": "CREDIT.KRD_MUS_KREDI tablosundaki INT_SHK_A_30GCK_ADT_LM kolonu, Akbank hariç, son 60 gün içerisinde müşterinin kredi kartı açık bakiyesini temsil etmektedir. Bu değer, kredi kartı hesaplarının güncel durumunu izlemek için kullanılmakta olup, kredi kartı açılış tarihi ile ilişkilidir. Kredi kartı açık bakiyesi, müşteri kredi durumu ve ödeme planları açısından önemli bir iş kuralıdır."
+        "description": "CREDIT.KRD_MUS_KREDI tablosundaki INT_SHK_A_30GCK_ADT_LM kolonu, Akbank hariç kredi kartı açık olan müşterilerin son 60 gün içerisindeki kredi kartı harcama tutarını temsil etmektedir. Bu kolon, kredi kartı harcamalarının izlenmesi ve müşteri kredi riskinin değerlendirilmesi amacıyla kullanılmaktadır. Harcama tutarları, kredi kartı işlemleri ile ilgili diğer kolonlarla (örneğin, KRD_TUTAR) ilişkilidir."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
@@ -2242,7 +2242,7 @@
         "issues": [
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "KRD_DURUM kolonu, CREDIT.KRD_MUS_KREDI tablosunda yer alan kredi durumunu belirtir. Bu kolonun alabileceği değerler şunlardır: 0 (Aktif), 1 (Kapalı) ve 2 (Takipteki Alacak - NPL). Kredi durumu, kredi işleminin mevcut durumunu yansıtmakta olup, ISLEM_TARIHI ile birlikte değerlendirilmelidir."
+        "description": "KRD_DURUM kolonu, CREDIT.KRD_MUS_KREDI tablosunda yer alan kredi durumunu belirtir. Bu kolonun alabileceği değerler şunlardır: 0=Aktif, 1=Kapalı, 2=Takipteki Kredi (NPL). Kredi durumu, kredi işleminin mevcut durumunu yansıtmakta olup, ISLEM_TARIHI ile birlikte değerlendirilmelidir."
       },
       {
         "table": "CREDIT.KRD_TEMINAT",
@@ -2261,16 +2261,20 @@
         "issues": [
           "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "CREDIT.KRD_TEMINAT tablosundaki TEM_DURUM kolonu, kredi teminatlarının durumunu belirtir ve üç olası değere sahiptir: 0 (Geçersiz), 1 (Geçerli) ve 2 (İptal Edilmiş). Bu kolon, teminatın geçerliliğini izlemek için kullanılır ve ilgili kayıtların güncellenmesi gerektiğinde dikkate alınmalıdır. TEM_DURUM, teminatın tarihsel durumu ile birlikte değerlendirilmelidir."
+        "description": "CREDIT.KRD_TEMINAT tablosundaki TEM_DURUM kolonu, kredi teminatının mevcut durumunu belirtir ve üç olası değer içerir: 0 (Geçersiz), 1 (Geçerli), 2 (İptal Edilmiş). Bu kolon, kredi teminatlarının yönetimi ve izlenmesi için kritik öneme sahiptir. İlgili kayıtların tarih bilgisi için TEM_TARIH kolonu referans alınmalıdır."
       },
       {
         "table": "CREDIT.KRD_ODEME_PLAN",
         "column": "PLAN_NO",
         "risk_level": "HIGH_RISK",
         "issues": [
+          "Belirsiz açıklama",
+          "Lookup tablosu eksik",
+          "Validation hatası",
+          "İngilizce açıklama mevcut",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "PLAN_NO — Kredi taksit ve ödeme planı tablosunda yer alan, her bir ödeme planını tanımlayan benzersiz kimlik numarasıdır. Bu kolon, kredi taksitlerinin düzenli bir şekilde takip edilmesi için kullanılır ve ilgili referans tablosu KRD_MUS_KREDI'dir. Mevcut açıklama, kolonun işlevini doğru yansıtmamaktadır; bu nedenle, \"son 90 gün toplamı\" ifadesi yerine \"her bir ödeme planının benzersiz kimlik numarası\" olarak düzeltilmiştir."
+        "description": "PLAN_NO — Kredi taksit ve ödeme planı tablosunda yer alan, her bir ödeme planını tanımlayan benzersiz kimlik numarasıdır. Bu kolon, kredi taksitlerinin düzenli bir şekilde takip edilmesi için kullanılır ve ilgili referans tablosu KRD_MUS_KREDI'dir. Mevcut açıklama, yanlış bir bilgi içermekte olup, bu kolonun işlevini doğru bir şekilde yansıtmamaktadır."
       },
       {
         "table": "CREDIT.KRD_ODEME_PLAN",
@@ -2283,34 +2287,27 @@
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "PLAN_DURUM — Kredi taksit ve ödeme planı tablosundaki bu kolon, ödeme planının durumunu belirtir. Bilinen değerler: 0 (Aktif), 1 (Tamamlandı), 2 (İptal Edildi). Bu kolon, ödeme planının geçerliliği ile ilgili iş kurallarını yansıtır ve ilgili tarih bilgileriyle (örn. ödeme tarihi) birlikte değerlendirilmelidir."
+        "description": "PLAN_DURUM — Kredi taksit ve ödeme planı tablosunda, ödeme planının durumunu belirtir. Bilinen değerler: 0 (Aktif), 1 (Tamamlandı), 2 (İptal Edildi). Bu kolon, ödeme planının geçerliliğini ve durumunu izlemek için kullanılır."
       },
       {
         "table": "CREDIT.KRD_ODEME_PLAN",
         "column": "MUSTERI_NO",
         "risk_level": "HIGH_RISK",
-        "issues": [],
-        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama."
-      },
-      {
-        "table": "CREDIT.KRD_BASVURU",
-        "column": "BASV_NO",
-        "risk_level": "HIGH_RISK",
         "issues": [
-          "Tablo açıklaması eksik.",
-          "Orijinal açıklama yetersiz.",
-          "Distinct sayısı bilinmiyor."
+          "Belirsiz açıklama",
+          "Lookup tablosu eksik",
+          "Validation hatası yok ama açıklama yetersiz"
         ],
-        "description": "KRD_BASVURU tablosundaki BASV_NO, her başvuru için benzersiz bir kimlik numarasıdır ve başvuru sürecinin takibi için kullanılır. Bu kolon, başvuru tarihine (BASV_TARIH) ve müşteri numarasına (MUSTERI_NO) referans verir. Başvuru durumu (BASV_DURUM) gibi diğer kolonlarla birlikte, başvuru sürecinin yönetilmesine yardımcı olur."
+        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama."
       },
       {
         "table": "CREDIT.KRD_BASVURU",
         "column": "BASV_TARIH",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "Belirsiz açıklama",
-          "Lookup tablosu eksik",
-          "Validation hatası yok ama açıklama yetersiz"
+          "Tablo açıklaması eksik",
+          "Orijinal açıklama yok",
+          "Bilinmeyen değerler var"
         ],
         "description": "BASV_TARIH alanı; iş kurallarına uygun tam açıklama."
       },
@@ -2319,7 +2316,7 @@
         "column": "BASV_KOD",
         "risk_level": "HIGH_RISK",
         "issues": [],
-        "description": "BASV_KOD, CREDIT.KRD_BASVURU tablosunda yer alan ve başvuru türünü tanımlayan bir alandır. Bu kolon, LKP_BASVUR lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler [0, 1, 2] olarak belirlenmiştir. Başvuru kodu, başvuru durumunu belirlemek için kullanılır ve BASV_DURUM kolonu ile birlikte değerlendirilmelidir."
+        "description": "BASV_KOD, CREDIT.KRD_BASVURU tablosunda yer alan ve başvuru türünü tanımlayan bir alandır. Bu kolon, LKP_BASVUR adlı lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler 0 (Yeni Başvuru), 1 (Devam Eden Başvuru) ve 2 (Tamamlanan Başvuru) olarak belirlenmiştir. Başvuru durumu ile birlikte değerlendirilerek, başvurunun hangi aşamada olduğunu belirlemek için kullanılır."
       },
       {
         "table": "CREDIT.KRD_BASVURU",
@@ -2328,7 +2325,7 @@
         "issues": [
           "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "KRD_BASVURU tablosundaki BASV_DURUM kolonu, başvuru durumunu temsil eden bir kod değeridir. Bu kolonun alabileceği değerler şunlardır: 0 (Başvuru Beklemede), 1 (Başvuru Onaylandı), 2 (Başvuru Reddedildi). Başvuru durumu, başvuru tarihi (BASV_TARIH) ile birlikte değerlendirilerek, başvurunun mevcut durumunu belirlemekte kullanılır."
+        "description": "KRD_BASVURU tablosundaki BASV_DURUM kolonu, başvuru durumunu temsil eden bir kod değeridir. Bu kolonun alabileceği değerler şunlardır: 0 (Beklemede), 1 (Onaylandı), 2 (Reddedildi). Başvuru durumu, başvuru tarihi (BASV_TARIH) ile birlikte değerlendirilerek başvurunun mevcut durumunu belirler."
       },
       {
         "table": "CREDIT.KRD_GARANTI",
@@ -2340,7 +2337,7 @@
           "İngilizce açıklama",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "GARA_KOD, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet ile garanti ilişkilerini tanımlayan bir alandır. Bu kolon, kefalet türünü belirtmek için kullanılır ve mevcut değerleri [0: Yok, 1: Var, 2: Belirsiz] şeklindedir; bu değerler LKP_GARANT referans tablosunda tanımlanmıştır. GARA_KOD, kefaletin geçerlilik süresi ile ilgili diğer kolonlarla (örneğin, valör tarihi) birlikte değerlendirilmelidir."
+        "description": "GARA_KOD, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet ile garanti ilişkilerini tanımlayan bir alandır. Bu kolon, kefalet türlerini belirtmek için kullanılır ve değerleri LKP_GARANT referans tablosundaki [0: Yok, 1: Var, 2: Belirsiz] seçeneklerini içerir. Mevcut açıklama, son 90 gün toplamı olarak belirtilmişken, bu kolonun anlamı kefalet durumunu ifade etmektedir."
       },
       {
         "table": "CREDIT.KRD_GARANTI",
@@ -2349,14 +2346,7 @@
         "issues": [
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "GARA_DURUM, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet ile garanti ilişkilerinin durumunu belirten bir alandır. Bu alan, 0 (Geçersiz), 1 (Geçerli) ve 2 (İptal Edilmiş) değerlerini alabilir. GARA_DURUM, ilgili garanti işleminin geçerliliğini izlemek için kullanılır ve bu nedenle KRD_MUS_KREDI tablosundaki müşteri bilgileri ile ilişkilidir."
-      },
-      {
-        "table": "CRM.MUS_SEGMENTASYON",
-        "column": "MUSTERI_NO",
-        "risk_level": "HIGH_RISK",
-        "issues": [],
-        "description": "Müşteri kimlik numarasıdır."
+        "description": "CREDIT.KRD_GARANTI tablosundaki GARA_DURUM kolonu, kefalet ve garanti ilişkilerinin durumunu belirtir. Bu alan, 0 (Geçersiz), 1 (Geçerli) ve 2 (İptal Edilmiş) değerlerini alabilir. GARA_DURUM, garanti işlemlerinin yönetimi için kritik bir iş kuralı olup, ilgili işlemlerin izlenmesi ve raporlanması açısından önemlidir."
       },
       {
         "table": "CRM.MUS_SEGMENTASYON",
@@ -2365,7 +2355,7 @@
         "issues": [
           "LOW CARDINALITY (5 distinct değer) ama LKP tablosu yok. Bilinen değerler: [1, 2, 3, 4, 5]"
         ],
-        "description": "GELIR_GRUBU, CRM.MUS_SEGMENTASYON tablosunda yer alan ve müşterilerin gelir düzeylerini sınıflandıran bir kod alanıdır. Bu alan, 1 ile 5 arasında değişen değerler alarak, müşterilerin gelir gruplarını belirler; 1 en düşük gelir grubunu, 5 ise en yüksek gelir grubunu temsil eder. Gelir grubu kodu, müşteri segmentasyonu ve pazarlama stratejilerinin belirlenmesinde önemli bir rol oynamaktadır."
+        "description": "GELIR_GRUBU kolonu, CRM.MUS_SEGMENTASYON tablosunda müşteri segmentasyonu için gelir grubu kodunu temsil eder. Bu kolon, müşterilerin gelir düzeylerini belirlemek amacıyla 1 ile 5 arasında kodlanmış değerler içermektedir; burada 1 en düşük gelir grubunu, 5 ise en yüksek gelir grubunu ifade eder. Gelir grubu kodları, müşteri analitiği ve hedefleme stratejileri için kritik bir referans noktasıdır."
       },
       {
         "table": "CRM.LKP_SEGMENT",
@@ -2374,7 +2364,7 @@
         "issues": [
           "LOW CARDINALITY (6 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "KOD kolonu, CRM.LKP_SEGMENT tablosunda yer alan segment kodlarını temsil eder ve bu kodlar, müşteri segmentasyonunu belirlemek için kullanılır. Mevcut değerler arasında 0, 1 ve 2 bulunmaktadır; bu değerler, farklı müşteri gruplarını tanımlamak için referans alınır. Bu kolon, segmentasyon süreçlerinde doğru veri analizi ve hedefleme için kritik öneme sahiptir."
+        "description": "LKP_SEGMENT tablosundaki KOD kolonu, müşteri segmentlerini tanımlamak için kullanılan sayısal kodları içermektedir. Mevcut değerler arasında 0, 1 ve 2 bulunmaktadır; bu değerler, müşteri segmentasyonunu belirlemek için referans alınan lookup değerleridir. Bu kolon, segmentasyon süreçlerinde kullanılmakta olup, ilgili diğer kolonlarla birlikte müşteri ilişkileri yönetimi stratejilerinin oluşturulmasında önemli bir rol oynamaktadır."
       },
       {
         "table": "CRM.LKP_SEGMENT",
@@ -2383,7 +2373,7 @@
         "issues": [
           "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['A', 'B', 'C']"
         ],
-        "description": "LKP_SEGMENT tablosundaki ACIKLAMA kolonu, segment kodlarının tanımlarını içermektedir. Bu kolon, 'A', 'B' ve 'C' gibi bilinen değerlerle segmentlerin özelliklerini açıklamak için kullanılmaktadır. Her bir segment kodu, müşteri segmentasyonu süreçlerinde önemli bir rol oynamaktadır."
+        "description": "LKP_SEGMENT tablosundaki ACIKLAMA kolonu, segment kodlarının açıklamalarını içermektedir. Bu kolon, 'A', 'B' ve 'C' gibi bilinen değerlerle ilişkilidir ve her bir segmentin ne anlama geldiğini tanımlamak için kullanılmaktadır. Bu açıklama, CRM sistemindeki müşteri segmentasyonunu daha iyi anlamak ve yönetmek amacıyla önemlidir."
       },
       {
         "table": "CRM.KAMPANYA_HEDEF",
@@ -2391,8 +2381,7 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz açıklama",
-          "Lookup tablosu ile ilgili eksiklik",
-          "Açıklama eksikliği"
+          "Lookup tablosu ile ilgili eksiklikler"
         ],
         "description": "HEDE_KOD alanı; iş kurallarına uygun tam açıklama."
       },
@@ -2403,33 +2392,43 @@
         "issues": [
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "KAMPANYA_HEDEF tablosundaki HEDE_DURUM kolonu, kampanyanın hedef durumunu belirtir ve üç olası değere sahiptir: 0 (Aktif değil), 1 (Aktif) ve 2 (Tamamlandı). Bu kolon, kampanya yönetimi süreçlerinde hedeflerin izlenmesi ve değerlendirilmesi için kritik öneme sahiptir. İlgili diğer kolonlar arasında kampanya başlangıç tarihi ve bitiş tarihi yer alabilir."
+        "description": "KAMPANYA_HEDEF tablosundaki HEDE_DURUM kolonu, kampanyanın hedef durumunu belirtir ve üç olası değere sahiptir: 0 (Aktif değil), 1 (Aktif) ve 2 (Tamamlandı). Bu kolon, kampanya yönetimi süreçlerinde hedeflerin izlenmesi ve raporlanması için kritik öneme sahiptir. İlgili kolonlar arasında kampanya başlangıç tarihi ve bitiş tarihi gibi zaman bilgileri yer alabilir."
       },
       {
         "table": "CRM.MUS_ILETISIM",
         "column": "ILET_NO",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "Belirsiz açıklama",
-          "Lookup tablosu eksikliği",
+          "Belirsiz/eksik açıklama",
           "Validation hatası",
           "İngilizce açıklama mevcut",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "ILET_NO — CRM.MUS_ILETISIM tablosunda yer alan bu kolon, müşterilerin iletişim kanallarını tanımlamak için kullanılan benzersiz bir numaradır. Bu numara, müşteri iletişim tercihleri ve kanallarıyla ilgili verilerin yönetilmesinde kritik bir rol oynar. İletişim kanallarıyla ilgili referans değerleri, ilgili lookup tablolarında bulunabilir."
+        "description": "ILET_NO — Müşteri iletişim kanalı tercihlerini tanımlayan benzersiz iletişim numarasıdır. Bu kolon, CRM.MUS_ILETISIM tablosunda yer almakta olup, müşteri iletişim bilgileri ile ilişkilidir. İletişim numarası, müşteri ile yapılan son 90 gün içindeki etkileşimlerde kullanılmaktadır."
       },
       {
         "table": "CRM.MUS_ILETISIM",
         "column": "ILET_DURUM",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "Belirsiz/eksik açıklama",
+          "Belirsiz açıklama",
           "Validation hatası",
           "İngilizce açıklama",
           "LOW CARDINALITY (4 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "MUS_ILETISIM tablosundaki ILET_DURUM kolonu, son 90 gün içinde müşteri iletişim durumunu temsil eder ve üç olası değere sahiptir: 0 (iletişim yok), 1 (iletişim var) ve 2 (iletişim tercihleri mevcut). Bu kolon, müşteri iletişim tercihleri ve kanalları ile ilgili karar alma süreçlerinde kullanılmak üzere tasarlanmıştır. İLET_DURUM, müşteri etkileşimleri ile ilgili diğer kolonlarla (örneğin, iletişim tarihi) birlikte değerlendirilmelidir."
+        "description": "MUS_ILETISIM tablosundaki ILET_DURUM kolonu, son 90 gün içinde müşteri iletişim durumunu temsil eder ve üç farklı değere sahiptir: 0 (iletişim yok), 1 (iletişim var) ve 2 (iletişim tercihleri mevcut). Bu kolon, müşteri iletişim tercihleri ve kanalları ile ilgili karar süreçlerinde kullanılmakta olup, müşteri etkileşimlerinin izlenmesine yardımcı olur. İLET_DURUM kolonu, müşteri iletişim tarihleri ile ilişkilidir ve bu nedenle müşteri etkileşimlerinin zamanlaması ile birlikte değerlendirilmelidir."
+      },
+      {
+        "table": "CRM.MUS_ILETISIM",
+        "column": "MUSTERI_NO",
+        "risk_level": "HIGH_RISK",
+        "issues": [
+          "Belirsiz açıklama",
+          "Lookup tablosu eksik",
+          "Validation hatası yok"
+        ],
+        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama."
       },
       {
         "table": "RISK.RISK_IZLEME",
@@ -2437,20 +2436,13 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           {
-            "issue": "Belirsiz/eksik açıklama",
-            "description": "Açıklama, müşteri kimlik numarasının ne amaçla kullanıldığına dair daha fazla bilgi vermiyor."
+            "issue": "Belirsiz/eksik açıklama"
           },
           {
-            "issue": "Lookup eksikliği",
-            "description": "Müşteri numaralarının hangi müşteri bilgileriyle ilişkilendirileceği hakkında bilgi yok."
+            "issue": "Lookup eksikliği"
           },
           {
-            "issue": "Validation hatası",
-            "description": "Distinct sayısı bilinmiyor, bu da veri kalitesini etkileyebilir."
-          },
-          {
-            "issue": "İngilizce açıklama",
-            "description": "Açıklama Türkçe verilmiş, İngilizce versiyonu yok."
+            "issue": "Validation hatası"
           }
         ],
         "description": "Müşteri kimlik numarası."
@@ -2462,7 +2454,7 @@
         "issues": [
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: ['LOW', 'MEDIUM', 'HIGH']"
         ],
-        "description": "RISK.RISK_IZLEME tablosundaki RISK_SINIF kolonu, her bir müşteri için hesaplanan risk skorunun sınıflandırılmasını belirtir ve üç değer alabilir: 'LOW' (Düşük), 'MEDIUM' (Orta) ve 'HIGH' (Yüksek). Bu sınıflandırma, müşteri bazında risk yönetimi süreçlerinde kullanılmakta olup, risk skoru ile birlikte değerlendirilmelidir. Müşteri risk durumu, bu kolonun değerine göre belirlenen iş kurallarına dayanarak yönetilmektedir."
+        "description": "RISK.RISK_IZLEME tablosundaki RISK_SINIF kolonu, her müşterinin risk durumunu belirten sınıflandırmayı ifade eder ve bu sınıflar 'LOW', 'MEDIUM' ve 'HIGH' olarak tanımlanmıştır. Bu kolon, müşteri bazlı risk skorları ve limit aşım bilgileri ile birlikte kullanılarak risk yönetimi süreçlerinde önemli bir rol oynamaktadır. RISK_SINIF, RISK_SKOR kolonu ile ilişkilidir ve risk değerlendirmesi için temel bir referans sağlar."
       },
       {
         "table": "RISK.RISK_LIMIT",
@@ -2470,11 +2462,12 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz/eksik açıklama",
+          "Lookup eksikliği",
           "Validation hatası",
-          "İngilizce açıklama mevcut",
+          "İngilizce açıklama",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "RISK.RISK_LIMIT tablosundaki LIM_KOD kolonu, limit tanımları için kullanılan bir kodu temsil eder ve 0, 1, 2 değerlerini alabilir. Bu değerler, LKP_LIMIT lookup tablosunda tanımlı olan limit türlerini belirtmektedir. Bu kolon, limitin geçerlilik durumunu belirlemek için LIM_DURUM kolonu ile birlikte kullanılmalıdır."
+        "description": "LIMI_KOD, RISK.RISK_LIMIT tablosunda yer alan ve limit tanımını belirten bir koddur. Bu kolon, limitin türünü belirtmek için kullanılır ve değerleri LKP_LIMIT lookup tablosunda tanımlanmıştır; bilinen değerler 0, 1 ve 2'dir. Bu kolon, limitin geçerlilik durumunu belirten LIM_DURUM kolonu ile birlikte değerlendirilmelidir."
       },
       {
         "table": "RISK.RISK_LIMIT",
@@ -2483,7 +2476,7 @@
         "issues": [
           "LOW CARDINALITY (6 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "RISK.RISK_LIMIT tablosundaki LIM_DURUM kolonu, limitin geçerlilik durumunu belirtir ve üç olası değere sahiptir: 0 (Geçersiz), 1 (Geçerli), 2 (İptal Edilmiş). Bu kolon, limitin kullanım sürecindeki durumunu izlemek için kritik öneme sahiptir. İlgili kolonlar arasında LIM_TARIH (limitin başlangıç tarihi) ile birlikte değerlendirilmelidir."
+        "description": "RISK.RISK_LIMIT tablosundaki LIM_DURUM kolonu, limitin mevcut durumunu belirtir ve üç olası değere sahiptir: 0 (Geçersiz), 1 (Geçerli) ve 2 (Askıya Alınmış). Bu kolon, limitin kullanım durumunu izlemek için kritik öneme sahiptir ve MUSTERI_NO kolonu ile ilişkilidir. Mevcut açıklama, bu alanın işlevini yeterince net bir şekilde ifade etmemektedir."
       },
       {
         "table": "RISK.RISK_RAPOR",
@@ -2494,10 +2487,7 @@
             "issue": "Tablo açıklaması eksik."
           },
           {
-            "issue": "RAPO_NO alanı açıklaması belirsiz."
-          },
-          {
-            "issue": "Orijinal açıklama yok."
+            "issue": "Kolon açıklaması belirsiz."
           },
           {
             "issue": "Distinct sayısı bilinmiyor."
@@ -2507,9 +2497,6 @@
           },
           {
             "issue": "Bilinen değerler yok."
-          },
-          {
-            "issue": "Validation sorunu yok, ancak açıklama yetersiz."
           }
         ],
         "description": "RAPO_NO alanı; iş kurallarına uygun tam açıklama."
@@ -2519,9 +2506,9 @@
         "column": "RAPO_DURUM",
         "risk_level": "HIGH_RISK",
         "issues": [
-          "Tablo açıklaması eksik",
-          "Kolon açıklaması belirsiz",
-          "Lookup tablosu yok",
+          "Belirsiz açıklama",
+          "Lookup tablosu eksik",
+          "Orijinal açıklama yok",
           "LOW CARDINALITY (7 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
         "description": "RAPO_DURUM alanı; iş kurallarına uygun tam açıklama."
@@ -2532,12 +2519,11 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz/eksik açıklama",
-          "Lookup eksikliği",
           "Validation hatası",
           "İngilizce açıklama",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "MUSTERI_NO, RISK.RISK_RAPOR tablosunda yer alan ve rapor edilen müşteri numarasını temsil eden bir alandır. Bu kolon, müşteri bilgilerini içeren bir referans tablosuna bağlıdır ve her müşteri için benzersiz bir tanımlayıcıdır. Rapor, son 90 gün içerisindeki müşteri verilerini içermektedir."
+        "description": "MUSTERI_NO, RISK.RISK_RAPOR tablosunda yer alan ve müşteri kimliğini temsil eden bir numaradır. Bu kolon, son 90 gün içinde raporlanan müşteri verilerini içermektedir ve müşteri bilgileri ile ilişkili diğer tablolarla (örneğin, RISK_IZLEME) bağlantılıdır. İş kuralı olarak, her müşteri numarası benzersiz olmalı ve sistemdeki tüm raporlamalarda tutarlı bir şekilde kullanılmalıdır."
       },
       {
         "table": "RISK.RISK_AML",
@@ -2545,12 +2531,11 @@
         "risk_level": "HIGH_RISK",
         "issues": [
           "Belirsiz/eksik açıklama",
-          "Lookup eksikliği",
           "Validation hatası",
           "İngilizce açıklama",
           "VALUE MISMATCH: Documented range does not match production samples."
         ],
-        "description": "AML_TARIH — RISK.RISK_AML tablosunda yer alan bu kolon, kara para aklama ve uyum izleme kayıtlarının oluşturulduğu tarihi belirtir. Bu tarih, son 90 gün içinde kaydedilen işlemleri kapsar ve AML_KOD ile AML_DURUM kolonları ile birlikte değerlendirilerek işlem durumunu belirlemek için kullanılır."
+        "description": "AML_TARIH, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarının oluşturulduğu tarihi ifade eder. Bu kolon, her kaydın son 90 gün içinde oluşturulmuş olduğunu belirtir ve ilgili kayıtların güncelliğini takip etmek için kullanılır. AML_TARIH, AML_NO ile birlikte değerlendirilerek her bir kaydın zamanlaması hakkında bilgi sağlar."
       },
       {
         "table": "RISK.RISK_AML",
@@ -2559,7 +2544,7 @@
         "issues": [
           "LOW CARDINALITY (3 distinct değer) ama LKP tablosu yok. Bilinen değerler: [0, 1, 2]"
         ],
-        "description": "AML_DURUM, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarının durumunu belirten bir alandır. Bu kolon, 0 (Aktif), 1 (Pasif) ve 2 (İptal) gibi bilinen değerleri içermektedir. Bu durum, müşteri kayıtlarının izlenmesi ve yönetilmesi için kritik öneme sahiptir."
+        "description": "AML_DURUM, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarının durumunu belirten bir alandır. Bu kolon, üç olası değere sahiptir: 0 (Aktif), 1 (Pasif) ve 2 (İptal). İlgili kayıtların güncel durumunu yansıtmakta olup, müşteri numarası (MUSTERI_NO) ile ilişkilidir."
       }
     ],
     "low_risk_columns": [
@@ -2568,28 +2553,28 @@
         "column": "HESAP_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "HESAP_NO, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir banka hesabını benzersiz şekilde tanımlayan bir alandır. Bu kolon, IBAN formatında 26 karakter olarak tutulmakta olup, \"TR\" ile başlayan, 2 kontrol hanesi, 4 banka kodu ve 16 hesap numarasından oluşmaktadır. HESAP_NO, NULL olamaz ve her hesap için benzersiz olma zorunluluğu vardır."
+        "description": "HESAP_NO, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların benzersiz tanımlayıcısıdır. Bu kolon, IBAN formatında 26 karakter olarak tutulmakta olup, `TR` ile başlayan, 2 kontrol hanesi, 4 banka kodu ve 16 hesap numarasını içermektedir. HESAP_NO, NULL olamaz ve her hesap için benzersiz olma zorunluluğu vardır."
       },
       {
         "table": "CORE_BANKING.XXX_HESAP",
         "column": "ACILIS_TARIHI",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "ACILIS_TARIHI, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların resmi açılış tarihini gösteren bir tarih kolonudur. Valörlü açılan hesaplar için bu tarih, fiziksel açılış tarihi yerine valör tarihini ifade eder; bu durumda `VALOR_TARIHI` kolonuna başvurulmalıdır. Bu kolon NULL olamaz ve her hesap için geçerli bir açılış tarihi sağlanması zorunludur."
+        "description": "ACILIS_TARIHI, CORE_BANKING.XXX_HESAP tablosunda yer alan ve banka müşterilerine ait hesapların resmi açılış tarihini ifade eden bir tarih kolonudur. Ticari veya bireysel hesaplar için bu tarih, fiziksel açılış tarihi yerine valör tarihini temsil edebilir; bu durumda, gerçek açılış tarihi ile valör tarihi arasındaki farkı anlamak için VALOR_TARIHI kolonuna başvurulmalıdır. Bu kolon NULL olamaz ve her hesap için geçerli bir tarih bilgisi sağlamalıdır."
       },
       {
         "table": "CORE_BANKING.XXX_HESAP",
         "column": "VALOR_TARIHI",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "`VALOR_TARIHI` kolonu, CORE_BANKING.XXX_HESAP tablosunda yer alan ve valörlü açılan hesapların geçerli valör tarihini tutan bir DATE veri tipine sahip alandır. Bu kolon, hesapların açılış tarihleri ile birlikte değerlendirilerek, hesapların işlem tarihleri için önemli bir referans noktasıdır; standart hesaplarda NULL değer alabilir. Valör tarihinin, hesap açılış tarihi ile karıştırılmaması için `ACILIS_TARIHI` kolonu ile birlikte dikkate alınması gerekmektedir."
+        "description": "### VALOR_TARIHI\nCORE_BANKING.XXX_HESAP tablosundaki VALOR_TARIHI, valörlü açılan hesaplar için geçerli olan tarih bilgisidir ve hesapların işlem tarihlerini belirlemek amacıyla kullanılır. Bu kolon, standart hesaplarda NULL değer alabilir ve açılış tarihi ile ayrı tutulması gereken bir bilgidir; dolayısıyla, hesapların gerçek açılış tarihi için ACILIS_TARIHI kolonuna başvurulmalıdır."
       },
       {
         "table": "CORE_BANKING.XXX_HESAP",
         "column": "HESAP_TIP_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "HESAP_TIP_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir hesabın türünü belirten bir kodudur. Bu kolon, LKP_HESAP_TIP tablosundan gelen değerleri kullanarak hesap tiplerini tanımlar; alabileceği değerler şunlardır: 1 (Vadesiz), 2 (Vadeli), 3 (Döviz), 4 (Altın) ve 5 (Yatırım). Her hesabın geçerli bir HESAP_TIP_KOD değerine sahip olması zorunludur."
+        "description": "HESAP_TIP_KOD, CORE_BANKING.XXX_HESAP tablosunda yer alan ve her bir hesabın tipini belirten bir kodudur. Bu kolon, LKP_HESAP_TIP tablosundan gelen değerleri kullanarak hesap türlerini tanımlar; alabileceği değerler şunlardır: 1 (Vadesiz), 2 (Vadeli), 3 (Döviz), 4 (Altın) ve 5 (Yatırım). Bu kolon, hesap açılış tarihi (ACILIS_TARIHI) ve valör tarihi (VALOR_TARIHI) ile birlikte, hesapların yönetimi ve izlenmesi açısından önemlidir."
       },
       {
         "table": "CORE_BANKING.XXX_HESAP",
@@ -2603,70 +2588,70 @@
         "column": "SUBE_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "### SUBE_KOD\nCORE_BANKING.XXX_HESAP tablosundaki SUBE_KOD, banka hesaplarının hangi şubeye ait olduğunu belirten bir kodu temsil eder ve LKP_SUBE tablosundan alınan değerleri referans alır. Bu kolon, hesapların yönetimi ve raporlaması açısından önemlidir; dolayısıyla, her hesap için geçerli bir SUBE_KOD değeri bulunması gerekmektedir. HESAP_NO ve ACILIS_TARIHI gibi diğer kolonlarla birlikte, hesabın açıldığı şubenin takibi için kritik bir rol oynamaktadır."
+        "description": "### SUBE_KOD\nCORE_BANKING.XXX_HESAP tablosundaki SUBE_KOD, bankanın şubelerini tanımlayan ve LKP_SUBE tablosundan gelen 4 haneli bir kodu temsil eder. Bu kolon, her hesabın hangi şubeye ait olduğunu belirtir ve hesapların yönetimi için önemlidir. İş kuralı olarak, SUBE_KOD NULL olamaz ve geçerli bir şube kodu ile ilişkilendirilmelidir."
       },
       {
         "table": "CORE_BANKING.XXX_MUSTERI",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUSTERI_NO, CORE_BANKING.XXX_MUSTERI tablosunda yer alan ve her müşteriyi benzersiz bir şekilde tanımlayan müşteri numarasıdır. Bu kolon, müşteri ana verisi için temel bir kimlik bilgisi olup, müşteri ile ilgili diğer tablolarda (örneğin, hesap ve işlem tablolarında) referans olarak kullanılmaktadır. Müşteri numarası, sistemdeki her müşteri kaydının doğruluğunu ve bütünlüğünü sağlamak amacıyla zorunlu bir alan olarak tanımlanmıştır."
+        "description": "MUSTERI_NO, CORE_BANKING.XXX_MUSTERI tablosunda yer alan ve her müşteriyi benzersiz bir şekilde tanımlayan müşteri numarasıdır. Bu kolon, müşteri ana verisi için temel bir kimlik bilgisi olup, diğer tablolarla (örneğin, XXX_HESAP) ilişkilendirilerek müşteri işlemlerinin takibini sağlar. MUSTERI_NO, NUMBER(10) veri tipinde olup, NULL değer alamaz ve her müşteri için zorunlu bir bilgidir."
       },
       {
         "table": "CORE_BANKING.XXX_MUSTERI",
         "column": "MUST_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUST_KOD, CORE_BANKING.XXX_MUSTERI tablosunda müşteri ana verisi için tanımlanan bir kod alanıdır ve müşteri türünü belirtir. Bu alan, LKP_MUSTER lookup tablosundaki değerlerle ilişkilidir; mevcut değerler [0, 1, 2] olarak tanımlanmıştır. Müşteri durumu (MUST_DURUM) ile birlikte kullanılarak müşteri yönetim süreçlerinde önemli bir rol oynar."
+        "description": "MUST_KOD, CORE_BANKING.XXX_MUSTERI tablosunda müşteri ana verisi için tanımlanan bir kod alanıdır ve müşteri türünü belirtir. Bu alan, LKP_MUSTER lookup tablosundaki değerlerle ilişkilidir; mevcut değerler [0, 1, 2] olarak tanımlanmıştır. Müşteri durumu (MUST_DURUM) ile birlikte kullanılarak müşteri segmentasyonu ve yönetimi için iş kurallarını destekler."
       },
       {
         "table": "CORE_BANKING.XXX_ISLEM",
         "column": "ISLE_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "ISLEM_NO, CORE_BANKING.XXX_ISLEM tablosundaki her bir işlem kaydını benzersiz şekilde tanımlayan bir numaradır. Bu kolon, işlemlerin tarihine göre partition'lanmış olan tabloda, işlem tarihine (ISLM_TARIH) bağlı olarak anahtar olarak kullanılmaktadır. ISLEM_NO, müşteri işlemlerinin takibi ve yönetimi için kritik bir öneme sahiptir."
+        "description": "ISLE_NO, CORE_BANKING.XXX_ISLEM tablosundaki her bir işlem kaydını benzersiz şekilde tanımlayan bir kimlik numarasıdır. Bu kolon, işlemin tarihine (ISLM_TARIH) bağlı olarak birincil anahtarın bir parçasını oluşturur ve her işlem için eşsiz bir referans sağlar. İşlem kaydı, müşteri numarası (MUSTERI_NO) ile ilişkilidir ve işlemin durumunu (ISLM_DURUM) belirleyen diğer kolonlarla birlikte kullanılır."
       },
       {
         "table": "CORE_BANKING.XXX_ISLEM",
         "column": "ISLE_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "ISLE_TARIH, CORE_BANKING.XXX_ISLEM tablosunda yer alan ve her bir işlemin gerçekleştirildiği tarihi temsil eden DATE veri tipinde bir kolondur. Bu kolon, işlemlerin zamanlamasını takip etmek için kritik öneme sahiptir ve ISLM_NO ile birlikte birincil anahtar olarak kullanılmaktadır. İşlem tarihleri, finansal raporlama ve analiz süreçlerinde önemli bir referans noktasıdır."
+        "description": "ISLE_TARIH, CORE_BANKING.XXX_ISLEM tablosundaki işlemin gerçekleştirildiği tarihi ifade eder. Bu kolon, işlemlerin tarihsel kaydını tutarak, müşteri hesap hareketlerinin zamanlamasını belirlemek için kullanılır. İlgili kolon olan ISLM_NO ile birlikte, her bir işlemin benzersiz tanımlanmasını sağlar."
       },
       {
         "table": "CORE_BANKING.XXX_ISLEM",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUSTERI_NO, CORE_BANKING.XXX_ISLEM tablosunda işlem gerçekleştiren müşterinin benzersiz kimlik numarasını temsil eder. Bu alan, müşteri bilgilerini tutan CORE_BANKING.XXX_MUSTERI tablosundaki MUSTERI_NO ile ilişkilidir ve her işlem kaydı için zorunlu bir bilgidir. İşlem tarihine göre partition'lanmış olan bu tablo, müşteri işlemlerinin izlenmesi ve yönetilmesi amacıyla kullanılmaktadır."
+        "description": "MUSTERI_NO, CORE_BANKING.XXX_ISLEM tablosunda yer alan ve işlem yapılan müşteriyi tanımlayan benzersiz numaradır. Bu alan, XXX_MUSTERI tablosundaki müşteri kayıtlarıyla ilişkilidir ve her işlem kaydının hangi müşteriye ait olduğunu belirler. Müşteri numarası, işlem tarihine bağlı olarak geçerli olan müşteri bilgilerini doğrulamak için kullanılmalıdır."
       },
       {
         "table": "CORE_BANKING.XXX_KART",
         "column": "KART_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KART_TARIH, CORE_BANKING.XXX_KART tablosunda yer alan ve bir debit/kredi kartının geçerlilik tarihini temsil eden DATE veri tipindeki alandır. Bu alan, kartın aktif olduğu tarih aralığını belirlemek için kullanılır ve genellikle KART_AKTIF_TARIH ile ilişkilidir. Kartın geçerlilik süresi dolduğunda, ilgili işlemler için bu tarih kontrol edilmelidir."
+        "description": "KART_TARIH, CORE_BANKING şemasındaki XXX_KART tablosunda yer alan ve bir debit/kredi kartının geçerlilik tarihini temsil eden DATE veri tipindeki alandır. Bu alan, kartın aktif olduğu tarih aralığını belirlemek için kullanılır ve genellikle kartın açılış tarihi ile ilişkilidir. Kartın geçerlilik süresi dolduğunda, ilgili işlemler için geçersiz hale gelir."
       },
       {
         "table": "CORE_BANKING.XXX_KART",
         "column": "KART_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KART_KOD, CORE_BANKING.XXX_KART tablosunda yer alan ve debit/kredi kartı ana verisini tanımlayan iki basamaklı bir sayıdır. Bu kolon, kart türlerini belirtmek için kullanılır ve LKP_KART lookup tablosundaki değerlerle ilişkilidir; mevcut değerler [0, 1, 2] olarak tanımlanmıştır. Kart kodu, kartın işlevselliği ve türü hakkında bilgi sağlar ve diğer ilgili kolonlarla (örneğin, kart sahibi bilgisi) birlikte değerlendirilmelidir."
+        "description": "KART_KOD, CORE_BANKING.XXX_KART tablosunda yer alan ve her bir debit/kredi kartını benzersiz şekilde tanımlayan iki haneli bir sayıdır. Bu kolon, LKP_KART lookup tablosundaki değerlerle ilişkilidir; mevcut değerler 0, 1 ve 2'dir. KART_KOD, kartın türünü belirlemek için kullanılır ve diğer ilgili kolonlarla (örneğin, kartın geçerlilik tarihi) birlikte değerlendirilmelidir."
       },
       {
         "table": "CORE_BANKING.LKP_HESAP_TIP",
         "column": "ACIKLAMA",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "LKP_HESAP_TIP tablosundaki ACIKLAMA kolonu, farklı hesap tiplerini tanımlayan açıklamaları içermektedir. Bu kolon, 'Vadesiz', 'Vadeli', 'Döviz', 'Altın' ve 'Yatırım' gibi belirli değerlerle ilişkilidir ve hesap türlerinin sınıflandırılmasında kullanılır. Hesap tipleri, müşteri hesaplarının yönetimi ve finansal işlemlerin gerçekleştirilmesi için önemlidir."
+        "description": "LKP_HESAP_TIP tablosundaki ACIKLAMA kolonu, hesap türlerini tanımlayan açıklamaları içermektedir. Bu kolonda yer alan değerler, 'Vadesiz', 'Vadeli', 'Döviz', 'Altın' ve 'Yatırım' gibi hesap tiplerini belirtmektedir. Hesap türleri, müşteri hesaplarının yönetimi ve işlem süreçlerinde önemli bir rol oynamaktadır."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
         "column": "KRD_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KRD_NO, CREDIT şemasındaki KRD_MUS_KREDI tablosunda yer alan ve her bir kredi işlemini benzersiz şekilde tanımlayan kredi numarasıdır. Bu kolon, kredi işlemlerinin izlenmesi ve yönetilmesi için kritik öneme sahiptir ve her kredi işlemi için birincil anahtarın bir parçasıdır. KRD_NO, kredi başvurusu ve müşteri bilgileri ile ilişkilidir; dolayısıyla, ilgili müşteri numarası (MUSTERI_NO) ile birlikte kullanılmalıdır."
+        "description": "KRD_MUS_KREDI tablosundaki KRD_NO kolonu, her bir kredi işlemini benzersiz bir şekilde tanımlayan kredi numarasıdır. Bu numara, kredi işlemlerinin izlenmesi ve yönetilmesi için kritik öneme sahiptir. KRD_NO, kredi işlemi tarihine (ISLEM_TARIHI) bağlı olarak, her işlem için farklılık gösterebilir ve bu nedenle kredi geçmişinin doğruluğu için önemlidir."
       },
       {
         "table": "CREDIT.KRD_MUS_KREDI",
@@ -2680,112 +2665,119 @@
         "column": "TEMI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "TEM_NO, CREDIT.KRD_TEMINAT tablosunda yer alan her bir kredi teminatının benzersiz tanımlayıcısıdır. Bu kolon, kredi teminat ve rehin kayıtlarının izlenmesi için kullanılır ve her bir teminat kaydının diğer ilgili kolonlarla (örneğin, TEM_TARIH, TEM_KOD) ilişkilendirilmesine olanak tanır. Bu nedenle, TEM_NO değeri, teminatın geçerliliği ve durumu hakkında bilgi sağlayan önemli bir referans noktasıdır."
+        "description": "TEM_NO, CREDIT şemasındaki KRD_TEMINAT tablosunda yer alan ve kredi teminatı veya rehin kaydını benzersiz şekilde tanımlayan bir alandır. Bu kolon, kredi teminatı işlemlerinin takibi için gereklidir ve her bir teminat kaydının referans numarasını temsil eder. TEM_NO, KRD_MUS_KREDI tablosundaki müşteri numarası (MUSTERI_NO) ile ilişkilidir ve teminatın geçerliliği için ilgili tarih ve durum bilgileri ile birlikte kullanılmalıdır."
       },
       {
         "table": "CREDIT.KRD_TEMINAT",
         "column": "TEMI_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KRD_TEMINAT tablosundaki TEMI_TARIH kolonu, kredi teminat ve rehin kayıtlarının oluşturulma tarihini ifade eder. Bu tarih, teminatın geçerlilik süresi ve yönetimi açısından önemlidir; dolayısıyla, ilgili kayıtların güncellenmesi ve izlenmesi için kritik bir referans noktasıdır. TEMI_TARIH, teminatın başlangıç tarihini belirlemek için kullanılabilir ve bu bağlamda diğer tarih kolonlarıyla (örneğin, valör tarihi) ilişkilidir."
+        "description": "KRD_TEMINAT tablosundaki TEMI_TARIH kolonu, kredi teminat ve rehin kayıtlarının oluşturulma tarihini ifade eder. Bu tarih, teminatın geçerlilik süresi ve izlenebilirliği açısından önemlidir. TEMI_TARIH, ilgili teminatın durumunu belirleyen diğer kolonlarla (örneğin, TEM_DURUM) birlikte değerlendirilmelidir."
       },
       {
         "table": "CREDIT.KRD_TEMINAT",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KRD_TEMINAT tablosundaki MUSTERI_NO kolonu, kredi teminat ve rehin kayıtlarına ilişkin müşteri numarasını tutmaktadır. Bu alan, müşteri bilgilerini içeren KRD_MUS_KREDI tablosundaki müşteri kayıtlarıyla ilişkilidir ve her müşteri için benzersiz bir tanımlayıcıdır. Müşteri numarası, kredi işlemlerinin izlenebilirliğini sağlamak amacıyla kullanılmaktadır."
+        "description": "MUSTERI_NO, CREDIT.KRD_TEMINAT tablosunda yer alan ve kredi teminatı için ilgili müşteriyi tanımlayan benzersiz müşteri numarasını ifade eder. Bu alan, müşteri bilgilerini tutan KRD_MUS_KREDI tablosundaki MUSTERI_NO ile ilişkilidir ve her teminat kaydı için geçerli bir müşteri numarası olmalıdır. Teminat kaydı oluşturulurken, MUSTERI_NO'nun mevcut bir müşteri kaydına referans vermesi gerekmektedir."
       },
       {
         "table": "CREDIT.KRD_ODEME_PLAN",
         "column": "PLAN_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "PLAN_TARIH, Kredi taksit ve ödeme planı tablosu olan CREDIT.KRD_ODEME_PLAN'da yer alan, her bir ödemenin yapılacağı tarihi ifade eden DATE türünde bir alandır. Bu tarih, kredi sözleşmesinin başlangıç tarihine göre belirlenir ve ödeme planının düzenli bir şekilde takip edilmesi için kritik öneme sahiptir. İlgili kolonlar arasında VALÖR_TARIH ile ilişkilidir ve bu tarih, ödeme tarihleriyle uyumlu olmalıdır."
+        "description": "PLAN_TARIH, Kredi taksit ve ödeme planı tablosu olan CREDIT.KRD_ODEME_PLAN'da yer alan, her bir ödemenin yapılacağı tarihi belirten DATE türündeki bir alandır. Bu tarih, kredi sözleşmesinin başlangıç tarihine (AÇILIŞ_TARIHI) göre belirlenir ve her taksit ödemesi için geçerli olan tarihleri içerir. Ödeme planı, kredi sözleşmesine bağlı olarak belirlenen taksit sayısı ve ödeme tarihleri ile ilişkilidir."
       },
       {
         "table": "CREDIT.KRD_ODEME_PLAN",
         "column": "PLAN_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "PLAN_KOD, CREDIT şemasındaki KRD_ODEME_PLAN tablosunda yer alan ve kredi taksitleri ile ödeme planlarını tanımlayan bir alandır. Bu kolon, 0, 1 ve 2 değerlerini alabilir ve bu değerler LKP_PLAN lookup tablosunda tanımlanan farklı ödeme planlarını temsil eder. Ödeme planı seçimi, kredi sözleşmesinin şartlarına bağlı olarak belirlenir."
+        "description": "PLAN_KOD, CREDIT şemasındaki KRD_ODEME_PLAN tablosunda yer alan ve kredi taksitlerinin ödeme planını tanımlayan bir alandır. Bu kolon, 0, 1 ve 2 değerlerini alabilir ve bu değerler LKP_PLAN lookup tablosunda tanımlı olan farklı ödeme planlarını temsil eder. Ödeme planı, kredi sözleşmesinin şartlarına göre belirlenir ve taksitlerin düzenli ödenmesini sağlamak amacıyla kullanılır."
+      },
+      {
+        "table": "CREDIT.KRD_BASVURU",
+        "column": "BASV_NO",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "KRD_BASVURU tablosundaki BASV_NO, her başvurunun benzersiz kimliğini temsil eden bir kod değeridir. Bu kolon, başvuru sürecinin takibi için kullanılır ve diğer ilgili kolonlar olan BASV_TARIH (başvuru tarihi) ve MUSTERI_NO (müşteri numarası) ile birlikte değerlendirilmelidir. Başvuru durumunu belirten BASV_DURUM ve başvuru kodunu gösteren BASV_KOD gibi diğer kolonlarla ilişkilidir."
       },
       {
         "table": "CREDIT.KRD_BASVURU",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "CREDIT.KRD_BASVURU tablosundaki MUSTERI_NO, başvuru yapan müşterinin benzersiz kimlik numarasını temsil eder. Bu kolon, müşteri bilgilerini içeren bir referans tablosuna (örneğin, KRD_MUS_KREDI) bağlanarak, başvuru sürecinin izlenmesine olanak tanır. MUSTERI_NO, başvuru ile ilişkilendirilen müşteri verilerinin doğruluğunu sağlamak için zorunludur."
+        "description": "KRD_BASVURU tablosundaki MUSTERI_NO, başvuruda bulunan müşterinin benzersiz kimlik numarasını temsil eder. Bu kolon, müşteri bilgilerini içeren KRD_MUS_KREDI tablosundaki MUSTERI_NO ile ilişkilidir ve başvuru sürecinde müşteri tanımlaması için kullanılır. Bu değer, başvuru işlemlerinin doğru bir şekilde izlenmesi ve yönetilmesi için gereklidir."
       },
       {
         "table": "CREDIT.KRD_GARANTI",
         "column": "GARA_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "GARA_NO, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerini tanımlayan benzersiz bir kimlik numarasıdır. Bu alan, garanti edilen işlemlerin takibi için kullanılır ve ilgili referans tabloları ile ilişkilidir. GARA_NO, KRD_MUS_KREDI tablosundaki müşteri kayıtlarıyla bağlantılıdır ve her garanti ilişkisi için tekil bir değer olmalıdır."
+        "description": "GARA_NO, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerini tanımlayan benzersiz bir kimlik numarasıdır. Bu alan, garanti işlemlerinin izlenmesi ve yönetilmesi için kullanılır ve ilgili referans tablosu KRD_MUS_KREDI'dir. GARA_NO, her garanti kaydı için zorunlu bir alan olup, garanti ilişkilerinin doğruluğunu sağlamak amacıyla iş kuralları gereği eksiksiz ve doğru bir şekilde doldurulmalıdır."
       },
       {
         "table": "CREDIT.KRD_GARANTI",
         "column": "GARA_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "GARA_TARIH, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerinin başlangıç tarihini ifade eden bir tarih bilgisidir. Bu kolon, garanti sürecinin zamanlamasını belirlemek için kritik öneme sahiptir ve ilgili işlemlerle bağlantılı diğer tarih bilgileriyle (örneğin, GARA_BITIS_TARIHI) birlikte değerlendirilmelidir."
+        "description": "GARA_TARIH, CREDIT şemasındaki KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkilerinin başlangıç tarihini temsil eden bir tarih bilgisidir. Bu tarih, garanti sürecinin başlangıcını belirler ve ilgili işlemler için kritik öneme sahiptir. GARA_TARIH, KRD_MUS_KREDI tablosundaki müşteri kredi ilişkileri ile bağlantılıdır."
       },
       {
         "table": "CREDIT.KRD_GARANTI",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUSTERI_NO, CREDIT.KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkileri ile ilgili olan müşteri numarasını temsil eder. Bu kolon, müşteri bilgilerini tanımlamak için kullanılır ve ilgili müşteri bilgileri için KRD_MUS_KREDI tablosundaki MUSTERI_NO kolonu ile ilişkilidir. Müşteri numarası, her müşteri için benzersiz bir tanımlayıcıdır ve 10 haneli sayısal bir değerdir."
+        "description": "MUSTERI_NO, CREDIT.KRD_GARANTI tablosunda yer alan ve kefalet veya garanti ilişkileri için ilgili müşteriyi tanımlayan benzersiz bir numaradır. Bu kolon, müşteri bilgilerini içeren KRD_MUS_KREDI tablosundaki MUSTERI_NO ile ilişkilidir ve her müşteri için yalnızca bir kez kullanılmalıdır. Müşteri numarası, garanti işlemlerinin doğru bir şekilde izlenmesi ve yönetilmesi için kritik öneme sahiptir."
+      },
+      {
+        "table": "CRM.MUS_SEGMENTASYON",
+        "column": "MUSTERI_NO",
+        "risk_level": "LOW_RISK",
+        "issues": [],
+        "description": "Müşteri kimlik numarasıdır."
       },
       {
         "table": "CRM.MUS_SEGMENTASYON",
         "column": "SEGMENT_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "SEGMENT_KOD, CRM şemasındaki MUS_SEGMENTASYON tablosunda yer alan, müşteri segmentasyonunu tanımlayan 5 karakter uzunluğunda bir alandır. Bu kolon, müşteri gruplarını belirlemek için LKP_SEGMENT lookup tablosundaki değerlerle ilişkilidir. Müşteri segmentleri, pazarlama stratejileri ve kampanya hedeflemesi için kritik öneme sahiptir."
+        "description": "SEGMENT_KOD, CRM şemasındaki MUS_SEGMENTASYON tablosunda yer alan ve müşteri segmentasyonunu tanımlayan 5 karakter uzunluğunda bir alandır. Bu kolon, müşteri gruplarını belirlemek için kullanılan LKP_SEGMENT referans tablosundaki değerlerle ilişkilidir. Müşteri segmentleri, pazarlama stratejileri ve kampanya hedeflemeleri için kritik öneme sahiptir."
       },
       {
         "table": "CRM.KAMPANYA_HEDEF",
         "column": "HEDE_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "HEDE_NO, CRM.KAMPANYA_HEDEF tablosunda yer alan ve kampanya hedeflerini tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, kampanyalara ait hedef kitle segmentlerini belirlemek için kullanılır ve ilgili referans tablosu KAMPANYA_SEGMENT olarak adlandırılmaktadır. Her bir HEDE_NO değeri, kampanya ile ilişkilendirilmiş müşteri segmentlerinin yönetimi ve analizi için kritik öneme sahiptir."
+        "description": "HEDE_NO, CRM.KAMPANYA_HEDEF tablosunda yer alan ve kampanya hedeflerini tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, kampanya hedeflerinin izlenmesi ve yönetilmesi için kullanılır ve diğer ilgili tablolardaki (örneğin, MUS_SEGMENTASYON) kayıtlarla ilişkilendirilir. Kampanya hedefleri, belirli müşteri segmentlerine yönelik pazarlama stratejilerinin uygulanmasında kritik bir rol oynamaktadır."
       },
       {
         "table": "CRM.KAMPANYA_HEDEF",
         "column": "HEDE_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KAMPANYA_HEDEF tablosundaki HEDE_TARIH kolonu, kampanyanın hedef tarihini belirtir ve DATE veri tipindedir. Bu tarih, kampanyanın uygulanacağı veya sona ereceği tarihi temsil eder. İlgili kolonlar arasında kampanya başlangıç tarihi (BAS_TARIH) ile ilişkilidir ve bu tarihlerin doğru bir şekilde yönetilmesi, kampanya planlaması açısından kritik öneme sahiptir."
+        "description": "KAMPANYA_HEDEF tablosundaki HEDE_TARIH kolonu, kampanyanın hedef tarihini belirtir ve DATE veri tipindedir. Bu tarih, kampanyanın uygulanacağı veya sona ereceği tarihi temsil eder. İlgili tarih bilgisi, kampanya planlaması ve performans değerlendirmesi için kritik öneme sahiptir."
       },
       {
         "table": "CRM.KAMPANYA_HEDEF",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "KAMPANYA_HEDEF tablosundaki MUSTERI_NO kolonu, kampanyalara hedeflenen müşterilerin benzersiz kimlik numaralarını tutar. Bu alan, müşteri bilgilerini içeren referans tablosu olan MUS_SEGMENTASYON ile ilişkilidir ve her müşteri için yalnızca bir kez kullanılmalıdır. Müşteri numarası, kampanya yönetimi süreçlerinde hedef kitle belirleme ve analiz için kritik öneme sahiptir."
+        "description": "KAMPANYA_HEDEF tablosundaki MUSTERI_NO kolonu, kampanya hedef kitlesini belirlemek için kullanılan müşteri numarasını temsil eder. Bu alan, CRM sistemindeki MÜŞTERİ tablosundaki müşteri kayıtlarıyla ilişkilidir ve her müşteri için benzersiz bir tanımlayıcıdır. Müşteri numarası, kampanya performans analizi ve hedefleme süreçlerinde kritik bir rol oynamaktadır."
       },
       {
         "table": "CRM.MUS_ILETISIM",
         "column": "ILET_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUS_ILETISIM tablosundaki ILET_TARIH kolonu, müşteri iletişim kanallarının kullanıldığı tarih bilgisini tutmaktadır. Bu alan, müşteri ile yapılan iletişimlerin zamanlamasını belirlemek amacıyla kullanılmakta olup, iletişim tercihleri ve kanallarıyla ilişkilidir. İLET_TARIH, müşteri etkileşimlerinin analizi ve raporlanması için kritik bir referans noktasıdır."
+        "description": "MUS_ILETISIM tablosundaki ILET_TARIH kolonu, müşteri iletişim kanallarının kullanıldığı tarih bilgisini tutmaktadır. Bu tarih, müşteri ile yapılan iletişimin zamanlamasını belirlemek için önemlidir ve diğer tarih kolonlarıyla (örneğin, iletişim son tarihi) birlikte değerlendirilmelidir. İletişim tarihleri, müşteri tercihleri ve kampanya etkinlikleri ile ilişkilidir."
       },
       {
         "table": "CRM.MUS_ILETISIM",
         "column": "ILET_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUS_ILETISIM tablosundaki ILET_KOD, müşteri iletişim kanallarını tanımlayan bir kod olup, bu kodun alabileceği değerler LKP_ILETIS referans tablosunda belirtilmiştir. Mevcut değerler arasında 0 (belirtilmemiş), 1 (e-posta) ve 2 (telefon) bulunmaktadır. Bu kolon, müşteri iletişim tercihlerini belirlemek için kullanılır ve müşteri etkileşim stratejilerinin oluşturulmasında önemli bir rol oynar."
-      },
-      {
-        "table": "CRM.MUS_ILETISIM",
-        "column": "MUSTERI_NO",
-        "risk_level": "LOW_RISK",
-        "issues": [],
-        "description": "MUSTERI_NO alanı; iş kurallarına uygun tam açıklama."
+        "description": "MUS_ILETISIM tablosundaki ILET_KOD, müşteri iletişim kanallarını tanımlamak için kullanılan bir kod olup, LKP_ILETIS referans tablosundaki değerlerle ilişkilidir. Mevcut değerler şunlardır: 0 (Belirtilmemiş), 1 (E-posta), 2 (Telefon). Bu kolon, müşteri iletişim tercihlerini belirlemek amacıyla kullanılır ve iletişim kanalı seçimi ile ilgili iş kurallarını destekler."
       },
       {
         "table": "RISK.RISK_IZLEME",
@@ -2799,62 +2791,62 @@
         "column": "LIMI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "LIM_NO, RISK.RISK_LIMIT tablosunda her bir risk limitinin benzersiz tanımlayıcısıdır. Bu alan, risk limitinin izlenmesi ve yönetilmesi için kullanılır ve her limit kaydı için zorunlu bir değerdir. İlgili müşteri bilgileri, MUSTERI_NO kolonu ile ilişkilidir."
+        "description": "RISK.RISK_LIMIT tablosundaki LIM_NO kolonu, her bir risk limitinin benzersiz tanımlayıcısını temsil eder. Bu alan, risk limitlerinin izlenmesi ve yönetilmesi için kritik öneme sahiptir ve diğer ilgili kolonlar olan LIM_TARIH (limitin geçerlilik tarihi) ve MUSTERI_NO (ilgili müşteri numarası) ile birlikte kullanılır. LIM_NO, sistemdeki risk limitlerinin tutarlılığını sağlamak amacıyla, her limit için yalnızca bir kez tanımlanmalıdır."
       },
       {
         "table": "RISK.RISK_LIMIT",
         "column": "LIMI_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "RISK.RISK_LIMIT tablosundaki LIM_TARIH kolonu, limitin geçerli olduğu tarihi belirtir. Bu tarih, limitin uygulamaya alındığı veya güncellendiği zamanı ifade eder ve ilgili limitin geçerlilik süresi ile ilişkilidir. LIM_TARIH, limitin izlenmesi ve yönetilmesi açısından kritik bir öneme sahiptir."
+        "description": "LIM_TARIH, RISK.RISK_LIMIT tablosunda yer alan ve limitin geçerli olduğu tarihi ifade eden bir DATE veri tipine sahip kolondur. Bu tarih, limitin başlangıç tarihini belirtir ve limitin geçerlilik süresi ile ilgili iş kurallarının uygulanmasında kritik bir rol oynar. İlgili kolonlar arasında LIM_NO (limit numarası) ve LIM_DURUM (limit durumu) bulunmaktadır."
       },
       {
         "table": "RISK.RISK_LIMIT",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUSTERI_NO, RISK.RISK_LIMIT tablosunda yer alan ve limit tanımları ile kullanım özetlerinin müşteri bazında izlenmesini sağlayan bir kimlik numarasıdır. Bu kolon, müşteri bilgilerini tutan bir referans tablosuna (MUSTERI) bağlıdır ve her müşteri için benzersiz bir değer içermelidir. Limit tanımları, müşteri bazında belirlenen risk limitlerini yönetmek amacıyla kullanılır."
+        "description": "MUSTERI_NO, RISK.RISK_LIMIT tablosunda yer alan ve her bir limit kaydının ilişkilendirildiği müşteri numarasını temsil eden bir alandır. Bu kolon, müşteri bilgilerini tutan bir referans tablosuna (MUSTERI) bağlıdır ve her müşteri için benzersiz bir numara olmalıdır. Limit tanımları, müşteri bazında risk yönetimi süreçlerinde kullanılır ve bu nedenle zorunlu bir alandır."
       },
       {
         "table": "RISK.RISK_RAPOR",
         "column": "RAPO_TARIH",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "RISK.RISK_RAPOR tablosundaki RAPO_TARIH kolonu, raporun oluşturulduğu tarihi belirtir ve bu tarih, raporun geçerliliği ve zamanlaması açısından kritik öneme sahiptir. Bu kolon, DATE veri tipinde olup, raporların zaman dilimlerine göre analiz edilmesine olanak tanır. Rapor tarihine bağlı olarak, ilgili raporların güncelliği ve doğruluğu sağlanmalıdır."
+        "description": "RISK.RISK_RAPOR tablosundaki RAPO_TARIH kolonu, risk raporunun oluşturulduğu tarihi belirtir. Bu tarih, raporun geçerliliği ve zamanlaması açısından kritik öneme sahiptir. Rapor tarihine göre, ilgili risk analizleri ve değerlendirmeleri yapılır; bu nedenle, doğru ve güncel bir tarih bilgisi sağlanması gerekmektedir."
       },
       {
         "table": "RISK.RISK_RAPOR",
         "column": "RAPO_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "RISK.RISK_RAPOR tablosundaki RAPO_KOD, rapor türünü tanımlayan iki haneli bir sayıdır. Bu kolon, LKP_RAPOR lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler [0, 1, 2] olarak belirlenmiştir. Rapor türleri, risk yönetimi süreçlerinde önemli bir rol oynar ve her bir kod, belirli bir rapor formatını veya içeriğini temsil eder."
+        "description": "RISK.RISK_RAPOR tablosundaki RAPO_KOD, rapor türünü tanımlayan iki basamaklı bir sayıdır. Bu kolon, LKP_RAPOR adlı lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler 0, 1 ve 2'dir. Rapor kodları, raporun içeriği ve amacı hakkında bilgi sağlamak için kullanılır."
       },
       {
         "table": "RISK.RISK_AML",
         "column": "AML_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "AML_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama (AML) izleme kayıtlarını tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, her bir AML kaydının ayırt edilmesini sağlamakta olup, ilgili müşteri kaydıyla (MUSTERI_NO) ilişkilidir. AML_NO, kara para aklama ile ilgili işlemlerin izlenmesi ve raporlanması amacıyla kullanılmaktadır."
+        "description": "AML_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama (AML) izleme kayıtlarını tanımlayan benzersiz bir kimlik numarasıdır. Bu kolon, her bir AML kaydının ayırt edilmesini sağlamakta olup, diğer ilgili kolonlar olan AML_TARIH (işlem tarihi) ve MUSTERI_NO (müşteri numarası) ile birlikte kullanılarak işlem geçmişinin izlenmesine olanak tanır. AML_NO, kara para aklama ile ilgili düzenlemelere uyum sağlamak amacıyla gereklidir ve her kaydın doğruluğunu ve geçerliliğini sağlamak için kullanılmaktadır."
       },
       {
         "table": "RISK.RISK_AML",
         "column": "AML_KOD",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "RISK.RISK_AML tablosundaki AML_KOD, kara para aklama ve uyum izleme süreçlerinde kullanılan bir kod alanıdır. Bu alan, LKP_AML lookup tablosunda tanımlanan değerlerden birini alabilir: 0 (uygun değil), 1 (uygun) veya 2 (şüpheli). AML_KOD, AML_DURUM kolonu ile birlikte değerlendirilerek müşteri risk profili oluşturulmasında önemli bir rol oynamaktadır."
+        "description": "RISK.RISK_AML tablosundaki AML_KOD, kara para aklama ve uyum izleme süreçlerinde kullanılan bir durum kodunu temsil eder. Bu kolon, LKP_AML lookup tablosundaki değerlerle ilişkilidir ve mevcut değerler [0: \"Geçersiz\", 1: \"Geçerli\", 2: \"İnceleme Gerektiriyor\"] şeklindedir. AML_KOD, AML_DURUM kolonu ile birlikte kullanılarak müşteri işlemlerinin risk durumunu belirlemek için kritik bir rol oynamaktadır."
       },
       {
         "table": "RISK.RISK_AML",
         "column": "MUSTERI_NO",
         "risk_level": "LOW_RISK",
         "issues": [],
-        "description": "MUSTERI_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarına ait müşteri numarasını temsil eden bir alandır. Bu kolon, müşteri bilgilerini tanımlamak için kullanılır ve ilgili müşteri bilgileri genellikle MÜŞTERİ tablosunda yer alır. Bu alandaki değerler, her bir kara para aklama kaydı için benzersiz olmalıdır ve boş bırakılamaz."
+        "description": "MUSTERI_NO, RISK.RISK_AML tablosunda yer alan ve kara para aklama ile uyum izleme kayıtlarına ait müşteri numarasını temsil eden bir alandır. Bu kolon, her müşteri için benzersiz bir kimlik numarasıdır ve ilgili müşteri bilgileri için referans olarak kullanılabilir. Müşteri numarası, AML süreçlerinde müşteri tanımlama ve izleme amacıyla kritik öneme sahiptir."
       }
     ],
     "summary": {
       "total_columns": 85,
-      "high_risk_count": 44,
-      "low_risk_count": 41
+      "high_risk_count": 43,
+      "low_risk_count": 42
     }
   },
   "lineage_graph": {
