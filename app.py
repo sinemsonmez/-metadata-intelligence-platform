@@ -1153,6 +1153,8 @@ def index():
 
 if __name__ == "__main__":
     load_existing_results()
+    port = int(os.environ.get("PORT", "5000"))
+    debug = os.environ.get("FLASK_DEBUG", "").lower() in ("1", "true", "yes")
     print("\n🚀 Metadata Intelligence Platform v0.0.1")
-    print("   Open: http://localhost:5000\n")
-    app.run(debug=True, port=5000)
+    print(f"   Open: http://127.0.0.1:{port}\n")
+    app.run(debug=debug, host="0.0.0.0", port=port)

@@ -1,0 +1,14 @@
+# Render.com — Run Pipeline için önerilen host (Vercel serverless uygun değil).
+# Dashboard: New → Blueprint → bu repo. OPENAI_API_KEY'i panelden ekleyin.
+services:
+  - type: web
+    name: metadata-intelligence-platform
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 600 --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: OPENAI_API_KEY
+        sync: false
