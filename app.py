@@ -1001,63 +1001,61 @@ async function loadResults() {
 }
 
 function consolidateIssues(col) {
-  const raw = [...(col.issues || [])];
-  const distinct = col.distinct_count;
-  const hasLookup = col.has_lookup;
-  const validationIssue = col.validation_issue;
-  const knownValues = col.known_values;
+  const raw = [];
+  if (col.validation_issue) raw.push('VALUE MISMATCH: ' + col.validation_issue);
+  if (col.distinct_count && col.distinct_count < 100 && !col.has_lookup)
+    raw.push('LOOKUP GAP: ' + col.distinct_count + ' distinct values, no LKP table');
+  if (col.issues) raw.push(...col.issues);
 
-  let hasValidation = Boolean(validationIssue);
-  let hasLookupGap = distinct != null && Number(distinct) < 100 && !hasLookup;
+  let hasValueMismatch = false;
+  let valueDetail = '';
+  let hasLookupGap = false;
+  const descriptionNotes = [];
   const other = [];
 
-  for (const issue of raw) {
-    const t = String(issue).trim();
-    if (!t) continue;
-    const l = t.toLowerCase();
+  const valueRe = /value mismatch|validation|documented values|db contains|uyumsuz|tutarsız|belirsiz değer|validation hatası|mismatch/i;
+  const lookupRe = /lookup|lkp|low cardinality|kardinalite|distinct.*tablo/i;
+  const descRe = /eksik açıklama|missing|vague|english|belirsiz açıklama|incomplete|wrong/i;
 
-    const isValidation =
-      l.startsWith('value mismatch') ||
-      l.includes('validation hatası') ||
-      l.includes('documented values') ||
-      l.includes('belirsiz değer') ||
-      (l.includes('validation') && (l.includes('uyumsuz') || l.includes('hata') || l.includes('mismatch')));
-
-    const isLookup =
-      l.startsWith('lookup gap') ||
-      l.includes('lookup tablosu') ||
-      l.includes('lkp tablosu') ||
-      l.includes('low cardinality') ||
-      (l.includes('distinct') && (l.includes('lkp') || l.includes('lookup')));
-
-    if (isValidation) {
-      hasValidation = true;
-      continue;
-    }
-    if (isLookup) {
+  for (const item of raw) {
+    const s = String(item).trim();
+    if (!s) continue;
+    if (valueRe.test(s)) {
+      hasValueMismatch = true;
+      const detail = s.replace(/^VALUE MISMATCH:\s*/i, '').trim();
+      if (detail.length > valueDetail.length) valueDetail = detail;
+    } else if (lookupRe.test(s)) {
       hasLookupGap = true;
-      continue;
+    } else if (descRe.test(s)) {
+      if (!descriptionNotes.includes(s)) descriptionNotes.push(s);
+    } else if (!other.includes(s)) {
+      other.push(s);
     }
-    if (!other.some(o => o.toLowerCase() === l)) other.push(t);
+  }
+
+  if (col.distinct_count && col.distinct_count < 100 && !col.has_lookup)
+    hasLookupGap = true;
+  if (col.validation_issue) {
+    hasValueMismatch = true;
+    if (col.validation_issue.length > valueDetail.length) valueDetail = col.validation_issue;
   }
 
   const out = [];
-  if (hasValidation) {
-    let detail = validationIssue;
-    if (!detail) {
-      const fromRaw = raw.find(r => String(r).toLowerCase().includes('value mismatch'));
-      detail = fromRaw
-        ? String(fromRaw).replace(/^VALUE MISMATCH:\s*/i, '').trim()
-        : 'Dokümante değerler ile üretim verisi uyuşmuyor.';
-    }
-    out.push('VALUE MISMATCH: ' + detail);
+  if (hasValueMismatch) {
+    out.push('VALUE MISMATCH: ' + (valueDetail || 'Dokümantasyon ile üretim verisi uyuşmuyor'));
   }
   if (hasLookupGap) {
-    let msg = `LOOKUP GAP: ${distinct} distinct değer, LKP tablosu tanımlı değil`;
-    if (knownValues != null) msg += `. Bilinen değerler: ${JSON.stringify(knownValues)}`;
-    out.push(msg);
+    const d = col.distinct_count;
+    const kv = col.known_values
+      ? ' Bilinen değerler: ' + JSON.stringify(col.known_values) + '.'
+      : '';
+    out.push('LOOKUP GAP: ' + (d != null ? d + ' distinct değer' : 'Düşük kardinalite') +
+      ', lookup tablosu tanımlı değil.' + kv);
   }
-  out.push(...other);
+  if (descriptionNotes.length) {
+    out.push('AÇIKLAMA: ' + descriptionNotes.join('; '));
+  }
+  other.forEach(o => out.push(o));
   return out;
 }
 
@@ -1252,7 +1250,7 @@ function computeRiskReasons(col) {
     incomplete: 'Eksik açıklama (incomplete)',
   };
   if (ql[q] && q !== 'generated') reasons.push(ql[q]);
-  if (col.issues) reasons.push(...col.issues);
+  // issues Risk bölümünde ayrı gösterildiği için buraya eklenmez
   if (!reasons.length && col.risk === 'LOW_RISK')
     reasons.push('Açıklama kalitesi ve metadata göstergeleri yeterli');
   if (!reasons.length && col.risk === 'HIGH_RISK')
