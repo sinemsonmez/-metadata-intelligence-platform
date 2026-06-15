@@ -632,7 +632,8 @@ tr:hover td { background: rgba(3,105,161,0.05); }
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 24px 28px;
-  max-width: 500px; width: 90%;
+  max-width: 560px; width: 92%;
+  max-height: 85vh; overflow-y: auto;
   position: relative;
   transform: translateY(8px);
   transition: transform 0.18s;
@@ -665,6 +666,47 @@ tr:hover td { background: rgba(3,105,161,0.05); }
   background: rgba(180,83,9,0.08);
   padding: 6px 10px; border-radius: 2px;
   border-left: 2px solid var(--warn);
+}
+
+.doc-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.doc-pill {
+  font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 2px;
+}
+.doc-pill.ok { background: rgba(5,150,105,0.12); color: #059669; }
+.doc-pill.miss { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+.coverage-badge {
+  display: inline-block; font-family: var(--mono); font-size: 0.58rem;
+  padding: 2px 8px; border-radius: 2px; margin-top: 6px;
+}
+.coverage-with { background: rgba(3,105,161,0.1); color: var(--accent); }
+.coverage-none { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.compare-box {
+  background: var(--surface2); padding: 10px 12px; border-radius: 3px;
+  font-size: 0.74rem; line-height: 1.6; min-height: 48px;
+}
+.compare-box.before { border-left: 2px solid var(--muted); }
+.compare-box.after  { border-left: 2px solid var(--accent); }
+.compare-label {
+  font-family: var(--mono); font-size: 0.55rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px;
+}
+.compare-missing { color: var(--muted); font-style: italic; font-size: 0.72rem; }
+
+.risk-reason {
+  font-size: 0.7rem; color: var(--text); line-height: 1.5;
+  padding: 5px 10px; background: var(--surface2); border-radius: 2px;
+  border-left: 2px solid var(--border);
+}
+.risk-reason.high { border-left-color: var(--high); }
+.risk-reason.low  { border-left-color: #059669; }
+
+.popup-feedback {
+  font-size: 0.72rem; color: var(--muted); line-height: 1.55;
+  background: var(--surface2); padding: 8px 10px; border-radius: 3px;
 }
 
 /* ── Empty state ───────────────────────────────────────────────────── */
@@ -794,8 +836,24 @@ tr:hover td { background: rgba(3,105,161,0.05); }
         <div class="popup-table" id="popupTable"></div>
       </div>
     </div>
-    <div class="popup-section">Description</div>
-    <div class="popup-desc" id="popupDesc"></div>
+    <div class="popup-section">Bağlam Dokümanları (Pipeline Öncesi)</div>
+    <div class="doc-pills" id="popupDocs"></div>
+    <div id="popupCoverage"></div>
+    <div class="popup-section">Risk Değerlendirmesi</div>
+    <div id="popupRiskReasons"></div>
+    <div class="popup-section">Açıklama Karşılaştırması</div>
+    <div class="compare-grid">
+      <div>
+        <div class="compare-label">Önce (Ham)</div>
+        <div class="compare-box before" id="popupBefore"></div>
+      </div>
+      <div>
+        <div class="compare-label">Sonra (Pipeline)</div>
+        <div class="compare-box after" id="popupAfter"></div>
+      </div>
+    </div>
+    <div class="popup-section" id="feedbackTitle" style="display:none">Critic Geri Bildirimi</div>
+    <div class="popup-feedback" id="popupFeedback" style="display:none"></div>
     <div class="popup-section" id="issueTitle" style="display:none">Issues Detected</div>
     <div class="popup-issues" id="popupIssues"></div>
   </div>
@@ -807,6 +865,7 @@ let allColumns = [];
 let currentFilter = 'all';
 let pollTimer = null;
 let lastPipelineStatus = 'idle';
+let lineageJobs = [];
 
 function applyMetrics(m) {
   if (!m || !Object.keys(m).length) return;
@@ -963,10 +1022,19 @@ function renderResults(data) {
         schema: t.schema || '',
         col: col.column_name,
         desc: col.description || '',
+        origDesc: col.original_description !== undefined ? col.original_description : col.description,
         quality: col.description_quality || '',
         risk,
         clarity,
         issues,
+        feedback: col.feedback || '',
+        riskReasons: col.risk_reasons || [],
+        hasFrd: t.has_functional_doc || false,
+        hasToa: t.has_toa_doc || false,
+        hasDdl: t.has_ddl || false,
+        contextLabels: t.context_labels || null,
+        coverage: (t.context_labels && t.context_labels.coverage)
+          || ((t.has_functional_doc || t.has_toa_doc || t.has_ddl) ? 'with_docs' : 'no_docs'),
       });
     });
   });
@@ -1085,16 +1153,16 @@ async function loadLineage() {
     const r = await fetch('/api/lineage');
     if (!r.ok) return;
     const data = await r.json();
-    const jobs = data.etl_lineage || [];
+    lineageJobs = data.etl_lineage || [];
 
-    const loops = jobs.filter(j => j.loop_risk).length;
+    const loops = lineageJobs.filter(j => j.loop_risk).length;
     document.getElementById('loopBadge').textContent =
       loops > 0 ? `⚠ ${loops} Loop` : '✓ No Loops';
     document.getElementById('loopBadge').className =
       loops > 0 ? 'badge badge-high' : 'badge badge-low';
     document.getElementById('statLoops').textContent = loops;
 
-    document.getElementById('lineageList').innerHTML = jobs.map(j => {
+    document.getElementById('lineageList').innerHTML = lineageJobs.map(j => {
       const src = j.source.schema + '.' + j.source.table;
       const tgt = j.target.schema + '.' + j.target.table;
       return `<div class="lineage-item">
@@ -1108,6 +1176,33 @@ async function loadLineage() {
 }
 
 // ─── Popup ────────────────────────────────────────────────────────────────────
+function hasEtlLineage(schema, table) {
+  return lineageJobs.some(j =>
+    (j.source.schema === schema && j.source.table === table) ||
+    (j.target.schema === schema && j.target.table === table)
+  );
+}
+
+function computeRiskReasons(col) {
+  if (col.riskReasons && col.riskReasons.length) return col.riskReasons;
+  const reasons = [];
+  const q = col.quality;
+  const ql = {
+    missing: 'Açıklama eksik (missing)',
+    wrong: 'Yanlış veya tutarsız açıklama (wrong)',
+    vague: 'Belirsiz açıklama (vague)',
+    english: 'İngilizce açıklama — Türkçe şema bekleniyor',
+    incomplete: 'Eksik açıklama (incomplete)',
+  };
+  if (ql[q] && q !== 'generated') reasons.push(ql[q]);
+  if (col.issues) reasons.push(...col.issues);
+  if (!reasons.length && col.risk === 'LOW_RISK')
+    reasons.push('Açıklama kalitesi ve metadata göstergeleri yeterli');
+  if (!reasons.length && col.risk === 'HIGH_RISK')
+    reasons.push('Yüksek risk — metadata kalite göstergeleri yetersiz');
+  return reasons;
+}
+
 function showPopup(table, colName) {
   const col = allColumns.find(c => c.table === table && c.col === colName);
   if (!col) return;
@@ -1119,7 +1214,64 @@ function showPopup(table, colName) {
     `<span class="risk-pill ${riskCls}">${riskLbl}</span>`;
   document.getElementById('popupCol').textContent = col.col;
   document.getElementById('popupTable').textContent = col.schema + '.' + col.table;
-  document.getElementById('popupDesc').textContent = col.desc || '(No description)';
+
+  const hasEtl = hasEtlLineage(col.schema, col.table);
+  const labels = col.contextLabels || {};
+  const frdOk = labels.frd !== undefined ? labels.frd : col.hasFrd;
+  const toaOk = labels.toa !== undefined ? labels.toa : col.hasToa;
+  const ddlOk = labels.ddl !== undefined ? labels.ddl : col.hasDdl;
+
+  document.getElementById('popupDocs').innerHTML = [
+    frdOk ? '<span class="doc-pill ok">FRD ✅</span>' : '<span class="doc-pill miss">FRD ❌</span>',
+    toaOk ? '<span class="doc-pill ok">TOA ✅</span>' : '<span class="doc-pill miss">TOA ❌</span>',
+    ddlOk ? '<span class="doc-pill ok">DDL ✅</span>' : '<span class="doc-pill miss">DDL ❌</span>',
+    hasEtl ? '<span class="doc-pill ok">ETL ✅</span>' : '<span class="doc-pill miss">ETL ❌</span>',
+  ].join('');
+
+  const cov = col.coverage || (frdOk || toaOk || ddlOk ? 'with_docs' : 'no_docs');
+  document.getElementById('popupCoverage').innerHTML =
+    cov === 'with_docs'
+      ? '<span class="coverage-badge coverage-with">📄 Bağlam dokümanı mevcut — zenginleştirme bağlam enjeksiyonu ile yapıldı</span>'
+      : '<span class="coverage-badge coverage-none">📭 Bağlam dokümanı yok — yalnızca metadata ile zenginleştirme</span>';
+
+  const reasons = computeRiskReasons(col);
+  const rCls = col.risk === 'HIGH_RISK' ? 'high' : 'low';
+  document.getElementById('popupRiskReasons').innerHTML = reasons.map(r =>
+    `<div class="risk-reason ${rCls}">${r}</div>`).join('');
+
+  const beforeEl = document.getElementById('popupBefore');
+  const afterEl = document.getElementById('popupAfter');
+  if (col.origDesc !== undefined && col.origDesc !== null) {
+    beforeEl.innerHTML = col.origDesc
+      ? col.origDesc
+      : '<span class="compare-missing">(açıklama yoktu)</span>';
+  } else if (col.quality === 'generated') {
+    beforeEl.innerHTML = '<span class="compare-missing">(orijinal açıklama kaydedilmemiş)</span>';
+  } else {
+    beforeEl.innerHTML = col.desc
+      ? col.desc
+      : '<span class="compare-missing">(pipeline henüz çalıştırılmadı)</span>';
+  }
+  if (col.quality === 'generated' && col.desc) {
+    afterEl.innerHTML = col.desc;
+  } else if (col.quality === 'generated') {
+    afterEl.innerHTML = '<span class="compare-missing">(üretilemedi)</span>';
+  } else if (col.desc) {
+    afterEl.innerHTML = col.desc + '<br><span class="compare-missing">(pipeline bu kolonu değiştirmedi)</span>';
+  } else {
+    afterEl.innerHTML = '<span class="compare-missing">(açıklama yok)</span>';
+  }
+
+  const fbkEl = document.getElementById('popupFeedback');
+  const fbkTitle = document.getElementById('feedbackTitle');
+  if (col.feedback) {
+    fbkTitle.style.display = 'block';
+    fbkEl.style.display = 'block';
+    fbkEl.textContent = col.feedback;
+  } else {
+    fbkTitle.style.display = 'none';
+    fbkEl.style.display = 'none';
+  }
 
   const issueEl = document.getElementById('popupIssues');
   const issueTitle = document.getElementById('issueTitle');

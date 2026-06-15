@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Metadata Intelligence Platform — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #060a12;
+  --surface: #0d1524;
+  --surface2: #121d2e;
+  --surface3: #172236;
+  --border: #1e2f48;
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --high: #ff4757;
+  --mid: #ffa502;
+  --low: #2ed573;
+  --text: #dde6f0;
+  --muted: #5a7296;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none; z-index: 0;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1480px; margin: 0 auto; padding: 22px 28px; }
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 24px;
+  gap: 20px; flex-wrap: wrap;
+}
+.logo h1 { font-size: 1.35rem; font-weight: 700; color: var(--accent); letter-spacing: -.02em; }
+.logo h1 span { color: var(--text); }
+.logo p { font-family: var(--mono); font-size: .65rem; color: var(--muted); margin-top: 3px; }
+.status-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+.badge {
+  font-family: var(--mono); font-size: .6rem; padding: 3px 9px; border-radius: 2px;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+}
+.bg  { background: rgba(46,213,115,.12);  color: var(--low);    border: 1px solid rgba(46,213,115,.25); }
+.br  { background: rgba(255,71,87,.12);   color: var(--high);   border: 1px solid rgba(255,71,87,.25); }
+.bb  { background: rgba(0,212,255,.1);    color: var(--accent); border: 1px solid rgba(0,212,255,.2); }
+.bw  { background: rgba(255,165,2,.1);    color: var(--mid);    border: 1px solid rgba(255,165,2,.2); }
+
+/* ── Stats ───────────────────────────────────────────────────────────────── */
+.stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  padding: 16px 18px; position: relative; overflow: hidden;
+}
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.sc-red::before    { background: var(--high); }
+.sc-mid::before    { background: var(--mid); }
+.sc-green::before  { background: var(--low); }
+.sc-blue::before   { background: var(--accent); }
+.sc-purple::before { background: var(--accent2); }
+.stat-num { font-family: var(--mono); font-size: 2rem; font-weight: 600; line-height:1; margin-bottom:5px; }
+.sc-red    .stat-num { color: var(--high); }
+.sc-mid    .stat-num { color: var(--mid); }
+.sc-green  .stat-num { color: var(--low); }
+.sc-blue   .stat-num { color: var(--accent); }
+.sc-purple .stat-num { color: var(--accent2); }
+.stat-label { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; font-weight: 600; }
+.stat-sub   { font-family: var(--mono); font-size: .6rem; color: var(--muted); margin-top: 4px; }
+
+/* ── Risk bar ─────────────────────────────────────────────────────────────── */
+.risk-bar-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px 22px; margin-bottom: 24px; }
+.risk-bar-title { font-family: var(--mono); font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 14px; }
+.risk-bar-track { display: flex; height: 12px; border-radius: 3px; overflow: hidden; gap: 2px; }
+.rbt-high   { background: var(--high); transition: width .8s ease; }
+.rbt-mid    { background: var(--mid);  transition: width .8s ease; }
+.rbt-low    { background: var(--low);  transition: width .8s ease; }
+.risk-legend { display: flex; gap: 22px; margin-top: 10px; flex-wrap: wrap; }
+.rl-item { display: flex; align-items: center; gap: 6px; font-size: .72rem; }
+.rl-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Main grid ───────────────────────────────────────────────────────────── */
+.main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+@media (max-width: 960px) { .main-grid { grid-template-columns: 1fr; } }
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 18px; }
+.panel-header {
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface2);
+}
+.panel-title { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); font-weight: 600; }
+
+/* ── Filter bar ──────────────────────────────────────────────────────────── */
+.filter-bar { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.fbtn {
+  font-family: var(--mono); font-size: .6rem; font-weight: 600; padding: 4px 12px;
+  border: 1px solid var(--border); border-radius: 2px; cursor: pointer;
+  background: transparent; color: var(--muted); letter-spacing: .06em; text-transform: uppercase;
+  transition: all .15s;
+}
+.fbtn:hover { color: var(--text); border-color: var(--accent); }
+.fbtn.fa { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,.08); }
+.fbtn.fr { color: var(--high);   border-color: var(--high);   background: rgba(255,71,87,.08); }
+.fbtn.fm { color: var(--mid);    border-color: var(--mid);    background: rgba(255,165,2,.08); }
+.fbtn.fg { color: var(--low);    border-color: var(--low);    background: rgba(46,213,115,.08); }
+
+/* ── Column table ─────────────────────────────────────────────────────────── */
+.tbl-wrap { overflow-x: auto; }
+.col-table { width: 100%; border-collapse: collapse; }
+.col-table th {
+  font-family: var(--mono); font-size: .58rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted); font-weight: 600; padding: 8px 14px; text-align: left;
+  border-bottom: 1px solid var(--border); background: var(--surface2); white-space: nowrap;
+}
+.col-table td { padding: 9px 14px; font-size: .76rem; border-bottom: 1px solid rgba(30,47,72,.5); vertical-align: middle; }
+.col-table tr:last-child td { border-bottom: none; }
+.col-table tr:hover td { background: rgba(0,212,255,.025); }
+.col-table tr.risk-high td:first-child { border-left: 2px solid var(--high); }
+.col-table tr.risk-mid  td:first-child { border-left: 2px solid var(--mid); }
+.col-table tr.risk-low  td:first-child { border-left: 2px solid var(--low); }
+
+.col-name { font-family: var(--mono); font-size: .68rem; color: var(--accent); cursor: pointer; }
+.col-name:hover { text-decoration: underline; }
+.tbl-label { font-family: var(--mono); font-size: .6rem; color: var(--muted); }
+.desc-text { font-size: .74rem; color: var(--text); }
+.desc-miss { font-family: var(--mono); font-size: .65rem; color: var(--high); }
+
+/* Score bar */
+.sbar { display: flex; align-items: center; gap: 8px; }
+.sbar-track { flex: 1; max-width: 80px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.sbar-fill  { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.sbar-val   { font-family: var(--mono); font-size: .62rem; min-width: 28px; }
+
+/* Risk pill */
+.rpill {
+  font-family: var(--mono); font-size: .58rem; font-weight: 700; padding: 2px 7px;
+  border-radius: 2px; white-space: nowrap; cursor: pointer;
+}
+.rp-high   { background: rgba(255,71,87,.15);  color: var(--high);   border: 1px solid rgba(255,71,87,.35); }
+.rp-mid    { background: rgba(255,165,2,.15);  color: var(--mid);    border: 1px solid rgba(255,165,2,.35); }
+.rp-low    { background: rgba(46,213,115,.12); color: var(--low);    border: 1px solid rgba(46,213,115,.3); }
+.issue-btn { cursor: pointer; font-family: var(--mono); font-size: .6rem; color: var(--mid); padding: 2px 5px; border: 1px solid rgba(255,165,2,.3); border-radius: 2px; }
+.issue-btn:hover { background: rgba(255,165,2,.1); }
+
+/* ── Terminal log panel ──────────────────────────────────────────────────── */
+.term-wrap { max-height: 340px; overflow-y: auto; }
+.term-log {
+  font-family: var(--mono); font-size: .62rem; line-height: 1.7;
+  padding: 14px 16px; color: var(--muted);
+}
+.tl-info   { color: var(--accent); }
+.tl-ok     { color: var(--low); }
+.tl-warn   { color: var(--mid); }
+.tl-err    { color: var(--high); }
+.tl-table  { color: #a78bfa; font-weight: 600; }
+.tl-col    { color: var(--text); }
+.tl-ded    { color: var(--high); }
+.tl-bon    { color: var(--low); }
+.tl-sep    { color: var(--border); }
+
+/* ── Lineage ─────────────────────────────────────────────────────────────── */
+.lin-node { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid rgba(30,47,72,.4); font-size: .73rem; }
+.lin-src, .lin-tgt { font-family: var(--mono); font-size: .65rem; color: var(--text); }
+.lin-arr { color: var(--muted); }
+.lin-loop { font-family: var(--mono); font-size: .55rem; font-weight: 700; padding: 1px 5px; background: rgba(255,165,2,.15); color: var(--mid); border: 1px solid rgba(255,165,2,.3); border-radius: 2px; margin-left: auto; }
+
+/* ── Daily report ────────────────────────────────────────────────────────── */
+.daily-card { padding: 12px 16px; border-bottom: 1px solid rgba(30,47,72,.4); }
+.daily-card:last-child { border-bottom: none; }
+.daily-name { font-family: var(--mono); font-size: .62rem; color: var(--accent); margin-bottom: 7px; }
+.daily-act  { display: flex; gap: 7px; font-size: .72rem; margin-bottom: 4px; line-height: 1.5; }
+.daily-icon { flex-shrink: 0; width: 16px; }
+
+/* Doc status pills */
+.doc-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.doc-pill { font-family: var(--mono); font-size: .55rem; padding: 2px 7px; border-radius: 2px; font-weight: 600; }
+.dp-ok { background: rgba(46,213,115,.1); color: var(--low); border: 1px solid rgba(46,213,115,.25); }
+.dp-miss { background: rgba(255,71,87,.1); color: var(--high); border: 1px solid rgba(255,71,87,.25); }
+
+/* ── POPUP ───────────────────────────────────────────────────────────────── */
+.popup-ov {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.popup-ov.active { display: flex; }
+.popup-box {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+  padding: 28px 30px; max-width: 640px; width: 100%; position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,.7);
+  max-height: 90vh; overflow-y: auto;
+}
+.popup-close {
+  position: absolute; top: 14px; right: 16px; background: none; border: none;
+  color: var(--muted); font-size: 1rem; cursor: pointer; font-family: var(--mono);
+}
+.popup-close:hover { color: var(--high); }
+.popup-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.popup-meta { flex: 1; }
+.popup-colname  { font-family: var(--mono); font-size: 1rem; font-weight: 600; color: var(--accent); }
+.popup-tblname  { font-family: var(--mono); font-size: .65rem; color: var(--muted); margin-top: 3px; }
+.popup-score-big { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; line-height:1; }
+
+.popup-sec-title {
+  font-family: var(--mono); font-size: .6rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--muted); margin: 16px 0 7px; border-top: 1px solid var(--border); padding-top: 14px;
+}
+.popup-sec-title:first-of-type { margin-top: 0; border-top: none; padding-top: 0; }
+
+/* Before / After comparison */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 540px) { .compare-grid { grid-template-columns: 1fr; } }
+.compare-box { background: var(--surface3); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; }
+.compare-label { font-family: var(--mono); font-size: .55rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 7px; }
+.cl-before { color: var(--high); }
+.cl-after  { color: var(--low); }
+.compare-text { font-size: .75rem; line-height: 1.6; color: var(--text); }
+.compare-missing { font-family: var(--mono); font-size: .68rem; color: var(--muted); font-style: italic; }
+
+.score-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sb-item { background: var(--surface3); border-radius: 3px; padding: 8px 10px; }
+.sb-label { font-family: var(--mono); font-size: .55rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.sb-val   { font-family: var(--mono); font-size: .85rem; font-weight: 600; margin-top: 2px; }
+
+.popup-issues { display: flex; flex-direction: column; gap: 6px; }
+.pi-item { display: flex; gap: 8px; font-size: .73rem; line-height: 1.5; }
+.pi-icon { flex-shrink: 0; font-family: var(--mono); font-size: .65rem; color: var(--mid); }
+
+.popup-factors { display: flex; flex-direction: column; gap: 5px; }
+.pf-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; font-size: .7rem; }
+.pf-label { color: var(--text); flex: 1; line-height: 1.4; }
+.pf-pts-ded { font-family: var(--mono); font-size: .62rem; color: var(--high); white-space: nowrap; }
+.pf-pts-bon { font-family: var(--mono); font-size: .62rem; color: var(--low); white-space: nowrap; }
+
+.doc-avail { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <h1>Metadata <span>Intelligence</span> Platform</h1>
+    <p>// Bankacılık Metadata Kalitesi & Risk Analizi — v2.0</p>
+  </div>
+  <div class="status-bar">
+    <span class="badge bb">Pipeline: Active</span>
+    <span class="badge bg" id="pipeline-status">✓ Critic Pass</span>
+    <span class="badge bw" id="loop-badge">⚠ 1 Loop</span>
+  </div>
+</header>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-card sc-red">
+    <div class="stat-num" id="stat-high">0</div>
+    <div class="stat-label">Yüksek Risk</div>
+    <div class="stat-sub" id="stat-high-pct">—</div>
+  </div>
+  <div class="stat-card sc-mid">
+    <div class="stat-num" id="stat-mid">0</div>
+    <div class="stat-label">Orta Risk</div>
+    <div class="stat-sub" id="stat-mid-pct">—</div>
+  </div>
+  <div class="stat-card sc-green">
+    <div class="stat-num" id="stat-low">0</div>
+    <div class="stat-label">Düşük Risk</div>
+    <div class="stat-sub" id="stat-low-pct">—</div>
+  </div>
+  <div class="stat-card sc-blue">
+    <div class="stat-num" id="stat-avg-clarity">—</div>
+    <div class="stat-label">Avg Clarity</div>
+    <div class="stat-sub">Bankacılık skoru /100</div>
+  </div>
+  <div class="stat-card sc-purple">
+    <div class="stat-num" id="stat-loops">1</div>
+    <div class="stat-label">Lineage Loop</div>
+    <div class="stat-sub">CRM ↔ RISK döngüsü</div>
+  </div>
+</div>
+
+<!-- Risk dağılım bar -->
+<div class="risk-bar-wrap">
+  <div class="risk-bar-title">// Risk Dağılımı (Kolon Bazlı Oran)</div>
+  <div class="risk-bar-track">
+    <div class="rbt-high" id="rb-high" style="width:0%"></div>
+    <div class="rbt-mid"  id="rb-mid"  style="width:0%"></div>
+    <div class="rbt-low"  id="rb-low"  style="width:0%"></div>
+  </div>
+  <div class="risk-legend">
+    <div class="rl-item"><div class="rl-dot" style="background:var(--high)"></div><span id="rl-high-label">Yüksek —</span></div>
+    <div class="rl-item"><div class="rl-dot" style="background:var(--mid)"></div><span id="rl-mid-label">Orta —</span></div>
+    <div class="rl-item"><div class="rl-dot" style="background:var(--low)"></div><span id="rl-low-label">Düşük —</span></div>
+  </div>
+</div>
+
+<!-- Main grid -->
+<div class="main-grid">
+  <div>
+
+    <!-- Column table -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">// Kolon Değerlendirme Tablosu</span>
+        <span class="badge bb" id="col-count-badge">— kolon</span>
+      </div>
+      <div class="filter-bar">
+        <button class="fbtn fa" onclick="filterTable('all',this)">Tümü</button>
+        <button class="fbtn fr" onclick="filterTable('high',this)">🔴 Yüksek</button>
+        <button class="fbtn fm" onclick="filterTable('mid',this)">🟡 Orta</button>
+        <button class="fbtn fg" onclick="filterTable('low',this)">🟢 Düşük</button>
+      </div>
+      <div class="tbl-wrap">
+        <table class="col-table">
+          <thead>
+            <tr>
+              <th>Tablo</th>
+              <th>Kolon</th>
+              <th>Açıklama (son hal)</th>
+              <th>Risk Skoru</th>
+              <th>Clarity</th>
+              <th>Sorunlar</th>
+            </tr>
+          </thead>
+          <tbody id="colTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Terminal log -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">// Pipeline Terminal Çıktısı</span>
+        <span class="badge bb">Simüle Edilmiş</span>
+      </div>
+      <div class="term-wrap">
+        <div class="term-log" id="termLog"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right sidebar -->
+  <div>
+
+    <!-- Lineage -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">// ETL Lineage</span>
+        <span class="badge bw">⚠ Loop</span>
+      </div>
+      <div id="lineageContainer"></div>
+    </div>
+
+    <!-- Daily report -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">// Günlük Rapor</span>
+        <span class="badge bg">UI Verified</span>
+      </div>
+      <div id="dailyContainer"></div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /wrap -->
+
+<!-- ════════════════════ POPUP ════════════════════ -->
+<div class="popup-ov" id="popup" onclick="closePopup(event)">
+<div class="popup-box">
+  <button class="popup-close" onclick="closePopup()">✕</button>
+
+  <div class="popup-header">
+    <div class="popup-meta">
+      <div class="popup-colname" id="pp-colname"></div>
+      <div class="popup-tblname" id="pp-tblname"></div>
+      <div style="margin-top:8px" id="pp-doc-avail"></div>
+    </div>
+    <div>
+      <div class="popup-score-big" id="pp-score-big"></div>
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:3px">risk skoru /100</div>
+    </div>
+  </div>
+
+  <!-- Before / After -->
+  <div class="popup-sec-title">Açıklama — İlk Hal → Son Hal</div>
+  <div class="compare-grid">
+    <div class="compare-box">
+      <div class="compare-label cl-before">◀ Önceki (ham)</div>
+      <div id="pp-before"></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-label cl-after">▶ Üretilen (son)</div>
+      <div id="pp-after"></div>
+    </div>
+  </div>
+
+  <!-- Score breakdown -->
+  <div class="popup-sec-title">Clarity Skoru Kırılımı</div>
+  <div class="score-breakdown" id="pp-breakdown"></div>
+
+  <!-- Deductions / Bonuses -->
+  <div id="pp-factors-section">
+    <div class="popup-sec-title">Puan Detayı</div>
+    <div class="popup-factors" id="pp-factors"></div>
+  </div>
+
+  <!-- Issues -->
+  <div id="pp-issues-section">
+    <div class="popup-sec-title">Tespit Edilen Sorunlar</div>
+    <div class="popup-issues" id="pp-issues"></div>
+  </div>
+
+  <!-- Feedback -->
+  <div id="pp-feedback-section">
+    <div class="popup-sec-title">Critic Önerisi</div>
+    <div id="pp-feedback" style="font-size:.76rem;line-height:1.6;color:var(--text);background:var(--surface3);padding:10px 12px;border-radius:3px;border:1px solid var(--border);"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA — Güncellenmiş skor bazlı veri modeli
+// ═══════════════════════════════════════════════════════
+const COLUMNS = [
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "HESAP_NO",
+    original_desc: "Hesap numarasıdır.",
+    desc: "CORE_BANKING.XXX_HESAP tablosundaki hesabın benzersiz IBAN formatındaki tanımlayıcısıdır. 26 karakter olup TR + 2 kontrol hanesi + 4 banka kodu + 16 hesap numarasından oluşur.",
+    risk_score: 12, clarity: 88,
+    issues: [],
+    feedback: "İş kuralı ve format bilgisi eklenmiş. Yeterli.",
+    deductions: [], bonuses: [["Bankacılık terminolojisi kullanılmış", 5], ["FK referans tablosu açıklamada belirtilmiş", 8]],
+    breakdown: {domain: 25, value_range: 20, reference: 15, business_rule: 15, language: 10, detail: 8},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "incomplete"
+  },
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "ACILIS_TARIHI",
+    original_desc: "Açılış tarihidir.",
+    desc: "Ticari veya bireysel hesabın resmi açılış tarihidir. Valörlü açılan hesaplarda bu tarih fiziksel açılış değil valör tarihini yansıtır; gerçek açılış için VALOR_TARIHI kolonuna bakılmalıdır.",
+    risk_score: 18, clarity: 86,
+    issues: [],
+    feedback: "Valör ilişkisi ve iş kuralı yansıtılmış. İyi.",
+    deductions: [], bonuses: [["Tablo bağlamı dahil edilmiş", 5], ["Bankacılık terminolojisi kullanılmış", 5]],
+    breakdown: {domain: 22, value_range: 18, reference: 14, business_rule: 18, language: 10, detail: 9},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "incomplete"
+  },
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "VALOR_TARIHI",
+    original_desc: "Valör tarihidir.",
+    desc: "Valörlü açılan hesaplarda geçerli olan valör tarihidir. Standart hesaplarda bu kolon dolu olmayabilir. ACILIS_TARIHI'nden küçük olamaz; aksi durum validasyon hatası sayılır.",
+    risk_score: 15, clarity: 84,
+    issues: [],
+    feedback: "ACILIS_TARIHI ilişkisi ve validasyon kısıtı eklenmiş.",
+    deductions: [], bonuses: [["Bankacılık terminolojisi kullanılmış", 5]],
+    breakdown: {domain: 20, value_range: 18, reference: 12, business_rule: 20, language: 10, detail: 9},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "incomplete"
+  },
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "HESAP_TIP_KOD",
+    original_desc: "Hesap tipi.",
+    desc: "LKP_HESAP_TIP tablosundan gelen hesap tipi kodudur. Değerler: 1=Vadesiz, 2=Vadeli, 3=Döviz, 4=Altın, 5=Yatırım.",
+    risk_score: 10, clarity: 91,
+    issues: [],
+    feedback: "Tüm enum değerleri ve lookup referansı mevcut.",
+    deductions: [], bonuses: [["Lookup tablosuna doğru atıf yapılmış", 10], ["Tüm olası değerler dokümante edilmiş", 10]],
+    breakdown: {domain: 24, value_range: 20, reference: 15, business_rule: 18, language: 10, detail: 9},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "incomplete"
+  },
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "HESAP_DURUM_KOD",
+    original_desc: "Account status code.",
+    desc: "Hesabın durum bilgisini taşır. Bilinen değerler: 0=Aktif, 1=Pasif, 2=Kapalı. ⚠ LKP tablosu tanımlanmamıştır; veritabanında belgelenmemiş '3' değeri de tespit edilmiştir.",
+    risk_score: 72, clarity: 55,
+    issues: [
+      "Türkçe şemada İngilizce orijinal açıklama",
+      "Value mismatch: belgelenen [0,1,2] ama DB'de 3 değeri de mevcut",
+      "Düşük kardinalite (3 distinct) — LKP tablosu yok"
+    ],
+    feedback: "Validation hatası ve LKP eksikliği giderilmeli. Değer 3 için iş kuralı netleştirilmeli.",
+    deductions: [["Türkçe şemada İngilizce açıklama", 25], ["Validation hatası var", 15], ["LKP tablosu yok", 20]],
+    bonuses: [["Bilinen değerler enumere edilmiş", 10]],
+    breakdown: {domain: 12, value_range: 10, reference: 5, business_rule: 8, language: 5, detail: 7},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "english"
+  },
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "MUSTERI_NO",
+    original_desc: "Müşteri numarasıdır. XXX_MUSTERI tablosunun birincil anahtarıdır.",
+    desc: "Müşteri numarasıdır. XXX_MUSTERI tablosunun birincil anahtarıdır.",
+    risk_score: 8, clarity: 87,
+    issues: [],
+    feedback: "FK ilişkisi açık belirtilmiş. Yeterli.",
+    deductions: [], bonuses: [["FK referans tablosu açıklamada belirtilmiş", 8]],
+    breakdown: {domain: 22, value_range: 20, reference: 15, business_rule: 16, language: 10, detail: 9},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "complete"
+  },
+  {
+    table: "CORE_BANKING.XXX_HESAP", col: "SUBE_KOD",
+    original_desc: null,
+    desc: "LKP_SUBE tablosundan gelen şube kodudur. FK kısıtı veri modelinde tanımlanmamış olsa da referans ilişkisi mevcuttur. 87 distinct şube değeri içerir.",
+    risk_score: 55, clarity: 62,
+    issues: [
+      "Orijinal açıklama tamamen eksikti",
+      "FK kısıtı modelde tanımlı değil — LKP_SUBE referansı çözülmeli"
+    ],
+    feedback: "Fallback kolon adından üretildi. FK eksikliği bilgisi eklendi.",
+    deductions: [["FK ilişkisi var ama modelde kısıt yok", 10], ["Kritik bankacılık kolonu için açıklama zayıf kaldı", 15]],
+    bonuses: [["Lookup tablosuna doğru atıf yapılmış", 10]],
+    breakdown: {domain: 16, value_range: 14, reference: 10, business_rule: 12, language: 10, detail: 7},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "missing"
+  },
+  {
+    table: "CREDIT.KRD_MUS_KREDI", col: "KRD_NO",
+    original_desc: "Kredi numarasıdır.",
+    desc: "CREDIT.KRD_MUS_KREDI tablosundaki kredinin benzersiz tanımlayıcısıdır. Tablonun birincil anahtarıdır, ISLEM_TARIHI ile birlikte bileşik PK oluşturur.",
+    risk_score: 42, clarity: 67,
+    issues: ["FRD dokümanı mevcut değil", "TOA dokümanı mevcut değil"],
+    feedback: "Dokümansız üretim — DDL'den çıkarım yapıldı. FRD hazırlanmalı.",
+    deductions: [["Kritik bankacılık kolonu için açıklama kısa", 15], ["Bankacılık bağlamı zayıf", 10]],
+    bonuses: [["Bankacılık terminolojisi kullanılmış", 5]],
+    breakdown: {domain: 14, value_range: 15, reference: 10, business_rule: 10, language: 10, detail: 8},
+    has_frd: false, has_toa: false, has_ddl: true,
+    quality: "incomplete"
+  },
+  {
+    table: "CREDIT.KRD_MUS_KREDI", col: "KRD_MUS_KOBI_TIP",
+    original_desc: "KOBI TIPININ TUTULACAGI ALAN.",
+    desc: "TMMOB tarafından belirlenen müşteri KOBİ tipi kodudur. Değerler: 1=Mikro, 2=Küçük, 3=Orta, 4=Büyük. LKP tablosu henüz tanımlanmamıştır.",
+    risk_score: 58, clarity: 63,
+    issues: ["LKP tablosu tanımlanmamış (4 distinct değer)", "FRD mevcut değil"],
+    feedback: "Enum değerleri açıklama içine eklendi. LKP tanımlanmalı.",
+    deductions: [["Düşük kardinalite — LKP yok", 20], ["FRD yokken domain bağlamı zayıf kaldı", 10]],
+    bonuses: [["Tüm olası değerler dokümante edilmiş", 10]],
+    breakdown: {domain: 16, value_range: 13, reference: 5, business_rule: 12, language: 10, detail: 7},
+    has_frd: false, has_toa: false, has_ddl: true,
+    quality: "vague"
+  },
+  {
+    table: "CREDIT.KRD_MUS_KREDI", col: "INT_SHK_A_30GCK_ADT_LM",
+    original_desc: "Akbank Hariç Kredi Kartı Açık Son 60 gün",
+    desc: "Akbank hariç kredi kartı açık bakiyesinin son 30 gün ortalamasıdır. ⚠ Orijinal açıklamada '60 gün' yazıyor ancak kolon adı (30GCK) 30 günü ifade eder — kritik mismatch.",
+    risk_score: 82, clarity: 32,
+    issues: [
+      "KRİTİK MISMATCH: Kolon adı 30GCK (30 gün) ama orijinal açıklama '60 gün' diyor",
+      "FRD ve TOA dokümanı mevcut değil — kaynak doğrulaması yapılamadı"
+    ],
+    feedback: "Açıklama düzeltildi (30 gün) ama kaynak olmadan kesinleştirilemez. İş birimi doğrulaması şart.",
+    deductions: [["Açıklamada '60 gün' — KRİTİK MISMATCH", 25], ["Bankacılık bağlamı zayıf", 20], ["FRD yokken doğrulama imkânsız", 15]],
+    bonuses: [],
+    breakdown: {domain: 8, value_range: 12, reference: 5, business_rule: 4, language: 8, detail: 5},
+    has_frd: false, has_toa: false, has_ddl: true,
+    quality: "wrong"
+  },
+  {
+    table: "CREDIT.KRD_MUS_KREDI", col: "KRD_TUTAR",
+    original_desc: "Kredi tutarı. Müşteriye kullandırılan kredi miktarını TL cinsinden ifade eder.",
+    desc: "Kredi tutarı. Müşteriye kullandırılan kredi miktarını TL cinsinden ifade eder.",
+    risk_score: 14, clarity: 82,
+    issues: [],
+    feedback: "Para birimi ve bağlam açık. Yeterli.",
+    deductions: [], bonuses: [["Bankacılık terminolojisi kullanılmış", 5]],
+    breakdown: {domain: 20, value_range: 18, reference: 12, business_rule: 14, language: 10, detail: 8},
+    has_frd: false, has_toa: false, has_ddl: true,
+    quality: "complete"
+  },
+  {
+    table: "CREDIT.KRD_MUS_KREDI", col: "KRD_DURUM",
+    original_desc: "Credit status. 0=Active, 1=Closed, 2=NPL",
+    desc: "Kredi durumu kodudur. Değerler: 0=Aktif, 1=Kapalı, 2=NPL (Takipteki Kredi). LKP tablosu tanımlanmamıştır.",
+    risk_score: 65, clarity: 58,
+    issues: ["Türkçe şemada İngilizce orijinal açıklama", "LKP tablosu yok (3 distinct)"],
+    feedback: "Dil düzeltildi ve değerler Türkçeleştirildi. LKP tanımlanmalı.",
+    deductions: [["İngilizce açıklama", 25], ["LKP tablosu yok", 20]],
+    bonuses: [["Tüm olası değerler dokümante edilmiş", 10]],
+    breakdown: {domain: 14, value_range: 14, reference: 5, business_rule: 10, language: 8, detail: 7},
+    has_frd: false, has_toa: false, has_ddl: true,
+    quality: "english"
+  },
+  {
+    table: "CRM.MUS_SEGMENTASYON", col: "MUSTERI_NO",
+    original_desc: "Müşteri kimlik numarasıdır.",
+    desc: "Müşteri kimlik numarasıdır.",
+    risk_score: 18, clarity: 75,
+    issues: [],
+    feedback: "Açıklama yeterli ancak tablo bağlamı eklenebilir.",
+    deductions: [["Kritik kolon için bağlam eksik", 10]],
+    bonuses: [],
+    breakdown: {domain: 18, value_range: 18, reference: 12, business_rule: 14, language: 10, detail: 8},
+    has_frd: true, has_toa: false, has_ddl: false,
+    quality: "complete"
+  },
+  {
+    table: "CRM.MUS_SEGMENTASYON", col: "SEGMENT_KOD",
+    original_desc: null,
+    desc: "CRM.MUS_SEGMENTASYON tablosundaki müşteri segmentini belirten koddur. LKP_SEGMENT tablosundan gelir.",
+    risk_score: 48, clarity: 65,
+    issues: ["Orijinal açıklama eksikti", "TOA dokümanı mevcut değil", "DDL mevcut değil"],
+    feedback: "Lookup atfı eklendi. LKP_SEGMENT değerleri açıklamaya henüz eklenemedi — metadata yoktu.",
+    deductions: [["Lookup değerleri açıklamada yok", 10], ["TOA ve DDL yokken bağlam sınırlı kaldı", 15]],
+    bonuses: [["Lookup tablosuna doğru atıf yapılmış", 10]],
+    breakdown: {domain: 16, value_range: 10, reference: 13, business_rule: 12, language: 10, detail: 7},
+    has_frd: true, has_toa: false, has_ddl: false,
+    quality: "missing"
+  },
+  {
+    table: "CRM.MUS_SEGMENTASYON", col: "GELIR_GRUBU",
+    original_desc: "Gelir grubu kodu.",
+    desc: "Müşterinin gelir grubunu gösteren koddur. Değerler: 1=Düşük, 2=Alt-Orta, 3=Orta, 4=Üst-Orta, 5=Yüksek. LKP tablosu tanımlı değildir.",
+    risk_score: 52, clarity: 61,
+    issues: ["LKP tablosu yok (5 distinct değer)", "TOA mevcut değil"],
+    feedback: "Enum değerleri tahminle dolduruldu. FRD'den doğrulanmalı.",
+    deductions: [["Düşük kardinalite — LKP yok", 20], ["Metadata notlarındaki kural yansıtılmamış", 8]],
+    bonuses: [["Tüm olası değerler dokümante edilmiş", 10]],
+    breakdown: {domain: 14, value_range: 13, reference: 5, business_rule: 12, language: 10, detail: 7},
+    has_frd: true, has_toa: false, has_ddl: false,
+    quality: "incomplete"
+  },
+  {
+    table: "RISK.RISK_IZLEME", col: "MUSTERI_NO",
+    original_desc: "Müşteri kimlik numarası.",
+    desc: "Müşteri kimlik numarası.",
+    risk_score: 10, clarity: 80,
+    issues: [],
+    feedback: "Yeterli.",
+    deductions: [], bonuses: [],
+    breakdown: {domain: 20, value_range: 18, reference: 12, business_rule: 14, language: 10, detail: 8},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "complete"
+  },
+  {
+    table: "RISK.RISK_IZLEME", col: "RISK_SKOR",
+    original_desc: "0-100 arası risk skoru. Yüksek değer yüksek riski ifade eder.",
+    desc: "0-100 arası risk skoru. Yüksek değer yüksek riski ifade eder.",
+    risk_score: 8, clarity: 92,
+    issues: [],
+    feedback: "Değer aralığı ve yorum açık. Mükemmel.",
+    deductions: [], bonuses: [["Bankacılık terminolojisi kullanılmış", 5], ["Tüm olası değerler dokümante edilmiş", 10]],
+    breakdown: {domain: 23, value_range: 20, reference: 14, business_rule: 20, language: 10, detail: 10},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "complete"
+  },
+  {
+    table: "RISK.RISK_IZLEME", col: "RISK_SINIF",
+    original_desc: "Risk sınıfı.",
+    desc: "Müşterinin risk sınıfını belirtir. Değerler: LOW=Düşük Risk, MEDIUM=Orta Risk, HIGH=Yüksek Risk. LKP tablosu tanımlı değildir.",
+    risk_score: 45, clarity: 68,
+    issues: ["LKP tablosu yok (3 distinct değer)"],
+    feedback: "Değerler Türkçe karşılıklarıyla eklendi. LKP tanımlanmalı.",
+    deductions: [["Düşük kardinalite — LKP yok", 20]],
+    bonuses: [["Tüm olası değerler dokümante edilmiş", 10]],
+    breakdown: {domain: 18, value_range: 14, reference: 5, business_rule: 16, language: 10, detail: 7},
+    has_frd: true, has_toa: true, has_ddl: true,
+    quality: "incomplete"
+  },
+];
+
+const LINEAGE = [
+  { src:"CORE_BANKING.XXX_HESAP",  tgt:"RISK.RISK_IZLEME",       loop:false },
+  { src:"CREDIT.KRD_MUS_KREDI",    tgt:"RISK.RISK_IZLEME",       loop:false },
+  { src:"RISK.RISK_IZLEME",        tgt:"CRM.MUS_SEGMENTASYON",   loop:true  },
+  { src:"CRM.MUS_SEGMENTASYON",    tgt:"RISK.RISK_IZLEME",       loop:true  },
+  { src:"CORE_BANKING.XXX_HESAP",  tgt:"CRM.MUS_SEGMENTASYON",   loop:false },
+];
+
+const DAILY = [
+  {
+    name: "Ali K.",
+    did:["Generator agent — kolon adından fallback, TOA/FRD kural çıkarımı eklendi",
+         "Lookup enum değerleri açıklamaya otomatik ekleme tamamlandı"],
+    couldnt:["KRD_MUS_KREDI tablosu FRD'si henüz yok — dokümansız üretim sınırlı"],
+    next:["FRD şablonu hazırlanacak","Ortak LKP eksiklik raporu çıkarılacak"]
+  },
+  {
+    name: "Büşra T.",
+    did:["Risk skoru 0-100 bazlı sisteme geçildi (HIGH/LOW etiket kaldırıldı)",
+         "Bankacılık odaklı clarity scorer tamamlandı — eşik 80"],
+    couldnt:["HESAP_DURUM_KOD '3' değeri iş birimiyle henüz netleştirilmedi"],
+    next:["Cardinality checker — partitioned tablo optimizasyonu","Validation catch rate güncelleme"]
+  },
+  {
+    name: "Cem Y.",
+    did:["Dashboard — ilk hal/son hal karşılaştırması popup'a eklendi",
+         "Terminal çıktısı UI'a entegre edildi","Risk dağılım bar chart güncellendi"],
+    couldnt:["INT_SHK mismatch kaynağı DB'den doğrulanamadı"],
+    next:["Ablation study güncellenecek","UI screenshot alınacak"]
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+
+function scoreColor(s) {
+  if (s >= 60) return 'var(--high)';
+  if (s >= 30) return 'var(--mid)';
+  return 'var(--low)';
+}
+function clarityColor(c) {
+  if (c >= 80) return 'var(--low)';
+  if (c >= 50) return 'var(--mid)';
+  return 'var(--high)';
+}
+function riskBand(s) {
+  if (s >= 60) return { label: 'YÜKSEK', cls: 'rp-high', rowCls: 'risk-high' };
+  if (s >= 30) return { label: 'ORTA',   cls: 'rp-mid',  rowCls: 'risk-mid'  };
+  return             { label: 'DÜŞÜK',  cls: 'rp-low',  rowCls: 'risk-low'  };
+}
+
+function renderTable(filter = 'all') {
+  const tbody = document.getElementById('colTbody');
+  let filtered = filter === 'all' ? COLUMNS
+    : filter === 'high' ? COLUMNS.filter(c => c.risk_score >= 60)
+    : filter === 'mid'  ? COLUMNS.filter(c => c.risk_score >= 30 && c.risk_score < 60)
+    : COLUMNS.filter(c => c.risk_score < 30);
+
+  tbody.innerHTML = filtered.map(col => {
+    const rb  = riskBand(col.risk_score);
+    const cc  = clarityColor(col.clarity);
+    const descHtml = col.desc
+      ? `<span class="desc-text">${col.desc.length > 75 ? col.desc.slice(0,75) + '…' : col.desc}</span>`
+      : `<span class="desc-miss">— eksik —</span>`;
+    const issBtn = col.issues.length
+      ? `<span class="issue-btn" onclick="showPopup('${col.table}','${col.col}')">⚠ ${col.issues.length}</span>`
+      : `<span style="color:var(--muted);font-size:.65rem">—</span>`;
+
+    return `<tr class="${rb.rowCls}">
+      <td><span class="tbl-label">${col.table}</span></td>
+      <td><span class="col-name" onclick="showPopup('${col.table}','${col.col}')">${col.col}</span></td>
+      <td>${descHtml}</td>
+      <td>
+        <span class="rpill ${rb.cls}" onclick="showPopup('${col.table}','${col.col}')">
+          ${col.risk_score}/100
+        </span>
+        <span style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-left:5px">${rb.label}</span>
+      </td>
+      <td>
+        <div class="sbar">
+          <div class="sbar-track"><div class="sbar-fill" style="width:${col.clarity}%;background:${cc}"></div></div>
+          <span class="sbar-val" style="color:${cc}">${col.clarity}</span>
+        </div>
+      </td>
+      <td>${issBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(f, btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.className = 'fbtn');
+  const map = { all: 'fa', high: 'fr', mid: 'fm', low: 'fg' };
+  btn.classList.add(map[f]);
+  renderTable(f);
+}
+
+// ── Lineage ────────────────────────────────────────────────────────────────
+function renderLineage() {
+  document.getElementById('lineageContainer').innerHTML = LINEAGE.map(l =>
+    `<div class="lin-node">
+      <span class="lin-src">${l.src.split('.')[1]}</span>
+      <span class="lin-arr">→</span>
+      <span class="lin-tgt">${l.tgt.split('.')[1]}</span>
+      ${l.loop ? '<span class="lin-loop">⚠ LOOP</span>' : ''}
+    </div>`
+  ).join('');
+}
+
+// ── Daily ──────────────────────────────────────────────────────────────────
+function renderDaily() {
+  document.getElementById('dailyContainer').innerHTML = DAILY.map(d => `
+    <div class="daily-card">
+      <div class="daily-name">@${d.name}</div>
+      ${d.did.map(a => `<div class="daily-act"><span class="daily-icon">✅</span><span>${a}</span></div>`).join('')}
+      ${d.couldnt.map(a => `<div class="daily-act"><span class="daily-icon">❌</span><span>${a}</span></div>`).join('')}
+      ${d.next.map(a => `<div class="daily-act"><span class="daily-icon">🔜</span><span>${a}</span></div>`).join('')}
+    </div>
+  `).join('');
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+function renderStats() {
+  const n     = COLUMNS.length;
+  const high  = COLUMNS.filter(c => c.risk_score >= 60).length;
+  const mid   = COLUMNS.filter(c => c.risk_score >= 30 && c.risk_score < 60).length;
+  const low   = COLUMNS.filter(c => c.risk_score < 30).length;
+  const avgC  = Math.round(COLUMNS.reduce((a,c) => a+c.clarity, 0) / n);
+
+  document.getElementById('stat-high').textContent    = high;
+  document.getElementById('stat-mid').textContent     = mid;
+  document.getElementById('stat-low').textContent     = low;
+  document.getElementById('stat-avg-clarity').textContent = avgC;
+  document.getElementById('col-count-badge').textContent  = `${n} kolon`;
+
+  const hp = (high/n*100).toFixed(1), mp = (mid/n*100).toFixed(1), lp = (low/n*100).toFixed(1);
+  document.getElementById('stat-high-pct').textContent = `%${hp} kolon`;
+  document.getElementById('stat-mid-pct').textContent  = `%${mp} kolon`;
+  document.getElementById('stat-low-pct').textContent  = `%${lp} kolon`;
+
+  document.getElementById('rb-high').style.width = hp + '%';
+  document.getElementById('rb-mid').style.width  = mp + '%';
+  document.getElementById('rb-low').style.width  = lp + '%';
+
+  document.getElementById('rl-high-label').textContent = `Yüksek — ${high} kolon (%${hp})`;
+  document.getElementById('rl-mid-label').textContent  = `Orta — ${mid} kolon (%${mp})`;
+  document.getElementById('rl-low-label').textContent  = `Düşük — ${low} kolon (%${lp})`;
+}
+
+// ── Terminal log ───────────────────────────────────────────────────────────
+function renderTerminal() {
+  const el = document.getElementById('termLog');
+  let html = '';
+
+  const sep = `<div class="tl-sep">═══════════════════════════════════════════════</div>`;
+  const dsep = `<div class="tl-sep">───────────────────────────────────────────────</div>`;
+
+  html += sep;
+  html += `<div class="tl-info">🚀 METADATA INTELLIGENCE PLATFORM — Pipeline v2.0</div>`;
+  html += sep;
+
+  const tables = [...new Set(COLUMNS.map(c => c.table))];
+
+  tables.forEach(tbl => {
+    const cols = COLUMNS.filter(c => c.table === tbl);
+    const tblCol = cols[0];
+    html += `\n<div class="tl-table">📋 TABLO: ${tbl}</div>`;
+
+    const docs = [];
+    if (tblCol.has_frd) docs.push('<span class="tl-ok">FRD ✅</span>'); else docs.push('<span class="tl-err">FRD ❌</span>');
+    if (tblCol.has_toa) docs.push('<span class="tl-ok">TOA ✅</span>'); else docs.push('<span class="tl-err">TOA ❌</span>');
+    if (tblCol.has_ddl) docs.push('<span class="tl-ok">DDL ✅</span>'); else docs.push('<span class="tl-err">DDL ❌</span>');
+    html += `<div>   Dokümanlar: ${docs.join(' | ')}</div>`;
+    html += dsep;
+
+    cols.forEach(col => {
+      const rb = riskBand(col.risk_score);
+      const icon = col.risk_score >= 60 ? '🔴' : col.risk_score >= 30 ? '🟡' : '🟢';
+      html += `<div class="tl-col">   ${icon} ${col.col.padEnd(36)} risk=${col.risk_score}/100  clarity=${col.clarity}/100  [${rb.label}]</div>`;
+      if (col.quality !== 'complete' && col.quality !== 'generated') {
+        html += `<div class="tl-warn">        ✏️ Üretildi [${col.quality}]</div>`;
+      }
+      col.deductions.forEach(([r,p]) => {
+        html += `<div class="tl-ded">        ↳ -${p}pt  ${r}</div>`;
+      });
+      col.bonuses.forEach(([r,p]) => {
+        html += `<div class="tl-bon">        ↳ +${p}pt  ${r}</div>`;
+      });
+      col.issues.forEach(iss => {
+        html += `<div class="tl-warn">        ⚠ ${iss}</div>`;
+      });
+    });
+
+    const avgR = Math.round(cols.reduce((a,c) => a+c.risk_score, 0) / cols.length);
+    const avgC = Math.round(cols.reduce((a,c) => a+c.clarity, 0) / cols.length);
+    html += `<div class="tl-info">   📊 Tablo özeti — avg risk: ${avgR}/100 | avg clarity: ${avgC}/100</div>\n`;
+  });
+
+  const n = COLUMNS.length;
+  const high = COLUMNS.filter(c => c.risk_score >= 60).length;
+  const mid  = COLUMNS.filter(c => c.risk_score >= 30 && c.risk_score < 60).length;
+  const low  = n - high - mid;
+
+  html += sep;
+  html += `<div class="tl-info">  GENEL ÖZET</div>`;
+  html += `<div>  Toplam kolon: ${n}</div>`;
+  html += `<div class="tl-err">  🔴 Yüksek risk (≥60): ${high} kolon (%${(high/n*100).toFixed(1)})</div>`;
+  html += `<div class="tl-warn">  🟡 Orta risk  (30-59): ${mid} kolon (%${(mid/n*100).toFixed(1)})</div>`;
+  html += `<div class="tl-ok">  🟢 Düşük risk (&lt;30): ${low} kolon (%${(low/n*100).toFixed(1)})</div>`;
+  html += `<div class="tl-warn">  ⚠ Lineage döngüsü: RISK ↔ CRM (ETL_003 + ETL_004)</div>`;
+  html += sep;
+
+  el.innerHTML = html;
+}
+
+// ── Popup ──────────────────────────────────────────────────────────────────
+function showPopup(table, colName) {
+  const col = COLUMNS.find(c => c.table === table && c.col === colName);
+  if (!col) return;
+
+  const rb = riskBand(col.risk_score);
+  const rc = scoreColor(col.risk_score);
+  const cc = clarityColor(col.clarity);
+
+  document.getElementById('pp-colname').textContent  = col.col;
+  document.getElementById('pp-tblname').textContent  = col.table;
+
+  // Skor
+  const sbig = document.getElementById('pp-score-big');
+  sbig.textContent = col.risk_score;
+  sbig.style.color = rc;
+
+  // Doc availability
+  const docPills = [
+    col.has_frd ? `<span class="doc-pill dp-ok">FRD ✅</span>` : `<span class="doc-pill dp-miss">FRD ❌</span>`,
+    col.has_toa ? `<span class="doc-pill dp-ok">TOA ✅</span>` : `<span class="doc-pill dp-miss">TOA ❌</span>`,
+    col.has_ddl ? `<span class="doc-pill dp-ok">DDL ✅</span>` : `<span class="doc-pill dp-miss">DDL ❌</span>`,
+  ].join('');
+  document.getElementById('pp-doc-avail').innerHTML = `<div class="doc-avail">${docPills}</div>`;
+
+  // Before / After
+  const before = document.getElementById('pp-before');
+  const after  = document.getElementById('pp-after');
+
+  if (col.original_desc) {
+    before.innerHTML = `<div class="compare-text">${col.original_desc}</div>`;
+  } else {
+    before.innerHTML = `<div class="compare-missing">(Açıklama yoktu)</div>`;
+  }
+  after.innerHTML = col.desc
+    ? `<div class="compare-text">${col.desc}</div>`
+    : `<div class="compare-missing">(Açıklama üretilemedi)</div>`;
+
+  // Score breakdown
+  const bd = col.breakdown;
+  const bdHtml = [
+    ['Domain Bağlamı', bd.domain, 25],
+    ['Değer Aralığı / LKP', bd.value_range, 20],
+    ['Referans Bütünlüğü', bd.reference, 15],
+    ['İş Kuralı', bd.business_rule, 20],
+    ['Dil Tutarlılığı', bd.language, 10],
+    ['Yeterli Detay', bd.detail, 10],
+  ].map(([label, val, max]) => {
+    const pct = Math.round(val / max * 100);
+    const c = pct >= 75 ? 'var(--low)' : pct >= 40 ? 'var(--mid)' : 'var(--high)';
+    return `<div class="sb-item">
+      <div class="sb-label">${label}</div>
+      <div class="sb-val" style="color:${c}">${val}<span style="color:var(--muted);font-size:.6rem">/${max}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('pp-breakdown').innerHTML = bdHtml;
+
+  // Factors
+  const factors = document.getElementById('pp-factors');
+  const fSection = document.getElementById('pp-factors-section');
+  const allFactors = [
+    ...col.deductions.map(([r,p]) => `<div class="pf-item"><span class="pf-label">${r}</span><span class="pf-pts-ded">-${p}pt</span></div>`),
+    ...col.bonuses.map(([r,p]) => `<div class="pf-item"><span class="pf-label">${r}</span><span class="pf-pts-bon">+${p}pt</span></div>`),
+  ];
+  if (allFactors.length) {
+    factors.innerHTML = allFactors.join('');
+    fSection.style.display = 'block';
+  } else {
+    fSection.style.display = 'none';
+  }
+
+  // Issues
+  const issSection = document.getElementById('pp-issues-section');
+  const issEl = document.getElementById('pp-issues');
+  if (col.issues.length) {
+    issEl.innerHTML = col.issues.map(i => `<div class="pi-item"><span class="pi-icon">⚠</span><span>${i}</span></div>`).join('');
+    issSection.style.display = 'block';
+  } else {
+    issSection.style.display = 'none';
+  }
+
+  // Feedback
+  const fbSection = document.getElementById('pp-feedback-section');
+  const fbEl = document.getElementById('pp-feedback');
+  if (col.feedback) {
+    fbEl.textContent = col.feedback;
+    fbSection.style.display = 'block';
+  } else {
+    fbSection.style.display = 'none';
+  }
+
+  document.getElementById('popup').classList.add('active');
+}
+
+function closePopup(e) {
+  if (!e || e.target === document.getElementById('popup') || e.currentTarget.classList.contains('popup-close')) {
+    document.getElementById('popup').classList.remove('active');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('popup').classList.remove('active');
+});
+
+// ── Init ───────────────────────────────────────────────────────────────────
+renderStats();
+renderTable();
+renderLineage();
+renderDaily();
+renderTerminal();
+</script>
+</body>
+</html>

@@ -143,6 +143,27 @@ def _generate_task(item: tuple) -> tuple:
         return table_name, col_name, None, e
 
 
+def _context_labels(ctx: dict, table: dict) -> dict:
+    """Pipeline öncesi mevcut bağlam dokümanlarını etiketle."""
+    frd = bool(ctx.get("functional_doc"))
+    toa = bool(ctx.get("toa_doc"))
+    ddl = bool(ctx.get("ddl"))
+    schema = bool(ctx.get("schema_info"))
+    any_doc = frd or toa or ddl
+    return {
+        "frd": frd,
+        "toa": toa,
+        "ddl": ddl,
+        "schema": schema,
+        "coverage": "with_docs" if any_doc else "no_docs",
+        "flags": {
+            "has_functional_doc": table.get("has_functional_doc", False),
+            "has_toa_doc": table.get("has_toa_doc", False),
+            "has_ddl": table.get("has_ddl", False),
+        },
+    }
+
+
 def run_generator(tables, on_column_done=None):
     """Run generator on all tables and columns, return enriched metadata."""
     _context_cache.clear()
@@ -176,7 +197,9 @@ def run_generator(tables, on_column_done=None):
     enriched = []
     for table in tables:
         print(f"\n📋 Processing table: {table['schema']}.{table['table_name']}")
+        ctx = _cached_context(table["table_name"], table["schema"])
         enriched_table = dict(table)
+        enriched_table["context_labels"] = _context_labels(ctx, table)
         enriched_columns = []
 
         for col in table.get("columns", []):
