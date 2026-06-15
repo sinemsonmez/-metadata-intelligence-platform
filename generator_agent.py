@@ -30,6 +30,108 @@ def load_text(path):
     return None
 
 
+def _extract_col_snippet(doc: str | None, col_name: str, max_len: int = 800) -> str | None:
+    """FRD/TOA içinden kolon adına ait bölümü çıkarır."""
+    if not doc or col_name not in doc:
+        return None
+    lines = doc.split("\n")
+    chunks: list[str] = []
+    capture = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("###") and col_name in line:
+            capture = True
+            chunks.append(line)
+            continue
+        if capture:
+            if stripped.startswith("###") and col_name not in line:
+                break
+            chunks.append(line)
+        elif col_name in line:
+            chunks.append(line)
+    text = "\n".join(chunks).strip()
+    return text[:max_len] if text else None
+
+
+def _table_schema(table_name: str, all_tables: list) -> str:
+    for t in all_tables:
+        if t["table_name"] == table_name:
+            return t["schema"]
+    return "UNKNOWN"
+
+
+def enrich_context_for_column(table: dict, column: dict, all_tables: list) -> dict:
+    """Kolon için bağlam yükler; kendi tablosunda yetersizse ilişkili dokümanlara bakar."""
+    base = dict(_cached_context(table["table_name"], table["schema"]))
+    sources: list[dict] = []
+    cross_snippets: list[str] = []
+    col_name = column["column_name"]
+    table_name = table["table_name"]
+    schema = table["schema"]
+    seen_keys: set[tuple] = set()
+
+    def _add_source(doc_type: str, src_schema: str, src_table: str, reason: str, snippet: str) -> None:
+        key = (doc_type, src_schema, src_table, reason)
+        if key in seen_keys:
+            return
+        seen_keys.add(key)
+        sources.append({
+            "doc_type": doc_type,
+            "source_schema": src_schema,
+            "source_table": src_table,
+            "reason": reason,
+        })
+        cross_snippets.append(
+            f"[Kaynak: {src_schema}.{src_table} — {doc_type} ({reason})]\n{snippet}"
+        )
+
+    if base.get("functional_doc"):
+        own = _extract_col_snippet(base["functional_doc"], col_name)
+        if own:
+            _add_source("FRD", schema, table_name, "own_table", own)
+    if base.get("toa_doc"):
+        own = _extract_col_snippet(base["toa_doc"], col_name)
+        if own:
+            _add_source("TOA", schema, table_name, "own_table", own)
+
+    has_own_col_doc = any(s["reason"] == "own_table" for s in sources)
+    needs_cross = not has_own_col_doc or not (base.get("functional_doc") or base.get("toa_doc"))
+
+    if needs_cross:
+        lkp_name = column.get("lookup_table")
+        if lkp_name:
+            lkp_schema = _table_schema(lkp_name, all_tables)
+            lkp_ctx = _cached_context(lkp_name, lkp_schema)
+            for doc_type, key in (("FRD", "functional_doc"), ("TOA", "toa_doc")):
+                doc = lkp_ctx.get(key)
+                if not doc:
+                    continue
+                snip = _extract_col_snippet(doc, col_name) or _extract_col_snippet(doc, "KOD")
+                if snip:
+                    _add_source(doc_type, lkp_schema, lkp_name, "lookup_table", snip)
+
+        for doc_type, prefix in (("FRD", "FRD_"), ("TOA", "TOA_")):
+            for path in sorted(DOCS_DIR.glob(f"{prefix}*.md")):
+                src_table = path.stem[len(prefix):]
+                if src_table == table_name:
+                    continue
+                doc = load_text(path)
+                if not doc or col_name not in doc:
+                    continue
+                snip = _extract_col_snippet(doc, col_name)
+                if not snip:
+                    continue
+                src_schema = _table_schema(src_table, all_tables)
+                _add_source(doc_type, src_schema, src_table, "related_column_reference", snip)
+                if len(cross_snippets) >= 4:
+                    break
+
+    base["context_sources"] = sources
+    if cross_snippets:
+        base["cross_context"] = "\n\n".join(cross_snippets[:4])
+    return base
+
+
 def load_context(table_name, schema):
     """Load all available context documents for a table."""
     context = {}
@@ -107,6 +209,10 @@ def build_prompt(table, column, context):
         parts.append(f"\nFONKSİYONEL İHTİYAÇ DOKÜMANI:\n{context['functional_doc'][:2000]}")
     if context.get("toa_doc"):
         parts.append(f"\nTOA DOKÜMANI:\n{context['toa_doc'][:1000]}")
+    if context.get("cross_context"):
+        parts.append(
+            f"\nİLİŞKİLİ TABLO/KOLON DOKÜMANLARI (cross-reference):\n{context['cross_context'][:2000]}"
+        )
     if context.get("ddl"):
         parts.append(f"\nDDL:\n{context['ddl']}")
 
@@ -149,13 +255,16 @@ def _context_labels(ctx: dict, table: dict) -> dict:
     toa = bool(ctx.get("toa_doc"))
     ddl = bool(ctx.get("ddl"))
     schema = bool(ctx.get("schema_info"))
-    any_doc = frd or toa or ddl
+    any_doc = frd or toa or ddl or bool(ctx.get("cross_context"))
+    cross_sources = [s for s in ctx.get("context_sources", []) if s.get("reason") != "own_table"]
     return {
         "frd": frd,
         "toa": toa,
         "ddl": ddl,
         "schema": schema,
         "coverage": "with_docs" if any_doc else "no_docs",
+        "cross_refs": len(cross_sources) > 0,
+        "sources": ctx.get("context_sources", []),
         "flags": {
             "has_functional_doc": table.get("has_functional_doc", False),
             "has_toa_doc": table.get("has_toa_doc", False),
@@ -168,11 +277,13 @@ def run_generator(tables, on_column_done=None):
     """Run generator on all tables and columns, return enriched metadata."""
     _context_cache.clear()
     tasks: list[tuple] = []
+    col_contexts: dict[tuple[str, str], dict] = {}
     for table in tables:
-        ctx = _cached_context(table["table_name"], table["schema"])
         for col in table.get("columns", []):
             if col.get("description_quality", "") in _GENERATE_QUALITIES:
-                tasks.append((table, col, ctx))
+                col_ctx = enrich_context_for_column(table, col, tables)
+                col_contexts[(table["table_name"], col["column_name"])] = col_ctx
+                tasks.append((table, col, col_ctx))
 
     generated: dict[tuple[str, str], tuple[str | None, Exception | None]] = {}
     if tasks:
@@ -198,6 +309,7 @@ def run_generator(tables, on_column_done=None):
     for table in tables:
         print(f"\n📋 Processing table: {table['schema']}.{table['table_name']}")
         ctx = _cached_context(table["table_name"], table["schema"])
+        table_sources: list[dict] = []
         enriched_table = dict(table)
         enriched_table["context_labels"] = _context_labels(ctx, table)
         enriched_columns = []
@@ -205,6 +317,7 @@ def run_generator(tables, on_column_done=None):
         for col in table.get("columns", []):
             quality = col.get("description_quality", "")
             key = (table["table_name"], col["column_name"])
+            col_ctx = col_contexts.get(key)
 
             if key in generated:
                 desc, err = generated[key]
@@ -217,11 +330,22 @@ def run_generator(tables, on_column_done=None):
                     enriched_col["original_description"] = col.get("description")
                     enriched_col["description"] = desc
                     enriched_col["description_quality"] = "generated"
+                    if col_ctx:
+                        enriched_col["context_sources"] = col_ctx.get("context_sources", [])
+                        table_sources.extend(col_ctx.get("context_sources", []))
                     enriched_columns.append(enriched_col)
             else:
                 print(f"  ✅ OK: {col['column_name']}")
                 enriched_columns.append(col)
 
+        if table_sources:
+            merged = {(
+                s["doc_type"], s["source_schema"], s["source_table"], s["reason"]
+            ): s for s in table_sources}
+            enriched_table["context_labels"]["sources"] = list(merged.values())
+            enriched_table["context_labels"]["cross_refs"] = any(
+                s.get("reason") != "own_table" for s in merged.values()
+            )
         enriched_table["columns"] = enriched_columns
         enriched.append(enriched_table)
 

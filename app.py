@@ -1000,14 +1000,63 @@ async function loadResults() {
   } catch(e) {}
 }
 
+function truncateText(s, n = 140) {
+  if (s === null || s === undefined || s === '') return '(yok)';
+  const t = String(s);
+  return t.length > n ? t.slice(0, n) + '…' : t;
+}
+
+function getUnknownValues(col) {
+  const known = col.known_values;
+  const actual = col.actual_values_in_db;
+  if (!Array.isArray(known) || !Array.isArray(actual)) return [];
+  return actual.filter(v => !known.some(k => k === v));
+}
+
+function beforeAfterSuffix(col) {
+  const before = truncateText(col.origDesc);
+  const after = truncateText(col.desc);
+  return ` Önce: "${before}" → Pipeline sonrası: "${after}"`;
+}
+
+function enrichOtherIssue(issue, col) {
+  const l = String(issue).toLowerCase();
+  const suffix = beforeAfterSuffix(col);
+  const unknown = getUnknownValues(col);
+  const known = col.known_values;
+
+  if (l.includes('ingilizce')) {
+    return `İNGİLİZCE AÇIKLAMA: Kolon açıklaması Türkçe şema ortamında İngilizce yazılmış.${suffix}`;
+  }
+  if (l.includes('belirsiz') && l.includes('tarih')) {
+    return `BELİRSİZ TARİH ARALIĞI: Tarih kolonunda net aralık veya iş kuralı belirtilmemiş.${suffix}`;
+  }
+  if (l.includes('belirsiz değer') || l.includes('belirsiz deger')) {
+    let msg = 'BELİRSİZ DEĞER: ';
+    if (known) msg += `Bilinen değerler: ${JSON.stringify(known)}. `;
+    if (unknown.length) {
+      msg += unknown.map(v => `${v} değeri bilinmiyor`).join('; ') + '.';
+    } else {
+      msg += issue.replace(/^belirsiz değer[:\s]*/i, '') + '.';
+    }
+    return msg + suffix;
+  }
+  if (l.includes('eksik') && l.includes('açıklama')) {
+    return `EKSİK AÇIKLAMA: Kolon için yeterli metadata açıklaması bulunmuyor.${suffix}`;
+  }
+  if (issue.length < 80) return issue + suffix;
+  return issue;
+}
+
 function consolidateIssues(col) {
   const raw = [...(col.issues || [])];
   const distinct = col.distinct_count;
   const hasLookup = col.has_lookup;
   const validationIssue = col.validation_issue;
   const knownValues = col.known_values;
+  const unknown = getUnknownValues(col);
 
-  let hasValidation = Boolean(validationIssue);
+  let hasValidation = Boolean(validationIssue || unknown.length || col.actual_values_in_db);
   let hasLookupGap = distinct != null && Number(distinct) < 100 && !hasLookup;
   const other = [];
 
@@ -1021,6 +1070,7 @@ function consolidateIssues(col) {
       l.includes('validation hatası') ||
       l.includes('documented values') ||
       l.includes('belirsiz değer') ||
+      l.includes('değeri bilinmiyor') ||
       (l.includes('validation') && (l.includes('uyumsuz') || l.includes('hata') || l.includes('mismatch')));
 
     const isLookup =
@@ -1043,21 +1093,26 @@ function consolidateIssues(col) {
 
   const out = [];
   if (hasValidation) {
-    let detail = validationIssue;
-    if (!detail) {
-      const fromRaw = raw.find(r => String(r).toLowerCase().includes('value mismatch'));
-      detail = fromRaw
-        ? String(fromRaw).replace(/^VALUE MISMATCH:\s*/i, '').trim()
-        : 'Dokümante değerler ile üretim verisi uyuşmuyor.';
+    let msg = 'VALUE MISMATCH: ';
+    if (knownValues) msg += `Bilinen değerler: ${JSON.stringify(knownValues)}. `;
+    if (unknown.length) {
+      msg += unknown.map(v => `${v} değeri bilinmiyor`).join('; ') + '. ';
+    } else if (validationIssue) {
+      msg += validationIssue + ' ';
+    } else {
+      msg += 'Dokümante değerler ile üretim verisi uyuşmuyor. ';
     }
-    out.push('VALUE MISMATCH: ' + detail);
+    msg += beforeAfterSuffix(col).trim();
+    out.push(msg);
   }
   if (hasLookupGap) {
     let msg = `LOOKUP GAP: ${distinct} distinct değer, LKP tablosu tanımlı değil`;
     if (knownValues != null) msg += `. Bilinen değerler: ${JSON.stringify(knownValues)}`;
+    if (unknown.length) msg += `. ${unknown.map(v => `${v} değeri bilinmiyor`).join('; ')}`;
+    msg += beforeAfterSuffix(col);
     out.push(msg);
   }
-  out.push(...other);
+  other.forEach(t => out.push(enrichOtherIssue(t, col)));
   return out;
 }
 
@@ -1086,10 +1141,16 @@ function renderResults(data) {
         issues,
         feedback: col.feedback || '',
         riskReasons: col.risk_reasons || [],
+        known_values: col.known_values,
+        actual_values_in_db: col.actual_values_in_db,
+        validation_issue: col.validation_issue,
+        distinct_count: col.distinct_count,
+        has_lookup: col.has_lookup,
         hasFrd: t.has_functional_doc || false,
         hasToa: t.has_toa_doc || false,
         hasDdl: t.has_ddl || false,
         contextLabels: t.context_labels || null,
+        contextSources: col.context_sources || (t.context_labels && t.context_labels.sources) || [],
         coverage: (t.context_labels && t.context_labels.coverage)
           || ((t.has_functional_doc || t.has_toa_doc || t.has_ddl) ? 'with_docs' : 'no_docs'),
       });
@@ -1286,10 +1347,26 @@ function showPopup(table, colName) {
   ].join('');
 
   const cov = col.coverage || (frdOk || toaOk || ddlOk ? 'with_docs' : 'no_docs');
-  document.getElementById('popupCoverage').innerHTML =
-    cov === 'with_docs'
-      ? '<span class="coverage-badge coverage-with">📄 Bağlam dokümanı mevcut — zenginleştirme bağlam enjeksiyonu ile yapıldı</span>'
-      : '<span class="coverage-badge coverage-none">📭 Bağlam dokümanı yok — yalnızca metadata ile zenginleştirme</span>';
+  const sources = col.contextSources || [];
+  const reasonLabels = {
+    own_table: 'kendi tablo dokümanı',
+    lookup_table: 'lookup tablosu dokümanı',
+    related_column_reference: 'ilişkili tablo dokümanı',
+  };
+  let covHtml = '';
+  if (sources.length) {
+    const srcLines = sources.map(s =>
+      `↳ ${s.doc_type} — ${s.source_schema}.${s.source_table} (${reasonLabels[s.reason] || s.reason})`
+    ).join('<br>');
+    const hasCross = sources.some(s => s.reason !== 'own_table');
+    covHtml = `<span class="coverage-badge coverage-with">📄 Bağlam enjeksiyonu${hasCross ? ' (cross-reference dahil)' : ''}</span>`
+      + `<div style="font-size:.66rem;color:var(--muted);margin-top:6px;line-height:1.5">${srcLines}</div>`;
+  } else if (cov === 'with_docs') {
+    covHtml = '<span class="coverage-badge coverage-with">📄 Bağlam dokümanı mevcut — zenginleştirme bağlam enjeksiyonu ile yapıldı</span>';
+  } else {
+    covHtml = '<span class="coverage-badge coverage-none">📭 Bağlam dokümanı yok — yalnızca metadata ile zenginleştirme</span>';
+  }
+  document.getElementById('popupCoverage').innerHTML = covHtml;
 
   const reasons = computeRiskReasons(col);
   const rCls = col.risk === 'HIGH_RISK' ? 'high' : 'low';

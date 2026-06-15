@@ -60,22 +60,52 @@ def _parse_eval(raw: str) -> dict:
         }
 
 
+CARDINALITY_THRESHOLD = 100
+
+
+def _unknown_values(column: dict) -> list:
+    known = column.get("known_values")
+    actual = column.get("actual_values_in_db")
+    if not isinstance(known, list) or not isinstance(actual, list):
+        return []
+    return [v for v in actual if v not in known]
+
+
+def format_validation_detail(column: dict) -> str:
+    """Validation uyarısını bilinen/bilinmeyen değerlerle detaylandırır."""
+    known = column.get("known_values")
+    unknown = _unknown_values(column)
+    parts: list[str] = []
+    if isinstance(known, list) and known:
+        parts.append(f"Bilinen değerler: {known}")
+    if unknown:
+        parts.append("; ".join(f"{v} değeri bilinmiyor" for v in unknown))
+    elif column.get("validation_issue"):
+        parts.append(column["validation_issue"])
+    return ". ".join(parts) if parts else "Dokümante değerler ile üretim verisi uyuşmuyor."
+
+
 def check_lookup_gaps(column):
     issues = []
     distinct = column.get("distinct_count")
     has_lookup = column.get("has_lookup", False)
     if distinct is not None and distinct < CARDINALITY_THRESHOLD and not has_lookup:
-        issues.append(
+        known = column.get("known_values", "bilinmiyor")
+        unknown = _unknown_values(column)
+        msg = (
             f"LOW CARDINALITY ({distinct} distinct değer) ama LKP tablosu yok. "
-            f"Bilinen değerler: {column.get('known_values', 'bilinmiyor')}"
+            f"Bilinen değerler: {known}"
         )
+        if unknown:
+            msg += ". " + "; ".join(f"{v} değeri bilinmiyor" for v in unknown)
+        issues.append(msg)
     return issues
 
 
 def check_value_validation(column):
     issues = []
-    if column.get("validation_issue"):
-        issues.append(f"VALUE MISMATCH: {column['validation_issue']}")
+    if column.get("validation_issue") or column.get("actual_values_in_db"):
+        issues.append(f"VALUE MISMATCH: {format_validation_detail(column)}")
     return issues
 
 
