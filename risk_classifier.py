@@ -7,6 +7,43 @@ Tags columns as HIGH_RISK or LOW_RISK based on metadata quality indicators.
 CARDINALITY_THRESHOLD = 100
 
 
+def get_risk_reasons(column: dict) -> list[str]:
+    """Return human-readable reasons for risk classification."""
+    reasons: list[str] = []
+
+    if column.get("risk_level") == "HIGH_RISK" and column.get("critic_score") is not None:
+        if column.get("critic_score", 100) < 60:
+            reasons.append(f"Critic skoru düşük ({column['critic_score']}/100)")
+
+    quality = column.get("description_quality", "")
+    quality_labels = {
+        "missing": "Açıklama eksik (missing)",
+        "wrong": "Yanlış veya tutarsız açıklama (wrong)",
+        "vague": "Belirsiz açıklama (vague)",
+        "english": "İngilizce açıklama — Türkçe şema bekleniyor",
+        "incomplete": "Eksik açıklama (incomplete)",
+    }
+    if quality in quality_labels and quality != "generated":
+        reasons.append(quality_labels[quality])
+
+    if column.get("validation_issue"):
+        reasons.append("Doğrulama uyumsuzluğu: " + column["validation_issue"])
+
+    distinct = column.get("distinct_count")
+    has_lookup = column.get("has_lookup", False)
+    if distinct is not None and int(distinct) < CARDINALITY_THRESHOLD and not has_lookup:
+        reasons.append(f"Düşük kardinalite ({distinct} distinct) ancak lookup tablosu yok")
+
+    for issue in column.get("issues", []):
+        if issue not in reasons:
+            reasons.append(issue)
+
+    if not reasons and column.get("risk_level") == "LOW_RISK":
+        reasons.append("Açıklama kalitesi ve metadata göstergeleri yeterli")
+
+    return reasons
+
+
 def classify_risk(column: dict) -> str:
     """
     Rule-based risk classification for a column.
@@ -53,6 +90,7 @@ def classify_all_risks(tables: list) -> dict:
         for col in table.get("columns", []):
             risk = classify_risk(col)
             col["risk_level"] = risk
+            col["risk_reasons"] = get_risk_reasons(col)
 
             entry = {
                 "table": table_key,
