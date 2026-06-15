@@ -1000,6 +1000,67 @@ async function loadResults() {
   } catch(e) {}
 }
 
+function consolidateIssues(col) {
+  const raw = [...(col.issues || [])];
+  const distinct = col.distinct_count;
+  const hasLookup = col.has_lookup;
+  const validationIssue = col.validation_issue;
+  const knownValues = col.known_values;
+
+  let hasValidation = Boolean(validationIssue);
+  let hasLookupGap = distinct != null && Number(distinct) < 100 && !hasLookup;
+  const other = [];
+
+  for (const issue of raw) {
+    const t = String(issue).trim();
+    if (!t) continue;
+    const l = t.toLowerCase();
+
+    const isValidation =
+      l.startsWith('value mismatch') ||
+      l.includes('validation hatası') ||
+      l.includes('documented values') ||
+      l.includes('belirsiz değer') ||
+      (l.includes('validation') && (l.includes('uyumsuz') || l.includes('hata') || l.includes('mismatch')));
+
+    const isLookup =
+      l.startsWith('lookup gap') ||
+      l.includes('lookup tablosu') ||
+      l.includes('lkp tablosu') ||
+      l.includes('low cardinality') ||
+      (l.includes('distinct') && (l.includes('lkp') || l.includes('lookup')));
+
+    if (isValidation) {
+      hasValidation = true;
+      continue;
+    }
+    if (isLookup) {
+      hasLookupGap = true;
+      continue;
+    }
+    if (!other.some(o => o.toLowerCase() === l)) other.push(t);
+  }
+
+  const out = [];
+  if (hasValidation) {
+    let detail = validationIssue;
+    if (!detail) {
+      const fromRaw = raw.find(r => String(r).toLowerCase().includes('value mismatch'));
+      detail = fromRaw
+        ? String(fromRaw).replace(/^VALUE MISMATCH:\s*/i, '').trim()
+        : 'Dokümante değerler ile üretim verisi uyuşmuyor.';
+    }
+    out.push('VALUE MISMATCH: ' + detail);
+  }
+  if (hasLookupGap) {
+    let msg = `LOOKUP GAP: ${distinct} distinct değer, LKP tablosu tanımlı değil`;
+    if (knownValues != null) msg += `. Bilinen değerler: ${JSON.stringify(knownValues)}`;
+    out.push(msg);
+  }
+  out.push(...other);
+  return out;
+}
+
 function renderResults(data) {
   const tables = data.tables || [];
   const riskReport = data.risk_report;
@@ -1008,11 +1069,7 @@ function renderResults(data) {
   allColumns = [];
   tables.forEach(t => {
     (t.columns || []).forEach(col => {
-      const issues = [];
-      if (col.validation_issue) issues.push('VALUE MISMATCH: ' + col.validation_issue);
-      if (col.distinct_count && col.distinct_count < 100 && !col.has_lookup)
-        issues.push('LOOKUP GAP: ' + col.distinct_count + ' distinct values, no LKP table');
-      if (col.issues) issues.push(...col.issues);
+      const issues = consolidateIssues(col);
 
       const risk = col.risk_level || (col.description_quality === 'missing' ? 'HIGH_RISK' : 'LOW_RISK');
       const clarity = col.clarity_score !== undefined ? col.clarity_score : clarityHeuristic(col);
